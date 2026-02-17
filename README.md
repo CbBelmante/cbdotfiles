@@ -21,34 +21,33 @@ Configuracoes pessoais de desenvolvimento. Clone o repositorio em qualquer maqui
 
 ## 🚀 Instalacao Rapida (Maquina Nova)
 
-### 0️⃣ Pre-requisitos
+### ⚡ One-liner (recomendado)
 
 ```bash
+curl -sL https://raw.githubusercontent.com/CbBelmante/cbdotfiles/master/bootstrap.sh | bash
+```
+
+> Clona o repositorio em `~/workspaces/cbdotfiles` e roda o instalador automaticamente.
+
+### 📋 Passo a passo (manual)
+
+```bash
+# 0. Pre-requisitos
 # Arch Linux
 sudo pacman -S git curl zsh eza
-
 # Ubuntu/Debian
 sudo apt install git curl zsh eza
-```
 
-### 1️⃣ Clone e instale
-
-```bash
-git clone <url-do-repo> ~/workspaces/cbdotfiles
+# 1. Clone e instale
+git clone https://github.com/CbBelmante/cbdotfiles.git ~/workspaces/cbdotfiles
 cd ~/workspaces/cbdotfiles
-chmod +x install.sh
+chmod +x install.sh installers/*.sh
 ./install.sh
-```
 
-### 2️⃣ Defina o Zsh como shell padrao
-
-```bash
+# 2. Defina Zsh como shell padrao
 chsh -s $(which zsh)
-```
 
-### 3️⃣ Reinicie o terminal
-
-```bash
+# 3. Reinicie o terminal
 source ~/.zshrc
 ```
 
@@ -93,6 +92,7 @@ Faz automaticamente: `git pull` → `install.sh` → `source ~/.zshrc`
 
 ```text
 cbdotfiles/
+├── bootstrap.sh                   # ⚡ One-liner para maquina nova
 ├── install.sh                     # 🎯 Orquestrador principal
 ├── installers/                    # 📦 Um script por modulo
 │   ├── helpers.sh                 # 🔧 Detecta distro (Arch/Debian/Fedora)
@@ -112,7 +112,8 @@ cbdotfiles/
 │   ├── config.kdl                 # ⌨️ Keybinds e config principal
 │   └── CbWorkTemplate1.kdl       # 📐 Layout: nvim + 6 terminais
 ├── zsh/
-│   └── .zshrc                     # 🐚 Zsh completo (aliases + funcoes)
+│   ├── .zshrc                     # 🐚 Config Zsh principal
+│   └── aliases.zsh                # 🔗 Aliases e funcoes (z-new, z-tab, etc)
 ├── nvim/                          # ✏️ Config completa Neovim (LazyVim)
 │   ├── init.lua
 │   ├── lua/
@@ -133,6 +134,7 @@ cbdotfiles/
 
 ```
 ~/.zshrc                              → cbdotfiles/zsh/.zshrc
+~/.config/cb/aliases.zsh              → cbdotfiles/zsh/aliases.zsh
 ~/.gitconfig                          → cbdotfiles/git/.gitconfig
 ~/.config/zellij/config.kdl           → cbdotfiles/zellij/config.kdl
 ~/.config/zellij/layouts/*.kdl        → cbdotfiles/zellij/*.kdl

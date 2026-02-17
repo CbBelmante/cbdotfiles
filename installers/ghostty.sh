@@ -1,7 +1,8 @@
 #!/bin/bash
 DOTFILES_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+source "$DOTFILES_DIR/installers/helpers.sh"
 
-echo "[ghostty] Configurando Ghostty..."
+log_title "ghostty" "Ghostty"
 mkdir -p ~/.config/ghostty
 ln -sf "$DOTFILES_DIR/ghostty/config" ~/.config/ghostty/config
-echo "  [ok] ~/.config/ghostty/config -> cbdotfiles"
+log_ok "~/.config/ghostty/config -> cbdotfiles"

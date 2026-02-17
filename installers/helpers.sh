@@ -1,6 +1,20 @@
 #!/bin/bash
 # Funcoes auxiliares compartilhadas entre installers
 
+# Cores
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+CYAN='\033[0;36m'
+BOLD='\033[1m'
+DIM='\033[2m'
+NC='\033[0m'
+
+# Logs padronizados
+log_ok()    { echo -e "  ${GREEN}✓${NC} $1"; }
+log_add()   { echo -e "  ${CYAN}+${NC} $1"; }
+log_warn()  { echo -e "  ${YELLOW}!${NC} $1"; }
+log_title() { echo -e "${BOLD}[$1]${NC} Configurando $2..."; }
+
 # Detecta o gerenciador de pacotes
 pkg_install() {
   if command -v pacman &> /dev/null; then
@@ -10,7 +24,7 @@ pkg_install() {
   elif command -v dnf &> /dev/null; then
     sudo dnf install -y "$@"
   else
-    echo "  [!] Gerenciador de pacotes nao encontrado. Instale manualmente: $*"
+    log_warn "Gerenciador de pacotes nao encontrado. Instale manualmente: $*"
     return 1
   fi
 }

@@ -1,10 +1,12 @@
 #!/bin/bash
+DOTFILES_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+source "$DOTFILES_DIR/installers/helpers.sh"
 
-echo "[nvm] Configurando NVM..."
+log_title "nvm" "NVM"
 
 if [ ! -d "$HOME/.nvm" ] && [ ! -d "$HOME/.config/nvm" ]; then
-  echo "  [+] Instalando NVM..."
+  log_add "Instalando NVM..."
   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
 else
-  echo "  [ok] NVM ja instalado"
+  log_ok "NVM ja instalado"
 fi

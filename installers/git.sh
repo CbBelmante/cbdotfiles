@@ -1,6 +1,7 @@
 #!/bin/bash
 DOTFILES_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+source "$DOTFILES_DIR/installers/helpers.sh"
 
-echo "[git] Configurando Git..."
+log_title "git" "Git"
 ln -sf "$DOTFILES_DIR/git/.gitconfig" ~/.gitconfig
-echo "  [ok] ~/.gitconfig -> cbdotfiles"
+log_ok "~/.gitconfig -> cbdotfiles"

@@ -1,7 +1,8 @@
 #!/bin/bash
 DOTFILES_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+source "$DOTFILES_DIR/installers/helpers.sh"
 
-echo "[kitty] Configurando Kitty..."
+log_title "kitty" "Kitty"
 mkdir -p ~/.config/kitty
 ln -sf "$DOTFILES_DIR/kitty/kitty.conf" ~/.config/kitty/kitty.conf
-echo "  [ok] ~/.config/kitty/kitty.conf -> cbdotfiles"
+log_ok "~/.config/kitty/kitty.conf -> cbdotfiles"
