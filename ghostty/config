@@ -17,6 +17,10 @@ cursor-style = "block"
 cursor-style-blink = false
 shell-integration-features = no-cursor
 
+# Transparency & Blur
+background-opacity = 0.85
+unfocused-split-opacity = 0.9
+
 # Keyboard bindings
 keybind = f11=toggle_fullscreen
 keybind = shift+insert=paste_from_clipboard

@@ -38,6 +38,15 @@ else
   log_ok "zsh-syntax-highlighting ja instalado"
 fi
 
+# Definir Zsh como shell padrao
+if [ "$SHELL" != "$(which zsh)" ]; then
+  log_add "Definindo Zsh como shell padrao..."
+  chsh -s "$(which zsh)"
+  log_ok "Zsh definido como shell padrao"
+else
+  log_ok "Zsh ja e o shell padrao"
+fi
+
 # Symlinks
 ln -sf "$DOTFILES_DIR/zsh/.zshrc" ~/.zshrc
 log_ok "~/.zshrc -> cbdotfiles"
