@@ -71,7 +71,7 @@ generate_hyprland() {
 # ═══════════════════════════════════════════════════════════════════════════════
 
 # APPLICATION VARIABLES
-$terminal = uwsm app -- $TERMINAL
+$terminal = uwsm app -- kitty
 $browser = uwsm app -- opera
 $webappbrowser = uwsm app -- chromium
 $filemanager = uwsm app -- nautilus

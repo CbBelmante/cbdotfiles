@@ -34,6 +34,12 @@ if [ "$DE" = "cosmic" ] || [ -d "$HOME/.config/cosmic" ]; then
     cp "$GENERATED/cosmic-custom.ron" "$COSMIC_DIR/custom"
     log_ok "~/.config/cosmic/.../Shortcuts/v1/custom -> cbdotfiles (generated)"
   fi
+
+  # Definir Kitty como terminal padrao no COSMIC
+  COSMIC_ACTIONS_DIR="$HOME/.config/cosmic/com.system76.CosmicSettings.Shortcuts/v1"
+  mkdir -p "$COSMIC_ACTIONS_DIR"
+  echo '{ Terminal: "kitty" }' > "$COSMIC_ACTIONS_DIR/system_actions"
+  log_ok "COSMIC terminal padrao -> kitty"
 fi
 
 if [ "$DE" = "unknown" ]; then
