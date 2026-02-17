@@ -2,7 +2,7 @@
 
 DOTFILES_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-echo "=== Dotfiles Installer ==="
+echo "=== CbDotfiles Installer ==="
 echo "Diretorio: $DOTFILES_DIR"
 echo ""
 
@@ -66,15 +66,15 @@ echo "[*] Criando symlinks..."
 # Zellij
 mkdir -p ~/.config/zellij
 ln -sf "$DOTFILES_DIR/zellij/config.kdl" ~/.config/zellij/config.kdl
-echo "    ~/.config/zellij/config.kdl -> dotfiles"
+echo "    ~/.config/zellij/config.kdl -> cbdotfiles"
 
 # Git
 ln -sf "$DOTFILES_DIR/git/.gitconfig" ~/.gitconfig
-echo "    ~/.gitconfig -> dotfiles"
+echo "    ~/.gitconfig -> cbdotfiles"
 
 # Zsh
 ln -sf "$DOTFILES_DIR/zsh/.zshrc" ~/.zshrc
-echo "    ~/.zshrc -> dotfiles"
+echo "    ~/.zshrc -> cbdotfiles"
 
 # --- PATH ---
 echo ""
