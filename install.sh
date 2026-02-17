@@ -1,82 +1,62 @@
 #!/bin/bash
 
 DOTFILES_DIR="$(cd "$(dirname "$0")" && pwd)"
+INSTALLERS_DIR="$DOTFILES_DIR/installers"
+
+# Modulos disponiveis (ordem de instalacao)
+ALL_MODULES=(zsh nvm git zellij nvim ghostty kitty lazygit fastfetch btop)
+
+show_help() {
+  echo "=== CbDotfiles Installer ==="
+  echo ""
+  echo "Uso: ./install.sh [modulos...]"
+  echo ""
+  echo "Sem argumentos instala tudo. Com argumentos instala apenas os selecionados."
+  echo ""
+  echo "Modulos disponiveis:"
+  for mod in "${ALL_MODULES[@]}"; do
+    echo "  - $mod"
+  done
+  echo ""
+  echo "Exemplos:"
+  echo "  ./install.sh              # instala tudo"
+  echo "  ./install.sh zellij nvim  # instala so zellij e nvim"
+  echo "  ./install.sh --help       # mostra esta ajuda"
+}
+
+run_module() {
+  local mod="$1"
+  local script="$INSTALLERS_DIR/$mod.sh"
+
+  if [ -f "$script" ]; then
+    echo ""
+    bash "$script"
+  else
+    echo "[!] Modulo '$mod' nao encontrado: $script"
+  fi
+}
+
+# --- Main ---
+if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
+  show_help
+  exit 0
+fi
 
 echo "=== CbDotfiles Installer ==="
 echo "Diretorio: $DOTFILES_DIR"
-echo ""
 
-# --- Zellij ---
-if ! command -v zellij &> /dev/null; then
-  echo "[+] Instalando Zellij..."
-  mkdir -p ~/.local/bin
-  curl -sL https://github.com/zellij-org/zellij/releases/latest/download/zellij-x86_64-unknown-linux-musl.tar.gz | tar xz -C ~/.local/bin/
-  chmod +x ~/.local/bin/zellij
-  echo "    Zellij instalado em ~/.local/bin/zellij"
+# Se passou argumentos, instala so os selecionados
+if [ $# -gt 0 ]; then
+  MODULES=("$@")
 else
-  echo "[ok] Zellij ja instalado: $(zellij --version)"
+  MODULES=("${ALL_MODULES[@]}")
 fi
 
-# --- Oh My Zsh ---
-if [ ! -d "$HOME/.oh-my-zsh" ]; then
-  echo "[+] Instalando Oh My Zsh..."
-  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-else
-  echo "[ok] Oh My Zsh ja instalado"
-fi
+for mod in "${MODULES[@]}"; do
+  run_module "$mod"
+done
 
-# --- Powerlevel10k ---
-P10K_DIR="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
-if [ ! -d "$P10K_DIR" ]; then
-  echo "[+] Instalando Powerlevel10k..."
-  git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$P10K_DIR"
-else
-  echo "[ok] Powerlevel10k ja instalado"
-fi
-
-# --- Plugins do Zsh ---
-ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
-
-if [ ! -d "$ZSH_CUSTOM/plugins/zsh-autosuggestions" ]; then
-  echo "[+] Instalando zsh-autosuggestions..."
-  git clone https://github.com/zsh-users/zsh-autosuggestions "$ZSH_CUSTOM/plugins/zsh-autosuggestions"
-else
-  echo "[ok] zsh-autosuggestions ja instalado"
-fi
-
-if [ ! -d "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" ]; then
-  echo "[+] Instalando zsh-syntax-highlighting..."
-  git clone https://github.com/zsh-users/zsh-syntax-highlighting "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting"
-else
-  echo "[ok] zsh-syntax-highlighting ja instalado"
-fi
-
-# --- NVM ---
-if [ ! -d "$HOME/.nvm" ]; then
-  echo "[+] Instalando NVM..."
-  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
-else
-  echo "[ok] NVM ja instalado"
-fi
-
-# --- Symlinks ---
-echo ""
-echo "[*] Criando symlinks..."
-
-# Zellij
-mkdir -p ~/.config/zellij
-ln -sf "$DOTFILES_DIR/zellij/config.kdl" ~/.config/zellij/config.kdl
-echo "    ~/.config/zellij/config.kdl -> cbdotfiles"
-
-# Git
-ln -sf "$DOTFILES_DIR/git/.gitconfig" ~/.gitconfig
-echo "    ~/.gitconfig -> cbdotfiles"
-
-# Zsh
-ln -sf "$DOTFILES_DIR/zsh/.zshrc" ~/.zshrc
-echo "    ~/.zshrc -> cbdotfiles"
-
-# --- PATH ---
+# PATH check
 echo ""
 if echo "$PATH" | grep -q '.local/bin'; then
   echo "[ok] ~/.local/bin ja esta no PATH"

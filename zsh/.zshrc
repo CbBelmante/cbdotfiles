@@ -78,12 +78,12 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
-  git
-  zsh-autosuggestions
-  zsh-syntax-highlighting
-  nvm
-  node
-  npm
+    git
+    zsh-autosuggestions
+    zsh-syntax-highlighting
+    docker
+    npm
+    sudo
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -120,24 +120,21 @@ source $ZSH/oh-my-zsh.sh
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-export NVM_DIR="$HOME/.nvm"
+# ───────────────────────────────────────────────────────────────────────────────
+# NVM Configuration
+# ───────────────────────────────────────────────────────────────────────────────
+export NVM_DIR="$HOME/.config/nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-# Navegação 
-alias ws="cd /home/belmante/workspaces/"
-alias workspaces="cd /home/belmante/workspaces/"
-alias workspace="cd /home/belmante/workspaces/"
+export PATH=~/.npm-global/bin:$PATH
 
-# Navegação Projetos
-alias cbadmin="cd /home/belmante/workspaces/CbAdmin/"
-alias CbAdmin="cd /home/belmante/workspaces/CbAdmin/"
-alias mnesis="cd /home/belmante/workspaces/mnesis_frontend/"
-alias mnesis_frontend="cd /home/belmante/workspaces/mnesis_frontend/"
-alias mns="cd /home/belmante/workspaces/mnesis_frontend/"
-alias corpcomponents="cd /home/belmante/workspaces/corp-components/"
-alias corp-components="cd /home/belmante/workspaces/corp-components/"
-alias corpcomp="cd /home/belmante/workspaces/corp-components/"
-alias corp="cd /home/belmante/workspaces/corp-components/"
-alias elas="cd /home/belmante/workspaces/elas_podem_website/"
-alias cbcomponents="cd /home/belmante/workspaces/cbcomponents/"
+# ═══════════════════════════════════════════════════════════════════════════════
+# FLATPAK EXPORTS - Menu de Aplicações
+# ═══════════════════════════════════════════════════════════════════════════════
+export XDG_DATA_DIRS="$XDG_DATA_DIRS:/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/exports/share"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ALIASES & FUNCTIONS (arquivo separado)
+# ═══════════════════════════════════════════════════════════════════════════════
+[[ -f ~/.config/cb/aliases.zsh ]] && source ~/.config/cb/aliases.zsh
