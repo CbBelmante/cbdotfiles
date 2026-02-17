@@ -8,15 +8,20 @@ if ! command -v lazygit &> /dev/null; then
   log_add "Instalando LazyGit..."
   DISTRO=$(get_distro)
   if [ "$DISTRO" = "arch" ]; then
-    pkg_install lazygit
+    if pkg_install lazygit; then
+      log_ok "LazyGit instalado"
+    fi
   else
     LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[^"]*')
-    curl -Lo /tmp/lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
-    tar xf /tmp/lazygit.tar.gz -C /tmp lazygit
-    sudo install /tmp/lazygit /usr/local/bin
+    if curl -Lo /tmp/lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz" && \
+       tar xf /tmp/lazygit.tar.gz -C /tmp lazygit && \
+       sudo install /tmp/lazygit /usr/local/bin; then
+      log_ok "LazyGit instalado"
+    else
+      log_warn "Falha ao instalar LazyGit"
+    fi
     rm -f /tmp/lazygit /tmp/lazygit.tar.gz
   fi
-  log_ok "LazyGit instalado"
 else
   log_ok "LazyGit ja instalado: $(lazygit --version | head -1)"
 fi

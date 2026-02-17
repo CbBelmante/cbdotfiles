@@ -6,7 +6,9 @@ log_title "kitty" "Kitty"
 
 if ! command -v kitty &> /dev/null; then
   log_add "Instalando Kitty..."
-  pkg_install kitty
+  if pkg_install kitty; then
+    log_ok "Kitty instalado"
+  fi
 else
   log_ok "Kitty ja instalado: $(kitty --version 2>/dev/null | head -1)"
 fi

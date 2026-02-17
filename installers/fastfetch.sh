@@ -7,17 +7,13 @@ log_title "fastfetch" "Fastfetch"
 if ! command -v fastfetch &> /dev/null; then
   log_add "Instalando Fastfetch..."
   DISTRO=$(get_distro)
-  if [ "$DISTRO" = "arch" ]; then
-    pkg_install fastfetch
-  elif [ "$DISTRO" = "debian" ]; then
-    # PPA para Ubuntu/Debian
+  if [ "$DISTRO" = "debian" ]; then
     sudo add-apt-repository -y ppa:zhangsongcui3371/fastfetch 2>/dev/null
-    sudo apt update -qq
-    pkg_install fastfetch
-  else
-    pkg_install fastfetch
+    sudo apt update -qq &> /dev/null
   fi
-  log_ok "Fastfetch instalado"
+  if pkg_install fastfetch; then
+    log_ok "Fastfetch instalado"
+  fi
 else
   log_ok "Fastfetch ja instalado: $(fastfetch --version | head -1)"
 fi

@@ -8,7 +8,9 @@ if ! command -v ghostty &> /dev/null; then
   log_add "Instalando Ghostty..."
   DISTRO=$(get_distro)
   if [ "$DISTRO" = "arch" ]; then
-    pkg_install ghostty
+    if pkg_install ghostty; then
+      log_ok "Ghostty instalado"
+    fi
   else
     log_warn "Ghostty nao disponivel via apt/dnf. Instale manualmente: https://ghostty.org"
   fi

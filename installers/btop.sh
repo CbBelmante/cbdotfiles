@@ -6,8 +6,9 @@ log_title "btop" "Btop"
 
 if ! command -v btop &> /dev/null; then
   log_add "Instalando Btop..."
-  pkg_install btop
-  log_ok "Btop instalado"
+  if pkg_install btop; then
+    log_ok "Btop instalado"
+  fi
 else
   log_ok "Btop ja instalado: $(btop --version 2>/dev/null | head -1)"
 fi

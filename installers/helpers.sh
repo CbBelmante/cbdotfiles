@@ -15,14 +15,31 @@ log_add()   { echo -e "  ${CYAN}+${NC} $1"; }
 log_warn()  { echo -e "  ${YELLOW}!${NC} $1"; }
 log_title() { echo -e "${BOLD}[$1]${NC} Configurando $2..."; }
 
-# Detecta o gerenciador de pacotes
+# Detecta o gerenciador de pacotes (com retry e refresh de mirrors)
 pkg_install() {
   if command -v pacman &> /dev/null; then
-    sudo pacman -S --noconfirm "$@"
+    if ! sudo pacman -S --noconfirm "$@" 2>/dev/null; then
+      log_warn "Falha na instalacao, atualizando mirrors e tentando novamente..."
+      sudo pacman -Syy --noconfirm &> /dev/null
+      if ! sudo pacman -S --noconfirm "$@"; then
+        log_warn "Falha ao instalar: $*"
+        return 1
+      fi
+    fi
   elif command -v apt &> /dev/null; then
-    sudo apt install -y "$@"
+    if ! sudo apt install -y "$@" 2>/dev/null; then
+      log_warn "Falha na instalacao, atualizando repos e tentando novamente..."
+      sudo apt update -qq &> /dev/null
+      if ! sudo apt install -y "$@"; then
+        log_warn "Falha ao instalar: $*"
+        return 1
+      fi
+    fi
   elif command -v dnf &> /dev/null; then
-    sudo dnf install -y "$@"
+    if ! sudo dnf install -y "$@"; then
+      log_warn "Falha ao instalar: $*"
+      return 1
+    fi
   else
     log_warn "Gerenciador de pacotes nao encontrado. Instale manualmente: $*"
     return 1
