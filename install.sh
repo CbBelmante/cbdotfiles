@@ -13,7 +13,7 @@ DIM='\033[2m'
 NC='\033[0m'
 
 # Modulos disponiveis (ordem de instalacao)
-ALL_MODULES=(zsh nvm git zellij nvim ghostty kitty lazygit fastfetch btop)
+ALL_MODULES=(zsh nvm git zellij nvim ghostty kitty lazygit fastfetch btop keybinds)
 
 show_header() {
   echo ""

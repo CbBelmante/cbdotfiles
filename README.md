@@ -77,6 +77,7 @@ Nao precisa instalar tudo. Escolha os modulos que quiser:
 | 🦥 `lazygit` | Config LazyGit (Git TUI) | ❌ Apenas symlink |
 | 🖥️ `fastfetch` | Config Fastfetch (system info) | ❌ Apenas symlink |
 | 📊 `btop` | Config Btop (monitor de sistema) | ❌ Apenas symlink |
+| ⌨️ `keybinds` | Gera e aplica keybinds (Hyprland/COSMIC) | ❌ Gera configs |
 
 ## 🔄 Atualizacao
 
@@ -94,6 +95,7 @@ Faz automaticamente: `git pull` → `install.sh` → `source ~/.zshrc`
 cbdotfiles/
 ├── bootstrap.sh                   # ⚡ One-liner para maquina nova
 ├── install.sh                     # 🎯 Orquestrador principal
+├── .gitignore                     # 🚫 Ignora arquivos gerados
 ├── installers/                    # 📦 Um script por modulo
 │   ├── helpers.sh                 # 🔧 Detecta distro (Arch/Debian/Fedora)
 │   ├── zsh.sh                     # 🐚 Oh My Zsh + plugins + symlink
@@ -105,7 +107,8 @@ cbdotfiles/
 │   ├── kitty.sh                   # 🐱 Terminal Kitty
 │   ├── lazygit.sh                 # 🦥 Git TUI
 │   ├── fastfetch.sh               # 🖥️ System info
-│   └── btop.sh                    # 📊 Monitor de sistema
+│   ├── btop.sh                    # 📊 Monitor de sistema
+│   └── keybinds.sh               # ⌨️ Gerador de keybinds
 ├── git/
 │   └── .gitconfig                 # Configuracao global do Git
 ├── zellij/
@@ -126,8 +129,14 @@ cbdotfiles/
 │   └── config.yml                 # 🦥 Config LazyGit
 ├── fastfetch/
 │   └── config.jsonc               # 🖥️ Config Fastfetch
-└── btop/
-    └── btop.conf                  # 📊 Config Btop
+├── btop/
+│   └── btop.conf                  # 📊 Config Btop
+└── keybinds/
+    ├── keybinds.conf              # ⌨️ Fonte unica de verdade
+    ├── generate.sh                # 🔄 Gerador (keybinds.conf -> configs)
+    └── generated/                 # 📁 Arquivos gerados (gitignored)
+        ├── hyprland-bindings.conf # 🪟 Keybinds Hyprland
+        └── cosmic-custom.ron      # 🚀 Keybinds COSMIC (RON)
 ```
 
 ### 🔗 Symlinks Criados
@@ -256,6 +265,49 @@ z-tab cbw1 radarEleitoral
 | `omarchy-refresh` | `omarchy-refresh-config` |
 | `omarchy-ver` | `omarchy-version` |
 | `omarchy-theme` | `omarchy-theme-current` |
+
+## ⌨️ Keybind Generator
+
+Sistema de keybinds com **fonte unica de verdade**. Defina uma vez em `keybinds.conf`, gere para ambos:
+
+```
+keybinds.conf  ──▶  hyprland-bindings.conf  (Arch/Hyprland)
+      │
+      └──────▶  cosmic-custom.ron          (Pop!OS/COSMIC)
+```
+
+### Tipos
+
+| Tipo | Descricao |
+|------|-----------|
+| `BOTH` | Gera para Hyprland e COSMIC |
+| `HYPR` | Gera apenas para Hyprland |
+| `COSM` | Gera apenas para COSMIC |
+
+### Atalhos Padronizados (BOTH)
+
+| Atalho | Acao |
+|--------|------|
+| `Super+Enter` | Terminal |
+| `Super+F` | File manager |
+| `Super+B` | Browser |
+| `Super+Shift+B` | Browser (privado) |
+| `Super+N` | Editor |
+| `Super+/` | 1Password |
+| `Super+Shift+O` | Obsidian |
+| `Super+Shift+G` | GitKraken |
+| `Super+Shift+M` | Spotify |
+| `Super+Shift+T` | Btop |
+| `Super+Q` | Fechar janela |
+| `Super+Escape` | Bloquear tela |
+| `Ctrl+Shift+3/4/5` | Screenshots |
+
+### Regenerar
+
+```bash
+./keybinds/generate.sh          # gera os arquivos
+./install.sh keybinds            # gera + aplica symlinks
+```
 
 ## ➕ Adicionando Novos Layouts
 
