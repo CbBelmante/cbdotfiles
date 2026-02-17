@@ -18,13 +18,9 @@ log_title() { echo -e "${BOLD}[$1]${NC} Configurando $2..."; }
 # Detecta o gerenciador de pacotes (com retry e refresh de mirrors)
 pkg_install() {
   if command -v pacman &> /dev/null; then
-    if ! sudo pacman -S --noconfirm "$@" 2>/dev/null; then
-      log_warn "Falha na instalacao, atualizando mirrors e tentando novamente..."
-      sudo pacman -Syy --noconfirm &> /dev/null
-      if ! sudo pacman -S --noconfirm "$@"; then
-        log_warn "Falha ao instalar: $*"
-        return 1
-      fi
+    if ! sudo pacman -Syu --noconfirm "$@"; then
+      log_warn "Falha ao instalar: $*"
+      return 1
     fi
   elif command -v apt &> /dev/null; then
     if ! sudo apt install -y "$@" 2>/dev/null; then
