@@ -136,7 +136,7 @@ cat > "$OUTPUT" << EOF
 # Para regenerar: ./kitty/generate-cosmic-theme.sh
 
 # Transparency & Blur
-background_opacity 0.80
+background_opacity 0.85
 background_blur 32
 
 # Colors (COSMIC theme: $THEME_NAME)
