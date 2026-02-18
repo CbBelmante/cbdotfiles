@@ -10,3 +10,22 @@ if [ ! -d "$HOME/.nvm" ] && [ ! -d "$HOME/.config/nvm" ]; then
 else
   log_ok "NVM ja instalado"
 fi
+
+# Carrega NVM no shell atual
+export NVM_DIR="${HOME}/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+
+if command -v nvm &>/dev/null; then
+  local_version="$(nvm current 2>/dev/null)"
+  remote_version="$(nvm version-remote node 2>/dev/null)"
+
+  if [ "$local_version" = "$remote_version" ]; then
+    log_ok "Node $local_version (mais recente)"
+  else
+    log_add "Instalando Node $remote_version..."
+    nvm install node --default
+    log_ok "Node $(node --version) instalado e definido como default"
+  fi
+else
+  log_add "AVISO: NVM nao carregou. Reinicie o terminal e rode: nvm install node"
+fi
