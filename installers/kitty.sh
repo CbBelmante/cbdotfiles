@@ -25,8 +25,14 @@ case "$DESKTOP" in
     log_ok "env: omarchy (opacity 0.65)"
     ;;
   cosmic)
+    # Gera cosmic.conf a partir do tema COSMIC ativo
+    if [ -d "$HOME/.config/cosmic/com.system76.CosmicTheme.Dark/v1" ]; then
+      log_add "Detectando tema COSMIC..."
+      bash "$DOTFILES_DIR/kitty/generate-cosmic-theme.sh"
+      log_ok "cosmic.conf gerado a partir do tema COSMIC ativo"
+    fi
     ln -sf "$DOTFILES_DIR/kitty/cosmic.conf" ~/.config/kitty/env.conf
-    log_ok "env: cosmic (opacity 0.85)"
+    log_ok "env: cosmic"
     ;;
   *)
     ln -sf "$DOTFILES_DIR/kitty/omarchy.conf" ~/.config/kitty/env.conf
