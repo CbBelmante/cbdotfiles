@@ -17,14 +17,14 @@ export NVM_DIR="${HOME}/.nvm"
 
 if command -v nvm &>/dev/null; then
   local_version="$(nvm current 2>/dev/null)"
-  remote_version="$(nvm version-remote node 2>/dev/null)"
+  remote_version="$(nvm version-remote --lts 2>/dev/null)"
 
   if [ "$local_version" = "$remote_version" ]; then
-    log_ok "Node $local_version (mais recente)"
+    log_ok "Node $local_version LTS (mais recente)"
   else
-    log_add "Instalando Node $remote_version..."
-    nvm install node --default
-    log_ok "Node $(node --version) instalado e definido como default"
+    log_add "Instalando Node LTS $remote_version..."
+    nvm install --lts --default
+    log_ok "Node $(node --version) LTS instalado e definido como default"
   fi
 else
   log_add "AVISO: NVM nao carregou. Reinicie o terminal e rode: nvm install node"
