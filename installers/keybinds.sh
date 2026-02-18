@@ -40,12 +40,6 @@ if [ "$DE" = "cosmic" ] || [ -d "$HOME/.config/cosmic" ]; then
   mkdir -p "$COSMIC_ACTIONS_DIR"
   echo '{ Terminal: "kitty" }' > "$COSMIC_ACTIONS_DIR/system_actions"
   log_ok "COSMIC terminal padrao -> kitty"
-
-  # Aplicar keybindings do compositor (sobrescreve defaults como Super+W)
-  COSMIC_COMP_DIR="$HOME/.config/cosmic/com.system76.CosmicComp/v1"
-  mkdir -p "$COSMIC_COMP_DIR"
-  cp "$DOTFILES_DIR/keybinds/cosmic-comp-keybindings.ron" "$COSMIC_COMP_DIR/keybindings"
-  log_ok "COSMIC compositor keybindings -> cbdotfiles (Super+W = Close)"
 fi
 
 if [ "$DE" = "unknown" ]; then

@@ -169,7 +169,11 @@ HEADER
     cosmic_key=$(key_to_cosmic "$key")
 
     entries+=("  // $desc")
-    entries+=("  (modifiers: $cosmic_mods, key: \"$cosmic_key\"): $cmd_cosmic,")
+    if [ "$key" = "NONE" ]; then
+      entries+=("  (modifiers: $cosmic_mods): $cmd_cosmic,")
+    else
+      entries+=("  (modifiers: $cosmic_mods, key: \"$cosmic_key\"): $cmd_cosmic,")
+    fi
     entries+=("")
     count=$((count + 1))
   done < "$SOURCE"
