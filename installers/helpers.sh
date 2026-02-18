@@ -54,3 +54,14 @@ get_distro() {
     echo "unknown"
   fi
 }
+
+# Retorna o desktop environment (omarchy, cosmic, unknown)
+get_desktop() {
+  if [ -d "$HOME/.config/omarchy" ] || command -v hyprctl &> /dev/null; then
+    echo "omarchy"
+  elif [ "$XDG_CURRENT_DESKTOP" = "COSMIC" ] || command -v cosmic-comp &> /dev/null; then
+    echo "cosmic"
+  else
+    echo "unknown"
+  fi
+}

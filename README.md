@@ -72,8 +72,7 @@ Nao precisa instalar tudo. Escolha os modulos que quiser:
 | 🔀 `git` | Symlink .gitconfig | ❌ Apenas symlink |
 | 🖥️ `zellij` | Multiplexador de terminal + config + layouts | ✅ Zellij (se nao instalado) |
 | ✏️ `nvim` | Config completa Neovim (LazyVim) | ✅ Neovim (se nao instalado) |
-| 👻 `ghostty` | Config terminal Ghostty | ❌ Apenas symlink |
-| 🐱 `kitty` | Config terminal Kitty | ❌ Apenas symlink |
+| 🐱 `kitty` | Config Kitty + override por ambiente (Omarchy/COSMIC) | ✅ Kitty (se nao instalado) |
 | 🦥 `lazygit` | Config LazyGit (Git TUI) | ❌ Apenas symlink |
 | 🖥️ `fastfetch` | Config Fastfetch (system info) | ❌ Apenas symlink |
 | 📊 `btop` | Config Btop (monitor de sistema) | ❌ Apenas symlink |
@@ -97,14 +96,13 @@ cbdotfiles/
 ├── install.sh                     # 🎯 Orquestrador principal
 ├── .gitignore                     # 🚫 Ignora arquivos gerados
 ├── installers/                    # 📦 Um script por modulo
-│   ├── helpers.sh                 # 🔧 Detecta distro (Arch/Debian/Fedora)
+│   ├── helpers.sh                 # 🔧 Detecta distro + desktop (Omarchy/COSMIC)
 │   ├── zsh.sh                     # 🐚 Oh My Zsh + plugins + symlink
 │   ├── nvm.sh                     # 📦 Node Version Manager
 │   ├── git.sh                     # 🔀 Symlink .gitconfig
 │   ├── zellij.sh                  # 🖥️ Zellij + config + layouts
 │   ├── nvim.sh                    # ✏️ Neovim + backup automatico
-│   ├── ghostty.sh                 # 👻 Terminal Ghostty
-│   ├── kitty.sh                   # 🐱 Terminal Kitty
+│   ├── kitty.sh                   # 🐱 Terminal Kitty (detecta ambiente)
 │   ├── lazygit.sh                 # 🦥 Git TUI
 │   ├── fastfetch.sh               # 🖥️ System info
 │   ├── btop.sh                    # 📊 Monitor de sistema
@@ -121,10 +119,10 @@ cbdotfiles/
 │   ├── init.lua
 │   ├── lua/
 │   └── ...
-├── ghostty/
-│   └── config                     # 👻 Config Ghostty
 ├── kitty/
-│   └── kitty.conf                 # 🐱 Config Kitty
+│   ├── kitty.conf                 # 🐱 Config base Kitty
+│   ├── omarchy.conf               # 🔧 Override Omarchy (opacity 0.65)
+│   └── cosmic.conf                # 🔧 Override COSMIC (opacity 0.85)
 ├── lazygit/
 │   └── config.yml                 # 🦥 Config LazyGit
 ├── fastfetch/
@@ -148,8 +146,8 @@ cbdotfiles/
 ~/.config/zellij/config.kdl           → cbdotfiles/zellij/config.kdl
 ~/.config/zellij/layouts/*.kdl        → cbdotfiles/zellij/*.kdl
 ~/.config/nvim/                       → cbdotfiles/nvim/
-~/.config/ghostty/config              → cbdotfiles/ghostty/config
 ~/.config/kitty/kitty.conf            → cbdotfiles/kitty/kitty.conf
+~/.config/kitty/env.conf              → cbdotfiles/kitty/{omarchy,cosmic}.conf
 ~/.config/lazygit/config.yml          → cbdotfiles/lazygit/config.yml
 ~/.config/fastfetch/config.jsonc      → cbdotfiles/fastfetch/config.jsonc
 ~/.config/btop/btop.conf              → cbdotfiles/btop/btop.conf
@@ -298,7 +296,7 @@ keybinds.conf  ──▶  hyprland-bindings.conf  (Arch/Hyprland)
 | `Super+Shift+G` | GitKraken |
 | `Super+Shift+M` | Spotify |
 | `Super+Shift+T` | Btop |
-| `Super+Q` | Fechar janela |
+| `Super+Q` / `Super+W` | Fechar janela |
 | `Super+Escape` | Bloquear tela |
 | `Ctrl+Shift+3/4/5` | Screenshots |
 
@@ -345,7 +343,7 @@ echo "  [ok] symlink criado"
 
 3. Adicione o nome no array `ALL_MODULES` em `install.sh`:
 ```bash
-ALL_MODULES=(zsh nvm git zellij nvim ghostty kitty lazygit fastfetch btop <nome>)
+ALL_MODULES=(zsh nvm git zellij nvim kitty lazygit fastfetch btop <nome>)
 ```
 
 4. Rode `./install.sh <nome>` para testar
@@ -355,7 +353,7 @@ ALL_MODULES=(zsh nvm git zellij nvim ghostty kitty lazygit fastfetch btop <nome>
 - **🐚 Zsh** + Oh My Zsh + Powerlevel10k
 - **🖥️ Zellij** - Multiplexador de terminal (Rust)
 - **✏️ Neovim** - Editor (LazyVim)
-- **👻 Ghostty** / **🐱 Kitty** - Terminal emulators
+- **🐱 Kitty** - Terminal emulator (config por ambiente)
 - **🦥 LazyGit** - Git TUI
 - **📊 Btop** - Monitor de sistema
 - **🖥️ Fastfetch** - System info
