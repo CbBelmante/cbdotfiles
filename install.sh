@@ -13,7 +13,7 @@ DIM='\033[2m'
 NC='\033[0m'
 
 # Modulos disponiveis (ordem de instalacao)
-ALL_MODULES=(zsh nvm git fonts zellij nvim kitty lazygit fastfetch btop keybinds)
+ALL_MODULES=(zsh nvm git fonts zellij nvim kitty vivaldi vscode gitkraken lazygit fastfetch btop keybinds)
 
 # Tracking de resultados
 SUCCEEDED=()

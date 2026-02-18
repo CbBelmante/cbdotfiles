@@ -67,22 +67,41 @@ alias omarchy-sync-gtk='python3 ~/.config/omarchy/generate-gtk-theme.py'
 # ───────────────────────────────────────────────────────────────────────────────
 # Zellij Layouts
 # ───────────────────────────────────────────────────────────────────────────────
-# Nova sessao: z-new <layout> <diretorio>
-# Ex: z-new cbw1 mnesis_frontend
+# Resolve alias de navegacao (cd ...) ou nome de pasta em ~/Workspaces
+_resolve_dir() {
+    local input="$1"
+    # Caminho absoluto ou com ~: usa direto
+    if [[ "$input" == /* || "$input" == ~* ]]; then
+        echo "$input"
+        return
+    fi
+    # Tenta resolver como alias (ex: mns -> 'cd ~/Workspaces/mnesis_frontend')
+    local alias_def=$(alias "$input" 2>/dev/null)
+    if [[ "$alias_def" =~ "cd (.+)" ]]; then
+        local resolved="${match[1]//\'/}"
+        echo "${resolved/#\~/$HOME}"
+        return
+    fi
+    # Fallback: assume pasta em ~/Workspaces
+    echo "$HOME/Workspaces/$input"
+}
+
+# Nova sessao: z-new <layout> <diretorio|alias>
+# Ex: z-new cbw1 mns
+# Ex: z-new cbw1 ~/Workspaces/meu-projeto
 z-new() {
     local layout="$1"
     local dir="$2"
 
     if [[ -z "$layout" || -z "$dir" ]]; then
-        echo "Uso: z-new <layout> <diretorio>"
-        echo "Ex:  z-new cbw1 ~/Workspaces/volan_admin"
-        echo "Ex:  z-new cbw1 mnesis_frontend"
+        echo "Uso: z-new <layout> <diretorio|alias>"
+        echo "Ex:  z-new cbw1 mns"
+        echo "Ex:  z-new cbw1 volan"
+        echo "Ex:  z-new cbw1 ~/Workspaces/meu-projeto"
         return 1
     fi
 
-    if [[ "$dir" != /* && "$dir" != ~* ]]; then
-        dir="$HOME/Workspaces/$dir"
-    fi
+    dir=$(_resolve_dir "$dir")
 
     case "$layout" in
         cbw1) layout="CbWorkTemplate1" ;;
@@ -91,22 +110,21 @@ z-new() {
     zellij --layout "$layout" options --default-cwd "$dir"
 }
 
-# Nova tab dentro do Zellij: z-tab <layout> <diretorio>
-# Ex: z-tab cbw1 volan_admin
+# Nova tab dentro do Zellij: z-tab <layout> <diretorio|alias>
+# Ex: z-tab cbw1 mns
 z-tab() {
     local layout="$1"
     local dir="$2"
 
     if [[ -z "$layout" || -z "$dir" ]]; then
-        echo "Uso: z-tab <layout> <diretorio>"
-        echo "Ex:  z-tab cbw1 ~/Workspaces/volan_admin"
-        echo "Ex:  z-tab cbw1 mnesis_frontend"
+        echo "Uso: z-tab <layout> <diretorio|alias>"
+        echo "Ex:  z-tab cbw1 mns"
+        echo "Ex:  z-tab cbw1 volan"
+        echo "Ex:  z-tab cbw1 ~/Workspaces/meu-projeto"
         return 1
     fi
 
-    if [[ "$dir" != /* && "$dir" != ~* ]]; then
-        dir="$HOME/Workspaces/$dir"
-    fi
+    dir=$(_resolve_dir "$dir")
 
     case "$layout" in
         cbw1) layout="CbWorkTemplate1" ;;

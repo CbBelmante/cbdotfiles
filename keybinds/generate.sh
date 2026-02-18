@@ -1,6 +1,6 @@
 #!/bin/bash
 # ═══════════════════════════════════════════════════════════════════════════════
-# KEYBIND GENERATOR - Gera configs a partir de keybinds.conf
+# KEYBIND GENERATOR - Gera configs a partir de keybinds.conf + vars.conf
 # ═══════════════════════════════════════════════════════════════════════════════
 #
 # Uso: ./keybinds/generate.sh
@@ -14,6 +14,7 @@ set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 SOURCE="$SCRIPT_DIR/keybinds.conf"
+VARS_FILE="$SCRIPT_DIR/vars.conf"
 GENERATED_DIR="$SCRIPT_DIR/generated"
 
 # Cores
@@ -23,6 +24,31 @@ BOLD='\033[1m'
 NC='\033[0m'
 
 mkdir -p "$GENERATED_DIR"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Carregar variaveis de vars.conf
+# ─────────────────────────────────────────────────────────────────────────────
+declare -A HYPR_VARS
+declare -A COSMIC_VARS
+
+while IFS= read -r line; do
+  [[ "$line" =~ ^[[:space:]]*# ]] && continue
+  [[ -z "$line" ]] && continue
+  if [[ "$line" =~ ^HYPR_([A-Z_]+)=(.+)$ ]]; then
+    HYPR_VARS["${BASH_REMATCH[1],,}"]="${BASH_REMATCH[2]}"
+  elif [[ "$line" =~ ^COSMIC_([A-Z_]+)=(.+)$ ]]; then
+    COSMIC_VARS["COSMIC_${BASH_REMATCH[1]}"]="${BASH_REMATCH[2]}"
+  fi
+done < "$VARS_FILE"
+
+# Substitui $COSMIC_* por seus valores
+expand_cosmic_vars() {
+  local text="$1"
+  for var in "${!COSMIC_VARS[@]}"; do
+    text="${text//\$$var/${COSMIC_VARS[$var]}}"
+  done
+  echo "$text"
+}
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Helpers
@@ -68,28 +94,26 @@ generate_hyprland() {
 # HYPRLAND BINDINGS - GERADO AUTOMATICAMENTE
 # ═══════════════════════════════════════════════════════════════════════════════
 #
-# NÃO EDITE AQUI! Edite keybinds/keybinds.conf e rode:
-# ./keybinds/generate.sh
+# NÃO EDITE AQUI! Edite keybinds/keybinds.conf e keybinds/vars.conf
+# Depois rode: ./keybinds/generate.sh
 # ═══════════════════════════════════════════════════════════════════════════════
 
-# APPLICATION VARIABLES
-$terminal = uwsm app -- kitty
-$browser = uwsm app -- opera
-$webappbrowser = uwsm app -- chromium
-$filemanager = uwsm app -- nautilus
-$clock = tty-clock -c -s
-$date = cal -y --color=always | sed -e :a -e 's/^.\{1,77\}$/ & /;ta'
-
 HEADER
+
+  # Gerar bloco de variaveis a partir de vars.conf
+  echo "# APPLICATION VARIABLES" >> "$output"
+  for var in "${!HYPR_VARS[@]}"; do
+    echo "\$$var = ${HYPR_VARS[$var]}" >> "$output"
+  done
+  echo "" >> "$output"
 
   while IFS= read -r line; do
     # Pular comentarios e linhas vazias
     [[ "$line" =~ ^[[:space:]]*# ]] && {
       # Detectar secoes
       if [[ "$line" =~ ^#\ ─ ]]; then
-        # Ler proxima linha de comentario para o titulo da secao
         :
-      elif [[ "$line" =~ ^#\ [A-Z] ]] && [[ ! "$line" =~ ^#\ \$ ]] && [[ ! "$line" =~ ^#\ Formato ]] && [[ ! "$line" =~ ^#\ TIPOS ]] && [[ ! "$line" =~ ^#\ MODS ]] && [[ ! "$line" =~ ^#\ CMD ]] && [[ ! "$line" =~ ^#\ Para ]]; then
+      elif [[ "$line" =~ ^#\ [A-Z] ]] && [[ ! "$line" =~ ^#\ \$ ]] && [[ ! "$line" =~ ^#\ Formato ]] && [[ ! "$line" =~ ^#\ TIPOS ]] && [[ ! "$line" =~ ^#\ MODS ]] && [[ ! "$line" =~ ^#\ CMD ]] && [[ ! "$line" =~ ^#\ Para ]] && [[ ! "$line" =~ ^#\ Definidas ]] && [[ ! "$line" =~ ^#\ Mude ]]; then
         section_name="${line#\# }"
         if [ "$section_name" != "$current_section" ]; then
           current_section="$section_name"
@@ -137,8 +161,8 @@ generate_cosmic() {
 // COSMIC KEYBINDS - GERADO AUTOMATICAMENTE
 // ═══════════════════════════════════════════════════════════════════════════════
 //
-// NÃO EDITE AQUI! Edite keybinds/keybinds.conf e rode:
-// ./keybinds/generate.sh
+// NÃO EDITE AQUI! Edite keybinds/keybinds.conf e keybinds/vars.conf
+// Depois rode: ./keybinds/generate.sh
 //
 // Copie para: ~/.config/cosmic/com.system76.CosmicSettings.Shortcuts/v1/custom
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -163,6 +187,9 @@ HEADER
 
     # Pular se nao tem comando COSMIC
     [[ -z "$cmd_cosmic" ]] && continue
+
+    # Substituir variaveis COSMIC_*
+    cmd_cosmic=$(expand_cosmic_vars "$cmd_cosmic")
 
     local cosmic_mods cosmic_key
     cosmic_mods=$(mods_to_cosmic "$mods")
@@ -200,5 +227,4 @@ generate_cosmic
 
 echo ""
 echo -e "  ${CYAN}+${NC} Arquivos em: keybinds/generated/"
-echo -e "  ${CYAN}+${NC} Hyprland: symlink ou copie hyprland-bindings.conf"
-echo -e "  ${CYAN}+${NC} COSMIC:   copie cosmic-custom.ron para ~/.config/cosmic/com.system76.CosmicSettings.Shortcuts/v1/custom"
+echo -e "  ${CYAN}+${NC} Variaveis lidas de: keybinds/vars.conf"

@@ -181,21 +181,23 @@ Layout estilo VSCode com Neovim central e terminais ao redor:
 #### Nova sessao (fora do Zellij)
 
 ```bash
-z-new <layout> <diretorio>
+z-new <layout> <diretorio|alias>
 
-z-new cbw1 mnesis_frontend        # ~/workspaces/mnesis_frontend
-z-new cbw1 volan_admin            # ~/workspaces/volan_admin
+z-new cbw1 mns                    # resolve alias mns -> ~/Workspaces/mnesis_frontend
+z-new cbw1 volan                  # resolve alias volan -> ~/Workspaces/volan_admin
 z-new cbw1 ~/projetos/meu-app    # caminho completo
 ```
+
+> Aceita qualquer alias de navegacao (`cd ...`) cadastrado no `aliases.zsh`. Sem alias, faz fallback para `~/Workspaces/<nome>`.
 
 #### Nova tab (dentro do Zellij)
 
 ```bash
-z-tab <layout> <diretorio>
+z-tab <layout> <diretorio|alias>
 
-z-tab cbw1 volan_admin
-z-tab cbw1 CbAdmin
-z-tab cbw1 radarEleitoral
+z-tab cbw1 volan
+z-tab cbw1 cbadmin
+z-tab cbw1 radar
 ```
 
 ### ⌨️ Atalhos do Zellij
