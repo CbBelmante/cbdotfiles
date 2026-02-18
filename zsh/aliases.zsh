@@ -87,7 +87,10 @@ fi
 # ───────────────────────────────────────────────────────────────────────────────
 if command -v fzf &> /dev/null; then
     alias ff="fzf --preview 'bat --style=numbers --color=always {}'"
-    source <(fzf --zsh) 2>/dev/null
+    # Keybindings do fzf (Ctrl+R historico fuzzy)
+    [ -f /usr/share/doc/fzf/examples/key-bindings.zsh ] && source /usr/share/doc/fzf/examples/key-bindings.zsh
+    [ -f /usr/share/fzf/key-bindings.zsh ] && source /usr/share/fzf/key-bindings.zsh
+    [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 fi
 
 # ───────────────────────────────────────────────────────────────────────────────
