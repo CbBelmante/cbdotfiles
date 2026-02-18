@@ -21,6 +21,7 @@ alias radar='cd ~/Workspaces/radarEleitoral/'
 alias corp='cd ~/Workspaces/corp-components/'
 alias elas='cd ~/Workspaces/elas_podem_website/'
 alias vlcomponents='cd ~/Workspaces/VLComponents_vue/'
+alias cbdotfiles='cd ~/Workspaces/cbdotfiles'
 
 # ───────────────────────────────────────────────────────────────────────────────
 # Navigation - System
