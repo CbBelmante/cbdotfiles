@@ -28,6 +28,7 @@ alias cbdotfiles='cd ~/Workspaces/cbdotfiles'
 # ───────────────────────────────────────────────────────────────────────────────
 alias ..='cd ..'
 alias ...='cd ../..'
+alias ....='cd ../../..'
 
 # ───────────────────────────────────────────────────────────────────────────────
 # Enhanced ls with icons (eza)
@@ -63,6 +64,41 @@ alias omarchy-refresh='omarchy-refresh-config'
 alias omarchy-ver='omarchy-version'
 alias omarchy-theme='omarchy-theme-current'
 alias omarchy-sync-gtk='python3 ~/.config/omarchy/generate-gtk-theme.py'
+
+# ───────────────────────────────────────────────────────────────────────────────
+# Zoxide (cd inteligente - lembra diretorios visitados)
+# ───────────────────────────────────────────────────────────────────────────────
+if command -v zoxide &> /dev/null; then
+    eval "$(zoxide init zsh)"
+    alias cd="zd"
+    zd() {
+        if [ $# -eq 0 ]; then
+            builtin cd ~ && return
+        elif [ -d "$1" ]; then
+            builtin cd "$1"
+        else
+            z "$@" && pwd || echo "Diretorio nao encontrado"
+        fi
+    }
+fi
+
+# ───────────────────────────────────────────────────────────────────────────────
+# fzf (busca fuzzy) + bat (preview com syntax highlight)
+# ───────────────────────────────────────────────────────────────────────────────
+if command -v fzf &> /dev/null; then
+    alias ff="fzf --preview 'bat --style=numbers --color=always {}'"
+    source <(fzf --zsh) 2>/dev/null
+fi
+
+# ───────────────────────────────────────────────────────────────────────────────
+# Ferramentas
+# ───────────────────────────────────────────────────────────────────────────────
+n() { if [ "$#" -eq 0 ]; then nvim .; else nvim "$@"; fi; }
+alias d='docker'
+
+open() {
+    xdg-open "$@" >/dev/null 2>&1 &
+}
 
 # ───────────────────────────────────────────────────────────────────────────────
 # Zellij Layouts

@@ -8,7 +8,7 @@
    ╚═════╝╚═════╝ ╚═════╝  ╚═════╝    ╚═╝   ╚═╝     ╚═╝╚══════╝╚══════╝╚══════╝
 </pre>
 
-⚙️ **DOTFILES PESSOAIS** | 🐧 Arch Linux & Ubuntu/Debian
+⚙️ **DOTFILES PESSOAIS** | 🐧 Arch Linux & Ubuntu/Debian & Fedora
 🔗 Symlinks Automaticos | 📦 Instalacao Modular | 🔄 Sincronizacao entre Maquinas
 
 </div>
@@ -27,7 +27,7 @@ Configuracoes pessoais de desenvolvimento. Clone o repositorio em qualquer maqui
 curl -sL https://raw.githubusercontent.com/CbBelmante/cbdotfiles/master/bootstrap.sh | bash
 ```
 
-> Clona o repositorio em `~/workspaces/cbdotfiles` e roda o instalador automaticamente.
+> Clona o repositorio em `~/Workspaces/cbdotfiles` e roda o instalador automaticamente.
 
 ### 📋 Passo a passo (manual)
 
@@ -39,8 +39,8 @@ sudo pacman -S git curl zsh eza
 sudo apt install git curl zsh eza
 
 # 1. Clone e instale
-git clone https://github.com/CbBelmante/cbdotfiles.git ~/workspaces/cbdotfiles
-cd ~/workspaces/cbdotfiles
+git clone https://github.com/CbBelmante/cbdotfiles.git ~/Workspaces/cbdotfiles
+cd ~/Workspaces/cbdotfiles
 chmod +x install.sh installers/*.sh
 ./install.sh
 
@@ -70,9 +70,16 @@ Nao precisa instalar tudo. Escolha os modulos que quiser:
 | 🐚 `zsh` | Oh My Zsh + Powerlevel10k + plugins + symlink .zshrc | ✅ Oh My Zsh, P10k, plugins |
 | 📦 `nvm` | Node Version Manager | ✅ NVM |
 | 🔀 `git` | Symlink .gitconfig | ❌ Apenas symlink |
+| 🔤 `fonts` | Fontes Nerd Font | ✅ Fontes |
+| 🎮 `drivers` | Drivers GPU (AMD/Intel/NVIDIA) + Bluetooth Mac | ✅ Mesa, VA-API, firmware |
+| 🔍 `shell-tools` | Zoxide + fzf + ripgrep + bat | ✅ Ferramentas de shell |
 | 🖥️ `zellij` | Multiplexador de terminal + config + layouts | ✅ Zellij (se nao instalado) |
-| ✏️ `nvim` | Config completa Neovim (LazyVim) | ✅ Neovim (se nao instalado) |
+| ✏️ `nvim` | Config completa Neovim (LazyVim) >= 0.11.2 | ✅ Neovim (GitHub release) |
 | 🐱 `kitty` | Config Kitty + override por ambiente (Omarchy/COSMIC) | ✅ Kitty (se nao instalado) |
+| 🌐 `vivaldi` | Vivaldi Browser + browser padrao | ✅ Vivaldi (repo oficial) |
+| 🌐 `opera` | Opera Browser | ✅ Opera (repo oficial) |
+| 💻 `vscode` | Visual Studio Code | ✅ VS Code (repo Microsoft) |
+| 🐙 `gitkraken` | GitKraken (Git GUI) | ✅ GitKraken (.deb/.rpm) |
 | 🦥 `lazygit` | Config LazyGit (Git TUI) | ❌ Apenas symlink |
 | 🖥️ `fastfetch` | Config Fastfetch (system info) | ❌ Apenas symlink |
 | 📊 `btop` | Config Btop (monitor de sistema) | ❌ Apenas symlink |
@@ -100,13 +107,19 @@ cbdotfiles/
 │   ├── zsh.sh                     # 🐚 Oh My Zsh + plugins + symlink
 │   ├── nvm.sh                     # 📦 Node Version Manager
 │   ├── git.sh                     # 🔀 Symlink .gitconfig
+│   ├── drivers.sh                 # 🎮 GPU + Bluetooth firmware (detecta hardware)
+│   ├── shell-tools.sh             # 🔍 Zoxide, fzf, ripgrep, bat
 │   ├── zellij.sh                  # 🖥️ Zellij + config + layouts
-│   ├── nvim.sh                    # ✏️ Neovim + backup automatico
+│   ├── nvim.sh                    # ✏️ Neovim (verifica versao >= 0.11.2)
 │   ├── kitty.sh                   # 🐱 Terminal Kitty (detecta ambiente)
+│   ├── vivaldi.sh                 # 🌐 Vivaldi Browser + browser padrao
+│   ├── opera.sh                   # 🌐 Opera Browser
+│   ├── vscode.sh                  # 💻 Visual Studio Code
+│   ├── gitkraken.sh               # 🐙 GitKraken
 │   ├── lazygit.sh                 # 🦥 Git TUI
 │   ├── fastfetch.sh               # 🖥️ System info
 │   ├── btop.sh                    # 📊 Monitor de sistema
-│   └── keybinds.sh               # ⌨️ Gerador de keybinds
+│   └── keybinds.sh                # ⌨️ Gerador de keybinds
 ├── git/
 │   └── .gitconfig                 # Configuracao global do Git
 ├── zellij/
@@ -130,8 +143,10 @@ cbdotfiles/
 ├── btop/
 │   └── btop.conf                  # 📊 Config Btop
 └── keybinds/
-    ├── keybinds.conf              # ⌨️ Fonte unica de verdade
+    ├── keybinds.conf              # ⌨️ Fonte unica de verdade (bindings)
+    ├── vars.conf                  # 🔧 Variaveis Hyprland + COSMIC
     ├── generate.sh                # 🔄 Gerador (keybinds.conf -> configs)
+    ├── show-keybinds.sh           # 📋 Mostra todos os atalhos (Super+K)
     └── generated/                 # 📁 Arquivos gerados (gitignored)
         ├── hyprland-bindings.conf # 🪟 Keybinds Hyprland
         └── cosmic-custom.ron      # 🚀 Keybinds COSMIC (RON)
@@ -152,6 +167,38 @@ cbdotfiles/
 ~/.config/fastfetch/config.jsonc      → cbdotfiles/fastfetch/config.jsonc
 ~/.config/btop/btop.conf              → cbdotfiles/btop/btop.conf
 ```
+
+## 🔍 Shell Tools
+
+Ferramentas de linha de comando inspiradas no Omarchy:
+
+### Zoxide (cd inteligente)
+
+Lembra os diretorios visitados. Navegue com atalhos:
+
+```bash
+cd ~/Workspaces/mnesis_frontend   # visita uma vez
+cd ~                               # volta pro home
+cd mnesis                          # zoxide lembra e volta direto
+```
+
+### fzf (busca fuzzy)
+
+```bash
+ff                    # busca arquivos com preview (bat)
+Ctrl+R                # historico de comandos com busca fuzzy
+```
+
+### Ferramentas extras
+
+| Comando | Descricao |
+|---------|-----------|
+| `n` | Abre Neovim (sem args abre o diretorio atual) |
+| `ff` | Busca fuzzy de arquivos com preview |
+| `rg` | Busca rapida em conteudo de arquivos (ripgrep) |
+| `bat` | Cat com syntax highlight |
+| `open` | Abre arquivo/diretorio com app padrao (xdg-open) |
+| `d` | Docker |
 
 ## 🖥️ Layouts do Zellij
 
@@ -219,15 +266,16 @@ z-tab cbw1 radar
 
 | Alias | Destino |
 |-------|---------|
-| `ws` / `workspaces` | ~/workspaces |
-| `mnesis` / `mns` / `mne` | ~/workspaces/mnesis_frontend |
-| `volan` | ~/workspaces/volan_admin |
-| `cbadmin` | ~/workspaces/CbAdmin |
-| `temporeal` / `tempo` | ~/workspaces/temporeal_admin |
-| `radar` | ~/workspaces/radarEleitoral |
-| `corp` | ~/workspaces/corp-components |
-| `elas` | ~/workspaces/elas_podem_website |
-| `vlcomponents` | ~/workspaces/VLComponents_vue |
+| `ws` / `workspaces` | ~/Workspaces |
+| `mnesis` / `mns` / `mne` | ~/Workspaces/mnesis_frontend |
+| `volan` | ~/Workspaces/volan_admin |
+| `cbadmin` | ~/Workspaces/CbAdmin |
+| `temporeal` / `tempo` | ~/Workspaces/temporeal_admin |
+| `radar` | ~/Workspaces/radarEleitoral |
+| `corp` | ~/Workspaces/corp-components |
+| `elas` | ~/Workspaces/elas_podem_website |
+| `vlcomponents` | ~/Workspaces/VLComponents_vue |
+| `cbdotfiles` | ~/Workspaces/cbdotfiles |
 
 ### 🔀 Git
 
@@ -268,12 +316,25 @@ z-tab cbw1 radar
 
 ## ⌨️ Keybind Generator
 
-Sistema de keybinds com **fonte unica de verdade**. Defina uma vez em `keybinds.conf`, gere para ambos:
+Sistema de keybinds com **fonte unica de verdade**. Defina uma vez em `keybinds.conf`, configure as variaveis em `vars.conf`, gere para ambos:
 
 ```
-keybinds.conf  ──▶  hyprland-bindings.conf  (Arch/Hyprland)
-      │
-      └──────▶  cosmic-custom.ron          (Pop!OS/COSMIC)
+keybinds.conf + vars.conf  ──▶  hyprland-bindings.conf  (Arch/Hyprland)
+                           └──▶  cosmic-custom.ron       (Pop!OS/COSMIC)
+```
+
+### Variaveis (`vars.conf`)
+
+Mude o browser, terminal ou app em **um lugar so**:
+
+```bash
+# Hyprland
+HYPR_TERMINAL=uwsm app -- kitty
+HYPR_BROWSER=uwsm app -- vivaldi
+
+# COSMIC
+COSMIC_TERMINAL=kitty
+COSMIC_BROWSER=vivaldi
 ```
 
 ### Tipos
@@ -284,7 +345,7 @@ keybinds.conf  ──▶  hyprland-bindings.conf  (Arch/Hyprland)
 | `HYPR` | Gera apenas para Hyprland |
 | `COSM` | Gera apenas para COSMIC |
 
-### Atalhos Padronizados (BOTH)
+### Atalhos Padronizados
 
 | Atalho | Acao |
 |--------|------|
@@ -294,12 +355,17 @@ keybinds.conf  ──▶  hyprland-bindings.conf  (Arch/Hyprland)
 | `Super+Shift+B` | Browser (privado) |
 | `Super+N` | Editor |
 | `Super+/` | 1Password |
+| `Super+G` | GitHub (webapp) |
+| `Super+Shift+N` | Notion (webapp) |
 | `Super+Shift+O` | Obsidian |
 | `Super+Shift+G` | GitKraken |
 | `Super+Shift+M` | Spotify |
 | `Super+Shift+T` | Btop |
+| `Super+C/X/V` | Copy / Cut / Paste |
+| `Super+Ctrl+V` | Clipboard history |
 | `Super+Q` / `Super+W` | Fechar janela |
-| `Super+Escape` | Bloquear tela |
+| `Super+Escape` | Power menu (lock/suspend/reboot/shutdown) |
+| `Super+K` | Mostrar todos os atalhos |
 | `Ctrl+Shift+3/4/5` | Screenshots |
 
 ### Regenerar
@@ -309,10 +375,21 @@ keybinds.conf  ──▶  hyprland-bindings.conf  (Arch/Hyprland)
 ./install.sh keybinds            # gera + aplica symlinks
 ```
 
+## 🎮 Drivers (deteccao automatica)
+
+O modulo `drivers` detecta o hardware e instala automaticamente:
+
+| Hardware | O que instala |
+|----------|---------------|
+| **GPU AMD** | Mesa, Vulkan, VA-API (aceleracao de video) |
+| **GPU Intel** | Mesa, Vulkan, Intel Media Driver |
+| **GPU NVIDIA** | Avisa para instalar manualmente |
+| **Bluetooth Apple/Broadcom** | Firmware BCM + otimizacao PipeWire |
+
 ## ➕ Adicionando Novos Layouts
 
 1. Crie o arquivo `.kdl` em `cbdotfiles/zellij/`
-2. Adicione o nome curto no `case` das funcoes `z-new` e `z-tab` no `zsh/.zshrc`:
+2. Adicione o nome curto no `case` das funcoes `z-new` e `z-tab` no `aliases.zsh`:
 
 ```bash
 case "$layout" in
@@ -325,30 +402,19 @@ esac
 
 ## ➕ Adicionando Novos Modulos
 
-1. Crie a pasta com os arquivos de config:
-```bash
-mkdir cbdotfiles/<nome>/
-# copie os arquivos de config para dentro
-```
-
-2. Crie o installer em `cbdotfiles/installers/<nome>.sh`:
+1. Crie o installer em `cbdotfiles/installers/<nome>.sh`:
 ```bash
 #!/bin/bash
 DOTFILES_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 source "$DOTFILES_DIR/installers/helpers.sh"
 
-echo "[nome] Configurando..."
-mkdir -p ~/.config/<nome>
-ln -sf "$DOTFILES_DIR/<nome>/config" ~/.config/<nome>/config
-echo "  [ok] symlink criado"
+log_title "nome" "Nome do Modulo"
+# ... logica de instalacao
 ```
 
-3. Adicione o nome no array `ALL_MODULES` em `install.sh`:
-```bash
-ALL_MODULES=(zsh nvm git zellij nvim kitty lazygit fastfetch btop <nome>)
-```
+2. Adicione o nome no array `ALL_MODULES` em `install.sh`
 
-4. Rode `./install.sh <nome>` para testar
+3. Rode `./install.sh <nome>` para testar
 
 ## 🛠️ Tecnologias
 
@@ -356,8 +422,12 @@ ALL_MODULES=(zsh nvm git zellij nvim kitty lazygit fastfetch btop <nome>)
 - **🖥️ Zellij** - Multiplexador de terminal (Rust)
 - **✏️ Neovim** - Editor (LazyVim)
 - **🐱 Kitty** - Terminal emulator (config por ambiente)
+- **🌐 Vivaldi** / **Opera** - Browsers
+- **💻 VS Code** - Editor GUI
+- **🐙 GitKraken** - Git GUI
 - **🦥 LazyGit** - Git TUI
 - **📊 Btop** - Monitor de sistema
 - **🖥️ Fastfetch** - System info
 - **📦 NVM** - Node Version Manager
-- **🐧 Arch Linux** / **Ubuntu/Debian** - Distros suportadas
+- **🔍 Zoxide** + **fzf** + **ripgrep** + **bat** - Shell tools
+- **🐧 Arch Linux** / **Ubuntu/Debian** / **Fedora** - Distros suportadas
