@@ -6,21 +6,21 @@
 # ───────────────────────────────────────────────────────────────────────────────
 # Navigation - Workspaces
 # ───────────────────────────────────────────────────────────────────────────────
-alias ws='cd ~/workspaces'
-alias workspaces='cd ~/workspaces'
-alias volan='cd ~/workspaces/volan_admin'
-alias mnesis='cd ~/workspaces/mnesis_frontend'
-alias mne='cd ~/workspaces/mnesis_frontend'
-alias mns='cd ~/workspaces/mnesis_frontend'
-alias cbadmin='cd ~/workspaces/CbAdmin'
-alias temporeal='cd ~/workspaces/temporeal_admin/'
-alias tempo='cd ~/workspaces/temporeal_admin/'
-alias tmpreal='cd ~/workspaces/temporeal_admin/'
-alias radareleitoral='cd ~/workspaces/radarEleitoral/'
-alias radar='cd ~/workspaces/radarEleitoral/'
-alias corp='cd ~/workspaces/corp-components/'
-alias elas='cd ~/workspaces/elas_podem_website/'
-alias vlcomponents='cd ~/workspaces/VLComponents_vue/'
+alias ws='cd ~/Workspaces'
+alias workspaces='cd ~/Workspaces'
+alias volan='cd ~/Workspaces/volan_admin'
+alias mnesis='cd ~/Workspaces/mnesis_frontend'
+alias mne='cd ~/Workspaces/mnesis_frontend'
+alias mns='cd ~/Workspaces/mnesis_frontend'
+alias cbadmin='cd ~/Workspaces/CbAdmin'
+alias temporeal='cd ~/Workspaces/temporeal_admin/'
+alias tempo='cd ~/Workspaces/temporeal_admin/'
+alias tmpreal='cd ~/Workspaces/temporeal_admin/'
+alias radareleitoral='cd ~/Workspaces/radarEleitoral/'
+alias radar='cd ~/Workspaces/radarEleitoral/'
+alias corp='cd ~/Workspaces/corp-components/'
+alias elas='cd ~/Workspaces/elas_podem_website/'
+alias vlcomponents='cd ~/Workspaces/VLComponents_vue/'
 
 # ───────────────────────────────────────────────────────────────────────────────
 # Navigation - System
@@ -74,13 +74,13 @@ z-new() {
 
     if [[ -z "$layout" || -z "$dir" ]]; then
         echo "Uso: z-new <layout> <diretorio>"
-        echo "Ex:  z-new cbw1 ~/workspaces/volan_admin"
+        echo "Ex:  z-new cbw1 ~/Workspaces/volan_admin"
         echo "Ex:  z-new cbw1 mnesis_frontend"
         return 1
     fi
 
     if [[ "$dir" != /* && "$dir" != ~* ]]; then
-        dir="$HOME/workspaces/$dir"
+        dir="$HOME/Workspaces/$dir"
     fi
 
     case "$layout" in
@@ -98,13 +98,13 @@ z-tab() {
 
     if [[ -z "$layout" || -z "$dir" ]]; then
         echo "Uso: z-tab <layout> <diretorio>"
-        echo "Ex:  z-tab cbw1 ~/workspaces/volan_admin"
+        echo "Ex:  z-tab cbw1 ~/Workspaces/volan_admin"
         echo "Ex:  z-tab cbw1 mnesis_frontend"
         return 1
     fi
 
     if [[ "$dir" != /* && "$dir" != ~* ]]; then
-        dir="$HOME/workspaces/$dir"
+        dir="$HOME/Workspaces/$dir"
     fi
 
     case "$layout" in
@@ -119,7 +119,7 @@ z-tab() {
 # ───────────────────────────────────────────────────────────────────────────────
 # Atualizar dotfiles: puxa do git e roda o instalador
 cbdotupdate() {
-    local dotdir="$HOME/workspaces/cbdotfiles"
+    local dotdir="$HOME/Workspaces/cbdotfiles"
     echo "=== Atualizando cbdotfiles ==="
     git -C "$dotdir" pull && "$dotdir/install.sh" && source ~/.zshrc
     echo "=== cbdotfiles atualizado! ==="

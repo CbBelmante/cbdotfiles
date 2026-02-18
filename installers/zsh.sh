@@ -4,10 +4,25 @@ source "$DOTFILES_DIR/installers/helpers.sh"
 
 log_title "zsh" "Zsh"
 
-# Oh My Zsh
-if [ ! -d "$HOME/.oh-my-zsh" ]; then
+# Instalar zsh se nao estiver instalado
+if ! command -v zsh &> /dev/null; then
+  log_add "Instalando zsh..."
+  pkg_install zsh
+  log_ok "Zsh instalado"
+else
+  log_ok "Zsh ja instalado: $(zsh --version)"
+fi
+
+# Oh My Zsh (verifica o arquivo principal, nao so o diretorio)
+if [ ! -f "$HOME/.oh-my-zsh/oh-my-zsh.sh" ]; then
   log_add "Instalando Oh My Zsh..."
-  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+  # Salva plugins/temas custom se o diretorio existe mas esta incompleto
+  if [ -d "$HOME/.oh-my-zsh" ]; then
+    log_add "Diretorio ~/.oh-my-zsh incompleto, reinstalando..."
+    rm -rf "$HOME/.oh-my-zsh"
+  fi
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc
+  log_ok "Oh My Zsh instalado"
 else
   log_ok "Oh My Zsh ja instalado"
 fi
@@ -41,8 +56,8 @@ fi
 # Definir Zsh como shell padrao
 if [ "$SHELL" != "$(which zsh)" ]; then
   log_add "Definindo Zsh como shell padrao..."
-  chsh -s "$(which zsh)"
-  log_ok "Zsh definido como shell padrao"
+  sudo chsh -s "$(which zsh)" "$USER"
+  log_ok "Zsh definido como shell padrao (efetivo no proximo login)"
 else
   log_ok "Zsh ja e o shell padrao"
 fi

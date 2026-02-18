@@ -15,6 +15,11 @@ NC='\033[0m'
 # Modulos disponiveis (ordem de instalacao)
 ALL_MODULES=(zsh nvm git fonts zellij nvim kitty lazygit fastfetch btop keybinds)
 
+# Tracking de resultados
+SUCCEEDED=()
+SKIPPED=()
+FAILED=()
+
 show_header() {
   echo ""
   echo -e "${CYAN}${BOLD}"
@@ -49,20 +54,67 @@ show_help() {
 run_module() {
   local mod="$1"
   local script="$INSTALLERS_DIR/$mod.sh"
+  local tmpfile
+  tmpfile=$(mktemp)
 
   if [ -f "$script" ]; then
     echo ""
-    bash "$script"
+    bash "$script" 2>&1 | tee "$tmpfile"
+    local exit_code=${PIPESTATUS[0]}
+
+    if [ $exit_code -ne 0 ] || grep -q '! Falha\|Falha ao instalar' "$tmpfile"; then
+      FAILED+=("$mod")
+    elif grep -q '+ \|Instalando' "$tmpfile"; then
+      SUCCEEDED+=("$mod")
+    else
+      SKIPPED+=("$mod")
+    fi
+    rm -f "$tmpfile"
   else
     echo -e "  ${YELLOW}[!]${NC} Modulo '$mod' nao encontrado"
+    FAILED+=("$mod")
   fi
 }
 
-show_footer() {
+show_summary() {
+  local RED='\033[0;31m'
+
   echo ""
-  echo -e "  ${GREEN}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-  echo -e "  ${GREEN}${BOLD}  ✓ cbdotfiles updated!${NC}"
-  echo -e "  ${GREEN}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+  echo -e "  ${BOLD}┌───────────────┬─────────────┐${NC}"
+  echo -e "  ${BOLD}│ Modulo        │ Status      │${NC}"
+  echo -e "  ${BOLD}├───────────────┼─────────────┤${NC}"
+
+  for mod in "${MODULES[@]}"; do
+    local status="${RED} erro${NC}"
+
+    for s in "${SUCCEEDED[@]}"; do
+      [ "$s" = "$mod" ] && status="${GREEN} ok${NC}" && break
+    done
+    for s in "${SKIPPED[@]}"; do
+      [ "$s" = "$mod" ] && status="${DIM} skipped${NC}" && break
+    done
+
+    printf "  ${BOLD}│${NC} %-13s ${BOLD}│${NC} %b ${BOLD}│${NC}\n" "$mod" "$status"
+  done
+
+  echo -e "  ${BOLD}└───────────────┴─────────────┘${NC}"
+  echo ""
+  echo -e "    ${GREEN} ${#SUCCEEDED[@]} ok${NC}   ${DIM} ${#SKIPPED[@]} skipped${NC}   ${RED} ${#FAILED[@]} erro(s)${NC}"
+}
+
+show_footer() {
+  local RED='\033[0;31m'
+  show_summary
+  echo ""
+  if [ ${#FAILED[@]} -eq 0 ]; then
+    echo -e "  ${GREEN}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "  ${GREEN}${BOLD}   cbdotfiles updated!${NC}"
+    echo -e "  ${GREEN}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+  else
+    echo -e "  ${RED}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "  ${RED}${BOLD}   cbdotfiles updated com erros${NC}"
+    echo -e "  ${RED}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+  fi
   echo ""
   echo -e "  ${DIM}Rode:${NC} ${BOLD}source ~/.zshrc${NC}"
   echo ""

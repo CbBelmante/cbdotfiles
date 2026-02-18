@@ -8,7 +8,7 @@ BOLD='\033[1m'
 NC='\033[0m'
 
 REPO="https://github.com/CbBelmante/cbdotfiles.git"
-DEST="$HOME/workspaces/cbdotfiles"
+DEST="$HOME/Workspaces/cbdotfiles"
 
 echo ""
 echo -e "${CYAN}${BOLD}  cbdotfiles bootstrap${NC}"
