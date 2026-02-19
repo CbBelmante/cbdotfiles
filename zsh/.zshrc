@@ -139,3 +139,4 @@ export XDG_DATA_DIRS="$XDG_DATA_DIRS:/var/lib/flatpak/exports/share:$HOME/.local
 # ALIASES & FUNCTIONS (arquivo separado)
 # ═══════════════════════════════════════════════════════════════════════════════
 [[ -f ~/.config/cb/aliases.zsh ]] && source ~/.config/cb/aliases.zsh
+[[ -f ~/.config/cb/local.zsh ]]   && source ~/.config/cb/local.zsh

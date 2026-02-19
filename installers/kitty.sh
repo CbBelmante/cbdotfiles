@@ -39,3 +39,9 @@ case "$DESKTOP" in
     log_warn "Desktop nao detectado, usando config omarchy como padrao"
     ;;
 esac
+
+# Local override de kitty (machine-specific)
+if [ -f "$DOTFILES_DIR/local/kitty/kitty.conf" ]; then
+  ln -sf "$DOTFILES_DIR/local/kitty/kitty.conf" ~/.config/kitty/local.conf
+  log_ok "~/.config/kitty/local.conf -> local override"
+fi

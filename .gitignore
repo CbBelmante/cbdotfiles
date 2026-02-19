@@ -3,3 +3,6 @@ keybinds/generated/*.conf
 keybinds/generated/*.ron
 
 nvim/lazy-lock.json
+
+# Local overrides (machine-specific, nao vai pro git)
+local/

@@ -69,3 +69,9 @@ log_ok "~/.zshrc -> cbdotfiles"
 mkdir -p ~/.config/cb
 ln -sf "$DOTFILES_DIR/zsh/aliases.zsh" ~/.config/cb/aliases.zsh
 log_ok "~/.config/cb/aliases.zsh -> cbdotfiles"
+
+# Local override de aliases (machine-specific)
+if [ -f "$DOTFILES_DIR/local/zsh/aliases.zsh" ]; then
+  ln -sf "$DOTFILES_DIR/local/zsh/aliases.zsh" ~/.config/cb/local.zsh
+  log_ok "~/.config/cb/local.zsh -> local override"
+fi

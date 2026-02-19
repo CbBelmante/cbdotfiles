@@ -13,7 +13,7 @@ DIM='\033[2m'
 NC='\033[0m'
 
 # Modulos disponiveis (ordem de instalacao)
-ALL_MODULES=(zsh nvm git fonts drivers shell-tools zellij nvim kitty vivaldi opera vscode gitkraken lazygit fastfetch btop keybinds)
+ALL_MODULES=(zsh nvm git fonts drivers shell-tools zellij nvim kitty vivaldi opera vscode gitkraken lazygit fastfetch btop keybinds power)
 
 # Tracking de resultados
 SUCCEEDED=()
@@ -64,7 +64,7 @@ run_module() {
 
     if [ $exit_code -ne 0 ] || grep -q '! Falha\|Falha ao instalar' "$tmpfile"; then
       FAILED+=("$mod")
-    elif grep -q '+ \|Instalando' "$tmpfile"; then
+    elif grep -q '+ \|Instalando\|desabilitado\|habilitado' "$tmpfile"; then
       SUCCEEDED+=("$mod")
     else
       SKIPPED+=("$mod")
@@ -127,6 +127,13 @@ if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
 fi
 
 show_header
+
+# Carrega overrides locais (machine-specific)
+LOCAL_CONF="$DOTFILES_DIR/local/local.sh"
+if [ -f "$LOCAL_CONF" ]; then
+  source "$LOCAL_CONF"
+  echo -e "  ${DIM} local/local.sh carregado${NC}"
+fi
 
 # Se passou argumentos, instala so os selecionados
 if [ $# -gt 0 ]; then

@@ -84,6 +84,7 @@ Nao precisa instalar tudo. Escolha os modulos que quiser:
 | 🖥️ `fastfetch` | Config Fastfetch (system info) | ❌ Apenas symlink |
 | 📊 `btop` | Config Btop (monitor de sistema) | ❌ Apenas symlink |
 | ⌨️ `keybinds` | Gera e aplica keybinds (Hyprland/COSMIC) | ❌ Gera configs |
+| ⚡ `power` | Energia (suspend auto-detecta desktop/laptop) | ❌ Apenas gsettings |
 
 ## 🔄 Atualizacao
 
@@ -119,7 +120,14 @@ cbdotfiles/
 │   ├── lazygit.sh                 # 🦥 Git TUI
 │   ├── fastfetch.sh               # 🖥️ System info
 │   ├── btop.sh                    # 📊 Monitor de sistema
-│   └── keybinds.sh                # ⌨️ Gerador de keybinds
+│   ├── keybinds.sh                # ⌨️ Gerador de keybinds
+│   └── power.sh                   # ⚡ Energia (suspend desktop/laptop)
+├── local.example/                 # 📋 Template de overrides locais
+│   ├── local.sh                   # Variaveis pro instalador
+│   ├── zsh/aliases.zsh            # Aliases locais
+│   └── kitty/kitty.conf           # Override de kitty
+├── local/                         # 🔒 Overrides dessa maquina (gitignored)
+│   └── ...                        # Mesma estrutura de local.example/
 ├── git/
 │   └── .gitconfig                 # Configuracao global do Git
 ├── zellij/
@@ -157,12 +165,14 @@ cbdotfiles/
 ```
 ~/.zshrc                              → cbdotfiles/zsh/.zshrc
 ~/.config/cb/aliases.zsh              → cbdotfiles/zsh/aliases.zsh
+~/.config/cb/local.zsh                → cbdotfiles/local/zsh/aliases.zsh (se existir)
 ~/.gitconfig                          → cbdotfiles/git/.gitconfig
 ~/.config/zellij/config.kdl           → cbdotfiles/zellij/config.kdl
 ~/.config/zellij/layouts/*.kdl        → cbdotfiles/zellij/*.kdl
 ~/.config/nvim/                       → cbdotfiles/nvim/
 ~/.config/kitty/kitty.conf            → cbdotfiles/kitty/kitty.conf
 ~/.config/kitty/env.conf              → cbdotfiles/kitty/{omarchy,cosmic}.conf
+~/.config/kitty/local.conf            → cbdotfiles/local/kitty/kitty.conf (se existir)
 ~/.config/lazygit/config.yml          → cbdotfiles/lazygit/config.yml
 ~/.config/fastfetch/config.jsonc      → cbdotfiles/fastfetch/config.jsonc
 ~/.config/btop/btop.conf              → cbdotfiles/btop/btop.conf
@@ -374,6 +384,51 @@ COSMIC_BROWSER=vivaldi
 ./keybinds/generate.sh          # gera os arquivos
 ./install.sh keybinds            # gera + aplica symlinks
 ```
+
+## 🔒 Local Overrides (configs por maquina)
+
+Cada maquina pode ter configs especificas que **nao vao pro git**. Basta criar arquivos em `local/` com a **mesma estrutura** do projeto:
+
+```bash
+# Copie o template
+cp -r local.example/ local/
+
+# Edite o que quiser
+nvim local/local.sh              # variaveis pro instalador
+nvim local/zsh/aliases.zsh       # aliases so dessa maquina
+nvim local/kitty/kitty.conf      # fonte/tamanho diferente
+```
+
+### Exemplos
+
+**Desktop — desabilitar suspend:**
+```bash
+# local/local.sh
+CB_SUSPEND=off
+```
+
+**Notebook — fonte maior no terminal:**
+```bash
+# local/kitty/kitty.conf
+font_size 11.0
+```
+
+**Maquina do trabalho — aliases extras:**
+```bash
+# local/zsh/aliases.zsh
+alias deploy='ssh deploy@prod-server'
+alias vpn='sudo openvpn ~/configs/trabalho.ovpn'
+```
+
+### Como funciona
+
+| Camada | Arquivo | Vai pro git? |
+|--------|---------|:------------:|
+| Base | `kitty/kitty.conf` | ✅ |
+| Ambiente | `kitty/env.conf` (omarchy/cosmic) | ✅ |
+| Local | `local/kitty/kitty.conf` | ❌ |
+
+O instalador detecta automaticamente se `local/` tem overrides e cria os symlinks. O modulo `power` auto-detecta desktop (sem bateria) vs laptop e configura suspend — sem precisar de override manual.
 
 ## 🎮 Drivers (deteccao automatica)
 

@@ -65,3 +65,8 @@ get_desktop() {
     echo "unknown"
   fi
 }
+
+# Detecta se a maquina e um laptop (tem bateria)
+is_laptop() {
+  ls /sys/class/power_supply/BAT* &>/dev/null
+}
