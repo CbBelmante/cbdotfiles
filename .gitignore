@@ -4,5 +4,8 @@ keybinds/generated/*.ron
 
 nvim/lazy-lock.json
 
+# Dependencies
+ts-installer/node_modules/
+
 # Local overrides (machine-specific, nao vai pro git)
 local/

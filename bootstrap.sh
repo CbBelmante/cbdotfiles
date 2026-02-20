@@ -1,4 +1,5 @@
 #!/bin/bash
+# One-liner para maquina nova: clona o repo e roda o instalador
 set -e
 
 GREEN='\033[0;32m'
@@ -15,27 +16,25 @@ echo -e "${CYAN}${BOLD}  cbdotfiles bootstrap${NC}"
 echo -e "${CYAN}  =====================${NC}"
 echo ""
 
-# check git
+# Pre-requisito: git
 if ! command -v git &> /dev/null; then
   echo -e "  ${RED}x${NC} git nao encontrado. Instale o git primeiro."
   exit 1
 fi
 
-# clone or pull
+# Clone ou pull
 if [ -d "$DEST" ]; then
-  echo -e "  ${GREEN}✓${NC} Repositorio ja existe em $DEST"
+  echo -e "  ${GREEN}+${NC} Repositorio ja existe em $DEST"
   cd "$DEST"
   git pull --quiet
-  echo -e "  ${GREEN}✓${NC} git pull concluido"
+  echo -e "  ${GREEN}+${NC} git pull concluido"
 else
   echo -e "  ${CYAN}+${NC} Clonando cbdotfiles..."
   mkdir -p "$(dirname "$DEST")"
   git clone "$REPO" "$DEST"
-  echo -e "  ${GREEN}✓${NC} Clonado em $DEST"
+  echo -e "  ${GREEN}+${NC} Clonado em $DEST"
 fi
 
-# run install
-cd "$DEST"
-chmod +x install.sh installers/*.sh
+# Roda o instalador (cuida de Bun + deps + TS installer)
 echo ""
-./install.sh "$@"
+"$DEST/install.sh" "$@"

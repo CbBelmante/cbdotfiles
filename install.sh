@@ -1,158 +1,34 @@
 #!/bin/bash
+# Instalador cbdotfiles — garante Bun e roda o instalador TypeScript
+set -e
 
 DOTFILES_DIR="$(cd "$(dirname "$0")" && pwd)"
-INSTALLERS_DIR="$DOTFILES_DIR/installers"
 
-# Cores
 GREEN='\033[0;32m'
-BLUE='\033[0;34m'
-YELLOW='\033[1;33m'
 CYAN='\033[0;36m'
 BOLD='\033[1m'
-DIM='\033[2m'
 NC='\033[0m'
 
-# Modulos disponiveis (ordem de instalacao)
-ALL_MODULES=(zsh nvm git fonts drivers shell-tools zellij nvim kitty vivaldi opera vscode gitkraken lazygit fastfetch btop keybinds power)
+# ---------------------------------------------------------------------------
+# Garante que Bun esta instalado
+# ---------------------------------------------------------------------------
+export BUN_INSTALL="${BUN_INSTALL:-$HOME/.bun}"
+export PATH="$BUN_INSTALL/bin:$PATH"
 
-# Tracking de resultados
-SUCCEEDED=()
-SKIPPED=()
-FAILED=()
-
-show_header() {
-  echo ""
-  echo -e "${CYAN}${BOLD}"
-  echo "   ██████╗██████╗ ██████╗  ██████╗ ████████╗███████╗██╗██╗     ███████╗███████╗"
-  echo "  ██╔════╝██╔══██╗██╔══██╗██╔═══██╗╚══██╔══╝██╔════╝██║██║     ██╔════╝██╔════╝"
-  echo "  ██║     ██████╔╝██║  ██║██║   ██║   ██║   █████╗  ██║██║     █████╗  ███████╗"
-  echo "  ██║     ██╔══██╗██║  ██║██║   ██║   ██║   ██╔══╝  ██║██║     ██╔══╝  ╚════██║"
-  echo "  ╚██████╗██████╔╝██████╔╝╚██████╔╝   ██║   ██║     ██║███████╗███████╗███████║"
-  echo "   ╚═════╝╚═════╝ ╚═════╝  ╚═════╝    ╚═╝   ╚═╝     ╚═╝╚══════╝╚══════╝╚══════╝"
-  echo -e "${NC}"
-  echo -e "  ${DIM}Diretorio: $DOTFILES_DIR${NC}"
-  echo ""
-}
-
-show_help() {
-  show_header
-  echo -e "  ${BOLD}Uso:${NC} ./install.sh [modulos...]"
-  echo ""
-  echo -e "  Sem argumentos instala tudo. Com argumentos instala apenas os selecionados."
-  echo ""
-  echo -e "  ${BOLD}Modulos disponiveis:${NC}"
-  for mod in "${ALL_MODULES[@]}"; do
-    echo -e "    ${CYAN}•${NC} $mod"
-  done
-  echo ""
-  echo -e "  ${BOLD}Exemplos:${NC}"
-  echo -e "    ${DIM}./install.sh${NC}              ${DIM}# instala tudo${NC}"
-  echo -e "    ${DIM}./install.sh zellij nvim${NC}  ${DIM}# instala so zellij e nvim${NC}"
-  echo ""
-}
-
-run_module() {
-  local mod="$1"
-  local script="$INSTALLERS_DIR/$mod.sh"
-  local tmpfile
-  tmpfile=$(mktemp)
-
-  if [ -f "$script" ]; then
-    echo ""
-    bash "$script" 2>&1 | tee "$tmpfile"
-    local exit_code=${PIPESTATUS[0]}
-
-    if [ $exit_code -ne 0 ] || grep -q '! Falha\|Falha ao instalar' "$tmpfile"; then
-      FAILED+=("$mod")
-    elif grep -q '+ \|Instalando\|desabilitado\|habilitado' "$tmpfile"; then
-      SUCCEEDED+=("$mod")
-    else
-      SKIPPED+=("$mod")
-    fi
-    rm -f "$tmpfile"
-  else
-    echo -e "  ${YELLOW}[!]${NC} Modulo '$mod' nao encontrado"
-    FAILED+=("$mod")
-  fi
-}
-
-show_summary() {
-  local RED='\033[0;31m'
-
-  echo ""
-  echo -e "  ${BOLD}┌───────────────┬─────────────┐${NC}"
-  echo -e "  ${BOLD}│ Modulo        │ Status      │${NC}"
-  echo -e "  ${BOLD}├───────────────┼─────────────┤${NC}"
-
-  for mod in "${MODULES[@]}"; do
-    local status="${RED} erro${NC}"
-
-    for s in "${SUCCEEDED[@]}"; do
-      [ "$s" = "$mod" ] && status="${GREEN} ok${NC}" && break
-    done
-    for s in "${SKIPPED[@]}"; do
-      [ "$s" = "$mod" ] && status="${DIM} skipped${NC}" && break
-    done
-
-    printf "  ${BOLD}│${NC} %-13s ${BOLD}│${NC} %b ${BOLD}│${NC}\n" "$mod" "$status"
-  done
-
-  echo -e "  ${BOLD}└───────────────┴─────────────┘${NC}"
-  echo ""
-  echo -e "    ${GREEN} ${#SUCCEEDED[@]} ok${NC}   ${DIM} ${#SKIPPED[@]} skipped${NC}   ${RED} ${#FAILED[@]} erro(s)${NC}"
-}
-
-show_footer() {
-  local RED='\033[0;31m'
-  show_summary
-  echo ""
-  if [ ${#FAILED[@]} -eq 0 ]; then
-    echo -e "  ${GREEN}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo -e "  ${GREEN}${BOLD}   cbdotfiles updated!${NC}"
-    echo -e "  ${GREEN}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-  else
-    echo -e "  ${RED}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo -e "  ${RED}${BOLD}   cbdotfiles updated com erros${NC}"
-    echo -e "  ${RED}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-  fi
-  echo ""
-  echo -e "  ${DIM}Rode:${NC} ${BOLD}source ~/.zshrc${NC}"
-  echo ""
-}
-
-# --- Main ---
-if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
-  show_help
-  exit 0
+if ! command -v bun &> /dev/null; then
+  echo -e "  ${CYAN}+${NC} Instalando Bun..."
+  curl -fsSL https://bun.sh/install | bash
+  export PATH="$BUN_INSTALL/bin:$PATH"
+  echo -e "  ${GREEN}+${NC} Bun instalado: $(bun --version)"
 fi
 
-show_header
+# ---------------------------------------------------------------------------
+# Instala dependencias (silencioso se ja instaladas)
+# ---------------------------------------------------------------------------
+cd "$DOTFILES_DIR/ts-installer"
+bun install --frozen-lockfile 2>/dev/null || bun install --silent
 
-# Carrega overrides locais (machine-specific)
-LOCAL_CONF="$DOTFILES_DIR/local/local.sh"
-if [ -f "$LOCAL_CONF" ]; then
-  source "$LOCAL_CONF"
-  echo -e "  ${DIM} local/local.sh carregado${NC}"
-fi
-
-# Se passou argumentos, instala so os selecionados
-if [ $# -gt 0 ]; then
-  MODULES=("$@")
-  echo -e "  ${BLUE}Modulos:${NC} ${MODULES[*]}"
-else
-  MODULES=("${ALL_MODULES[@]}")
-  echo -e "  ${BLUE}Instalando todos os modulos...${NC}"
-fi
-
-for mod in "${MODULES[@]}"; do
-  run_module "$mod"
-done
-
-# PATH check
-echo ""
-if ! echo "$PATH" | grep -q '.local/bin'; then
-  echo -e "  ${YELLOW}[!]${NC} Adicione ~/.local/bin ao PATH no seu .zshrc:"
-  echo -e "      ${DIM}export PATH=\"\$HOME/.local/bin:\$PATH\"${NC}"
-fi
-
-show_footer
+# ---------------------------------------------------------------------------
+# Roda o instalador TypeScript
+# ---------------------------------------------------------------------------
+bun run src/install.ts "$@"

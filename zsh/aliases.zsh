@@ -175,10 +175,16 @@ z-tab() {
 # ───────────────────────────────────────────────────────────────────────────────
 # CbDotfiles
 # ───────────────────────────────────────────────────────────────────────────────
-# Atualizar dotfiles: puxa do git e roda o instalador
-cbdotupdate() {
+# Instalar dotfiles: abre o menu interativo (Padrao / Custom)
+cbdotInstall() {
+    local dotdir="$HOME/Workspaces/cbdotfiles"
+    "$dotdir/install.sh" && source ~/.zshrc
+}
+
+# Atualizar dotfiles: puxa do git e reinstala modulos salvos
+cbdotUpdate() {
     local dotdir="$HOME/Workspaces/cbdotfiles"
     echo "=== Atualizando cbdotfiles ==="
-    git -C "$dotdir" pull && "$dotdir/install.sh" && source ~/.zshrc
+    git -C "$dotdir" pull && "$dotdir/install.sh" --update && source ~/.zshrc
     echo "=== cbdotfiles atualizado! ==="
 }

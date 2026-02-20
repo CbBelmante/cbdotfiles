@@ -32,36 +32,52 @@ curl -sL https://raw.githubusercontent.com/CbBelmante/cbdotfiles/master/bootstra
 ### 📋 Passo a passo (manual)
 
 ```bash
-# 0. Pre-requisitos
-# Arch Linux
-sudo pacman -S git curl zsh eza
-# Ubuntu/Debian
-sudo apt install git curl zsh eza
+# 1. Pre-requisito: git
+sudo apt install git   # ou: sudo pacman -S git
 
-# 1. Clone e instale
+# 2. Clone e instale
 git clone https://github.com/CbBelmante/cbdotfiles.git ~/Workspaces/cbdotfiles
 cd ~/Workspaces/cbdotfiles
-chmod +x install.sh installers/*.sh
 ./install.sh
-
-# 2. Defina Zsh como shell padrao
-chsh -s $(which zsh)
 
 # 3. Reinicie o terminal
 source ~/.zshrc
 ```
 
-> 💡 Na proxima vez que precisar atualizar, basta rodar `cbdotupdate`
+> O instalador cuida de tudo: instala Bun (se necessario), dependencias e abre o menu interativo.
+
+> 💡 Na proxima vez que precisar atualizar, basta rodar `cbdotUpdate`
 
 ## 📦 Instalacao Seletiva
 
-Nao precisa instalar tudo. Escolha os modulos que quiser:
+O instalador abre um menu interativo com duas opcoes:
+
+```
+? Como deseja instalar?
+❯ Padrao (todos os modulos)
+  Custom (selecionar modulos)
+```
+
+No modo **Custom**, selecione os modulos com checkbox:
+
+```
+? Selecione os modulos para instalar:
+  ◻ 🐚 zsh            Oh My Zsh + Powerlevel10k + plugins
+  ◻ ✏️ nvim           Config completa Neovim (LazyVim)
+  ◻ 🐱 kitty          Config Kitty + override por ambiente
+  ...
+```
+
+Tambem aceita argumentos diretos:
 
 ```bash
-./install.sh zellij nvim     # so zellij e neovim
-./install.sh zsh git         # so zsh e git
+./install.sh --custom        # vai direto pra selecao de modulos
+./install.sh --all           # instala tudo (sem menu)
+./install.sh zsh nvim git    # instala so esses
 ./install.sh --help          # lista todos os modulos
 ```
+
+Ao selecionar browsers (Vivaldi/Opera), o instalador pergunta qual definir como padrao.
 
 ### 🧩 Modulos Disponiveis
 
@@ -91,37 +107,47 @@ Nao precisa instalar tudo. Escolha os modulos que quiser:
 Depois de instalado, para puxar mudancas do repositorio em qualquer maquina:
 
 ```bash
-cbdotupdate
+cbdotUpdate
 ```
 
-Faz automaticamente: `git pull` → `install.sh` → `source ~/.zshrc`
+Faz automaticamente: `git pull` → `install.sh --update` → `source ~/.zshrc`
+
+> O `--update` reinstala apenas os modulos que voce selecionou na instalacao (salvos em `local/.modules`). Se nao existe selecao salva, abre o menu interativo.
 
 ## 📂 Estrutura do Projeto
 
 ```text
 cbdotfiles/
 ├── bootstrap.sh                   # ⚡ One-liner para maquina nova
-├── install.sh                     # 🎯 Orquestrador principal
+├── install.sh                     # 🎯 Shell minimo (garante Bun + chama TS)
 ├── .gitignore                     # 🚫 Ignora arquivos gerados
-├── installers/                    # 📦 Um script por modulo
-│   ├── helpers.sh                 # 🔧 Detecta distro + desktop (Omarchy/COSMIC)
-│   ├── zsh.sh                     # 🐚 Oh My Zsh + plugins + symlink
-│   ├── nvm.sh                     # 📦 Node Version Manager
-│   ├── git.sh                     # 🔀 Symlink .gitconfig
-│   ├── drivers.sh                 # 🎮 GPU + Bluetooth firmware (detecta hardware)
-│   ├── shell-tools.sh             # 🔍 Zoxide, fzf, ripgrep, bat
-│   ├── zellij.sh                  # 🖥️ Zellij + config + layouts
-│   ├── nvim.sh                    # ✏️ Neovim (verifica versao >= 0.11.2)
-│   ├── kitty.sh                   # 🐱 Terminal Kitty (detecta ambiente)
-│   ├── vivaldi.sh                 # 🌐 Vivaldi Browser + browser padrao
-│   ├── opera.sh                   # 🌐 Opera Browser
-│   ├── vscode.sh                  # 💻 Visual Studio Code
-│   ├── gitkraken.sh               # 🐙 GitKraken
-│   ├── lazygit.sh                 # 🦥 Git TUI
-│   ├── fastfetch.sh               # 🖥️ System info
-│   ├── btop.sh                    # 📊 Monitor de sistema
-│   ├── keybinds.sh                # ⌨️ Gerador de keybinds
-│   └── power.sh                   # ⚡ Energia (suspend desktop/laptop)
+├── ts-installer/                  # 🟦 Instalador TypeScript (Bun Shell)
+│   ├── package.json               # 📦 Deps: @inquirer/prompts
+│   ├── tsconfig.json              # ⚙️ Config TypeScript
+│   └── src/
+│       ├── install.ts             # 🎯 Entry point (menu interativo)
+│       ├── helpers.ts             # 🔧 Detecta distro, desktop, hardware
+│       ├── log.ts                 # 🎨 Log colorido + header + summary
+│       └── modules/               # 📦 Um arquivo por modulo
+│           ├── index.ts           # Registry (IModule[])
+│           ├── zsh.ts             # 🐚 Oh My Zsh + plugins + symlink
+│           ├── nvm.ts             # 📦 Node Version Manager
+│           ├── git.ts             # 🔀 Symlink .gitconfig
+│           ├── drivers.ts         # 🎮 GPU + Bluetooth (detecta hardware)
+│           ├── shell-tools.ts     # 🔍 Zoxide, fzf, ripgrep, bat
+│           ├── zellij.ts          # 🖥️ Zellij + config + layouts
+│           ├── nvim.ts            # ✏️ Neovim (versao >= 0.11.2)
+│           ├── kitty.ts           # 🐱 Kitty (detecta ambiente)
+│           ├── lazygit.ts         # 🦥 Git TUI
+│           ├── fastfetch.ts       # 🖥️ System info
+│           ├── btop.ts            # 📊 Monitor de sistema
+│           ├── fonts.ts           # 🔤 Nerd Fonts
+│           ├── vivaldi.ts         # 🌐 Vivaldi Browser
+│           ├── opera.ts           # 🌐 Opera Browser
+│           ├── vscode.ts          # 💻 Visual Studio Code
+│           ├── gitkraken.ts       # 🐙 GitKraken
+│           ├── keybinds.ts        # ⌨️ Gerador de keybinds
+│           └── power.ts           # ⚡ Energia (desktop/laptop)
 ├── local.example/                 # 📋 Template de overrides locais
 │   ├── local.sh                   # Variaveis pro instalador
 │   ├── zsh/aliases.zsh            # Aliases locais
@@ -453,26 +479,43 @@ case "$layout" in
 esac
 ```
 
-3. Rode `cbdotupdate` ou `./install.sh zellij`
+3. Rode `cbdotUpdate` ou `./install.sh zellij`
 
 ## ➕ Adicionando Novos Modulos
 
-1. Crie o installer em `cbdotfiles/installers/<nome>.sh`:
-```bash
-#!/bin/bash
-DOTFILES_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-source "$DOTFILES_DIR/installers/helpers.sh"
+1. Crie o modulo em `ts-installer/src/modules/<nome>.ts`:
 
-log_title "nome" "Nome do Modulo"
-# ... logica de instalacao
+```typescript
+import { $ } from "bun";
+import type { IModule } from "./index";
+import { DOTFILES_DIR, HOME, symlink } from "../helpers";
+import { log } from "../log";
+
+export const nome: IModule = {
+  id: "nome",
+  name: "Nome do Modulo",
+  emoji: "📦",
+  description: "O que faz",
+  installsSoftware: false,
+
+  async run() {
+    log.title("nome", "Nome do Modulo");
+    await symlink(`${DOTFILES_DIR}/nome/config`, `${HOME}/.config/nome/config`);
+    log.ok("~/.config/nome/config -> cbdotfiles");
+  },
+};
 ```
 
-2. Adicione o nome no array `ALL_MODULES` em `install.sh`
+2. Registre no array `ALL_MODULES` em `ts-installer/src/modules/index.ts`
 
-3. Rode `./install.sh <nome>` para testar
+3. Rode `./install.sh nome` para testar
 
 ## 🛠️ Tecnologias
 
+### Instalador
+- **🟦 Bun** + **TypeScript** - Instalador interativo (Bun Shell + @inquirer/prompts)
+
+### Ferramentas instaladas
 - **🐚 Zsh** + Oh My Zsh + Powerlevel10k
 - **🖥️ Zellij** - Multiplexador de terminal (Rust)
 - **✏️ Neovim** - Editor (LazyVim)

@@ -140,3 +140,6 @@ export XDG_DATA_DIRS="$XDG_DATA_DIRS:/var/lib/flatpak/exports/share:$HOME/.local
 # ═══════════════════════════════════════════════════════════════════════════════
 [[ -f ~/.config/cb/aliases.zsh ]] && source ~/.config/cb/aliases.zsh
 [[ -f ~/.config/cb/local.zsh ]]   && source ~/.config/cb/local.zsh
+
+# bun completions
+[ -s "/home/cbbelmante/.bun/_bun" ] && source "/home/cbbelmante/.bun/_bun"
