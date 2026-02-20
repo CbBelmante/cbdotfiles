@@ -70,3 +70,8 @@ get_desktop() {
 is_laptop() {
   ls /sys/class/power_supply/BAT* &>/dev/null
 }
+
+# Detecta hardware Apple (iMac/MacBook rodando Linux)
+is_apple() {
+  [ "$(cat /sys/class/dmi/id/sys_vendor 2>/dev/null)" = "Apple Inc." ]
+}

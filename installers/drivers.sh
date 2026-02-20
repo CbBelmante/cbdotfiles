@@ -68,7 +68,8 @@ fi
 # Bluetooth - Firmware Broadcom (Apple Mac)
 # ─────────────────────────────────────────────────────────────────────────────
 BT_USB=$(lsusb 2>/dev/null | grep -i "apple.*bluetooth\|broadcom.*bluetooth")
-if [ -n "$BT_USB" ]; then
+if [ -n "$BT_USB" ] || is_apple; then
+  [ -z "$BT_USB" ] && BT_USB=$(lsusb 2>/dev/null | grep -i "broadcom")
   USB_ID=$(echo "$BT_USB" | grep -oP 'ID \K[0-9a-f]{4}:[0-9a-f]{4}')
   BT_CHIP=$(dmesg 2>/dev/null | grep -oP 'BCM\d+A?\d*' | head -1)
   if [ -z "$BT_CHIP" ]; then
