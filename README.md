@@ -402,7 +402,8 @@ COSMIC_BROWSER=vivaldi
 | `Super+Q` / `Super+W` | Fechar janela |
 | `Super+Escape` | Power menu (lock/suspend/reboot/shutdown) |
 | `Super+K` | Mostrar todos os atalhos |
-| `Ctrl+Shift+3/4/5` | Screenshots |
+| `Print` | Screenshot (interativo) |
+| `Shift+Print` | Screenshot (clipboard) |
 
 ### Regenerar
 

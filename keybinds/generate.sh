@@ -74,6 +74,7 @@ key_to_cosmic() {
   case "$key" in
     Return) echo "Return" ;;
     Escape) echo "Escape" ;;
+    Print)  echo "Print" ;;
     slash)  echo "slash" ;;
     [0-9])  echo "$key" ;;
     *)      echo "$key" | tr '[:upper:]' '[:lower:]' ;;
