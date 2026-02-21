@@ -2,7 +2,8 @@
 
 import { $ } from "bun";
 import { checkbox, confirm, select } from "@inquirer/prompts";
-import { ALL_MODULES, BROWSER_MODULES, getModuleById, type IModule } from "./modules/index";
+import { ALL_MODULES, getModuleById, type IModule, type IRunContext } from "./modules/index";
+import { changeDefaultBrowser } from "./modules/browsers";
 import {
   DOTFILES_DIR,
   commandExists,
@@ -21,6 +22,7 @@ const isHelp = args.includes("--help") || args.includes("-h");
 const isAll = args.includes("--all");
 const isCustom = args.includes("--custom");
 const isUpdate = args.includes("--update");
+const isChBrowser = args.includes("--chbrowser");
 const cliModules = args.filter((a) => !a.startsWith("-"));
 
 // ---------------------------------------------------------------------------
@@ -35,6 +37,7 @@ if (isHelp) {
   console.log("    --all       Instala todos os modulos (sem perguntar)");
   console.log("    --custom    Vai direto pra selecao de modulos");
   console.log("    --update    Reinstala os modulos da ultima selecao");
+  console.log("    --chbrowser Altera o browser padrao (sem instalar)");
   console.log("    --help      Mostra esta ajuda");
   console.log();
   console.log("  Modulos disponiveis:");
@@ -50,71 +53,6 @@ if (isHelp) {
   console.log("    ./install.sh zsh nvim git      # instala so esses");
   console.log();
   process.exit(0);
-}
-
-// ---------------------------------------------------------------------------
-// Selecao de browser padrao
-// ---------------------------------------------------------------------------
-
-async function askDefaultBrowser(selectedModules: IModule[]) {
-  // Verifica quais browsers foram selecionados pra instalar
-  const browserIds = BROWSER_MODULES.map((b) => b.id);
-  const hasBrowser = selectedModules.some((m) => browserIds.includes(m.id));
-
-  if (!hasBrowser) return;
-
-  // Monta choices com os browsers selecionados + "Nenhum"
-  const choices = [];
-  for (const mod of selectedModules) {
-    if (browserIds.includes(mod.id)) {
-      choices.push({
-        name: `${mod.emoji} ${mod.name}`,
-        value: mod.id,
-      });
-    }
-  }
-  choices.push({ name: "Nenhum (manter o atual)", value: "none" });
-
-  const browser = await select({
-    message: "Qual browser definir como padrao?",
-    choices,
-  });
-
-  if (browser !== "none") {
-    return browser;
-  }
-}
-
-async function setDefaultBrowser(browserId: string) {
-  if (!(await commandExists("xdg-settings"))) {
-    log.warn("xdg-settings nao disponivel, defina o browser padrao manualmente");
-    return;
-  }
-
-  // Mapeia id -> desktop file pattern
-  const desktopFiles: Record<string, string> = {
-    vivaldi: "vivaldi",
-    opera: "opera",
-  };
-
-  const pattern = desktopFiles[browserId];
-  if (!pattern) return;
-
-  try {
-    const found = (
-      await $`find /usr/share/applications -name "${pattern}*" -print -quit 2>/dev/null`.text()
-    ).trim();
-
-    if (found) {
-      const desktopName = found.split("/").pop()!;
-      await $`xdg-settings set default-web-browser ${desktopName}`;
-      log.ok(`${browserId} definido como browser padrao (${desktopName})`);
-    } else {
-      log.warn(`Desktop file de ${browserId} nao encontrado`);
-    }
-  } catch {
-    log.warn(`Falha ao definir ${browserId} como browser padrao`);
-  }
 }
 
 // ---------------------------------------------------------------------------
@@ -174,9 +112,14 @@ async function main() {
   // Carrega overrides locais
   const overrides = await loadLocalOverrides();
 
+  // --chbrowser: apenas altera o browser padrao
+  if (isChBrowser) {
+    await changeDefaultBrowser();
+    return;
+  }
+
   // Determina quais modulos instalar
   let selectedModules: IModule[];
-  let defaultBrowser: string | undefined;
 
   if (isUpdate) {
     // --update: reinstala os modulos da ultima selecao
@@ -210,18 +153,12 @@ async function main() {
     selectedModules = await interactiveMenu();
   }
 
-  // Pergunta browser padrao (se algum browser foi selecionado)
-  defaultBrowser = await askDefaultBrowser(selectedModules);
-
   // Confirma antes de executar
   console.log();
   console.log("  Modulos selecionados:");
   for (const mod of selectedModules) {
     const badge = mod.installsSoftware ? " (instala software)" : " (symlink)";
     console.log(`    ${mod.emoji} ${mod.id}${badge}`);
-  }
-  if (defaultBrowser) {
-    console.log(`    🌐 Browser padrao: ${defaultBrowser}`);
   }
   console.log();
 
@@ -242,10 +179,11 @@ async function main() {
   // ---------------------------------------------------------------------------
 
   const results: Array<{ name: string; status: IModuleStatus }> = [];
+  const ctx: IRunContext = { overrides, isAll };
 
   for (const mod of selectedModules) {
     try {
-      await mod.run(overrides);
+      await mod.run(ctx);
       results.push({ name: mod.id, status: "ok" });
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
@@ -257,11 +195,6 @@ async function main() {
   // Salva selecao pra --update futuro
   const moduleIds = selectedModules.map((m) => m.id);
   await saveSelectedModules(moduleIds);
-
-  // Definir browser padrao apos instalar
-  if (defaultBrowser) {
-    await setDefaultBrowser(defaultBrowser);
-  }
 
   // ---------------------------------------------------------------------------
   // PATH check

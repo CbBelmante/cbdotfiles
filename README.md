@@ -73,11 +73,12 @@ Tambem aceita argumentos diretos:
 ```bash
 ./install.sh --custom        # vai direto pra selecao de modulos
 ./install.sh --all           # instala tudo (sem menu)
+./install.sh --chbrowser     # altera o browser padrao (sem instalar nada)
 ./install.sh zsh nvim git    # instala so esses
 ./install.sh --help          # lista todos os modulos
 ```
 
-Ao selecionar browsers (Vivaldi/Opera), o instalador pergunta qual definir como padrao.
+Ao selecionar o modulo `browsers`, o instalador mostra checkbox dos navegadores e pergunta qual definir como padrao. Use `--chbrowser` a qualquer momento para alterar o browser padrao.
 
 ### 🧩 Modulos Disponiveis
 
@@ -88,17 +89,14 @@ Ao selecionar browsers (Vivaldi/Opera), o instalador pergunta qual definir como 
 | 🔀 `git` | Symlink .gitconfig | ❌ Apenas symlink |
 | 🔤 `fonts` | Fontes Nerd Font | ✅ Fontes |
 | 🎮 `drivers` | Drivers GPU (AMD/Intel/NVIDIA) + Bluetooth Mac | ✅ Mesa, VA-API, firmware |
-| 🔍 `shell-tools` | Zoxide + fzf + ripgrep + bat | ✅ Ferramentas de shell |
-| 🖥️ `zellij` | Multiplexador de terminal + config + layouts | ✅ Zellij (se nao instalado) |
-| ✏️ `nvim` | Config completa Neovim (LazyVim) >= 0.11.2 | ✅ Neovim (GitHub release) |
+| 🔍 `shell-tools` | Zoxide + fzf + ripgrep + bat + eza | ✅ Ferramentas de shell |
 | 🐱 `kitty` | Config Kitty + override por ambiente (Omarchy/COSMIC) | ✅ Kitty (se nao instalado) |
-| 🌐 `vivaldi` | Vivaldi Browser + browser padrao | ✅ Vivaldi (repo oficial) |
-| 🌐 `opera` | Opera Browser | ✅ Opera (repo oficial) |
-| 💻 `vscode` | Visual Studio Code | ✅ VS Code (repo Microsoft) |
-| 🐙 `gitkraken` | GitKraken (Git GUI) | ✅ GitKraken (.deb/.rpm) |
-| 🦥 `lazygit` | Config LazyGit (Git TUI) | ❌ Apenas symlink |
+| 🌐 `browsers` | Navegadores (Vivaldi, Opera, Firefox, Chrome, Chromium) | ✅ Browsers selecionados |
+| 🛠️ `dev` | Neovim + Zellij + VS Code + GitKraken + LazyGit + LazyDocker | ✅ Dev tools selecionados |
 | 🖥️ `fastfetch` | Config Fastfetch (system info) | ❌ Apenas symlink |
 | 📊 `btop` | Config Btop (monitor de sistema) | ❌ Apenas symlink |
+| 📦 `apps` | LibreOffice + Sublime + VLC + Obsidian + Kdenlive + PeaZip + qBittorrent | ✅ Apps selecionados |
+| 🎮 `gaming` | Steam + Lutris + ProtonUp-Qt + MangoHud + Gamemode + Wine + Discord | ✅ Gaming tools |
 | ⌨️ `keybinds` | Gera e aplica keybinds (Hyprland/COSMIC) | ❌ Gera configs |
 | ⚡ `power` | Energia (suspend auto-detecta desktop/laptop) | ❌ Apenas gsettings |
 

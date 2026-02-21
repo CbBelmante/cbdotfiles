@@ -1,4 +1,5 @@
 import { $ } from "bun";
+import { checkbox } from "@inquirer/prompts";
 import { log } from "./log";
 import { existsSync } from "fs";
 import { resolve } from "path";
@@ -168,14 +169,29 @@ export async function saveSelectedModules(moduleIds: string[]) {
   await Bun.write(MODULES_FILE, moduleIds.join("\n") + "\n");
 }
 
+// Migra IDs de modulos antigos para os novos (browsers unificado)
+const LEGACY_MODULE_MAP: Record<string, string> = {
+  vivaldi: "browsers",
+  opera: "browsers",
+  nvim: "dev",
+  zellij: "dev",
+  vscode: "dev",
+  gitkraken: "dev",
+  lazygit: "dev",
+};
+
 export function loadSavedModules(): string[] | null {
   if (!existsSync(MODULES_FILE)) return null;
 
   try {
     const content = require("fs").readFileSync(MODULES_FILE, "utf-8") as string;
-    return content
+    const ids = content
       .split("\n")
-      .filter((line: string) => line.trim().length > 0);
+      .filter((line: string) => line.trim().length > 0)
+      .map((id: string) => LEGACY_MODULE_MAP[id] || id);
+
+    // Remove duplicatas (ex: vivaldi + opera -> browsers + browsers)
+    return [...new Set(ids)];
   } catch {
     return null;
   }
@@ -199,4 +215,41 @@ export async function loadLocalOverrides(): Promise<Record<string, string>> {
 
   log.dim("local/local.sh carregado");
   return overrides;
+}
+
+// ---------------------------------------------------------------------------
+// Checkbox com opcao "Todos" no topo
+// ---------------------------------------------------------------------------
+
+interface ICheckboxItem {
+  id: string;
+  name: string;
+  emoji: string;
+}
+
+export async function checkboxWithAll<T extends ICheckboxItem>(
+  message: string,
+  items: T[]
+): Promise<T[]> {
+  const ALL_VALUE = "__all__";
+
+  const selected = await checkbox({
+    message,
+    choices: [
+      { name: "✅ Todos", value: ALL_VALUE },
+      ...items.map((item) => ({
+        name: `${item.emoji} ${item.name}`,
+        value: item.id,
+        checked: false,
+      })),
+    ],
+  });
+
+  if (selected.includes(ALL_VALUE)) {
+    return items;
+  }
+
+  return selected
+    .map((id) => items.find((item) => item.id === id)!)
+    .filter(Boolean);
 }

@@ -1,5 +1,5 @@
 import { $ } from "bun";
-import type { IModule } from "./index";
+import type { IModule, IRunContext } from "./index";
 import { isApple, isLaptop, commandExists } from "../helpers";
 import { log } from "../log";
 
@@ -10,7 +10,7 @@ export const power: IModule = {
   description: "Energia (suspend auto-detecta desktop/laptop)",
   installsSoftware: false,
 
-  async run(overrides) {
+  async run(ctx: IRunContext) {
     log.title("power", "Energia");
 
     // Detecta hardware Apple
@@ -24,8 +24,8 @@ export const power: IModule = {
     // Determina suspend: override local > apple > auto-detecta
     let suspend: "on" | "off";
 
-    if (overrides.CB_SUSPEND) {
-      suspend = overrides.CB_SUSPEND as "on" | "off";
+    if (ctx.overrides.CB_SUSPEND) {
+      suspend = ctx.overrides.CB_SUSPEND as "on" | "off";
       log.ok(`Suspend override: ${suspend} (via local.sh)`);
     } else if (isApple()) {
       suspend = "off";

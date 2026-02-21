@@ -14,11 +14,11 @@ export const shellTools: IModule = {
   id: "shell-tools",
   name: "Shell Tools",
   emoji: "🔍",
-  description: "Zoxide + fzf + ripgrep + bat",
+  description: "Zoxide + fzf + ripgrep + bat + eza",
   installsSoftware: true,
 
   async run() {
-    log.title("shell-tools", "Shell Tools (zoxide, fzf, ripgrep, bat)");
+    log.title("shell-tools", "Shell Tools (zoxide, fzf, ripgrep, bat, eza)");
 
     const distro = await getDistro();
 
@@ -45,6 +45,11 @@ export const shellTools: IModule = {
         name: "bat",
         cmd: "bat",
         packages: ["bat"],
+      },
+      {
+        name: "eza",
+        cmd: "eza",
+        packages: ["eza"],
       },
     ];
 
