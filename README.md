@@ -62,8 +62,8 @@ No modo **Custom**, selecione os modulos com checkbox:
 
 ```
 ? Selecione os modulos para instalar:
-  ◻ 🐚 zsh            Oh My Zsh + Powerlevel10k + plugins
-  ◻ ✏️ nvim           Config completa Neovim (LazyVim)
+  ◻ 🐚 shell-tools    Zsh + NVM + Git + CLI tools
+  ◻ 🛠️ dev            Neovim + Zellij + VS Code + LazyGit...
   ◻ 🐱 kitty          Config Kitty + override por ambiente
   ...
 ```
@@ -74,7 +74,7 @@ Tambem aceita argumentos diretos:
 ./install.sh --custom        # vai direto pra selecao de modulos
 ./install.sh --all           # instala tudo (sem menu)
 ./install.sh --chbrowser     # altera o browser padrao (sem instalar nada)
-./install.sh zsh nvim git    # instala so esses
+./install.sh shell-tools dev # instala so esses
 ./install.sh --help          # lista todos os modulos
 ```
 
@@ -84,13 +84,9 @@ Ao selecionar o modulo `browsers`, o instalador mostra checkbox dos navegadores 
 
 | Modulo | Descricao | Instala software? |
 |--------|-----------|-------------------|
-| 🐚 `zsh` | Oh My Zsh + Powerlevel10k + plugins + symlink .zshrc | ✅ Oh My Zsh, P10k, plugins |
-| 📦 `nvm` | Node Version Manager | ✅ NVM |
-| 🔀 `git` | Symlink .gitconfig | ❌ Apenas symlink |
+| 🐚 `shell-tools` | Zsh + Oh My Zsh + NVM + Git + Kitty + Zoxide + fzf + ripgrep + bat + eza | ✅ Zsh, NVM, Kitty, ferramentas CLI |
 | 🔤 `fonts` | Fontes Nerd Font | ✅ Fontes |
 | 🎮 `drivers` | Drivers GPU (AMD/Intel/NVIDIA) + Bluetooth Mac | ✅ Mesa, VA-API, firmware |
-| 🔍 `shell-tools` | Zoxide + fzf + ripgrep + bat + eza | ✅ Ferramentas de shell |
-| 🐱 `kitty` | Config Kitty + override por ambiente (Omarchy/COSMIC) | ✅ Kitty (se nao instalado) |
 | 🌐 `browsers` | Navegadores (Vivaldi, Opera, Firefox, Chrome, Chromium) | ✅ Browsers selecionados |
 | 🛠️ `dev` | Neovim + Zellij + VS Code + GitKraken + LazyGit + LazyDocker | ✅ Dev tools selecionados |
 | 🖥️ `fastfetch` | Config Fastfetch (system info) | ❌ Apenas symlink |
@@ -128,22 +124,15 @@ cbdotfiles/
 │       ├── log.ts                 # 🎨 Log colorido + header + summary
 │       └── modules/               # 📦 Um arquivo por modulo
 │           ├── index.ts           # Registry (IModule[])
-│           ├── zsh.ts             # 🐚 Oh My Zsh + plugins + symlink
-│           ├── nvm.ts             # 📦 Node Version Manager
-│           ├── git.ts             # 🔀 Symlink .gitconfig
+│           ├── shell-tools.ts     # 🐚 Zsh + NVM + Git + Kitty + CLI tools
+│           ├── fonts.ts           # 🔤 Nerd Fonts
 │           ├── drivers.ts         # 🎮 GPU + Bluetooth (detecta hardware)
-│           ├── shell-tools.ts     # 🔍 Zoxide, fzf, ripgrep, bat
-│           ├── zellij.ts          # 🖥️ Zellij + config + layouts
-│           ├── nvim.ts            # ✏️ Neovim (versao >= 0.11.2)
-│           ├── kitty.ts           # 🐱 Kitty (detecta ambiente)
-│           ├── lazygit.ts         # 🦥 Git TUI
+│           ├── browsers.ts        # 🌐 Vivaldi, Opera, Firefox, Chrome, Chromium
+│           ├── dev.ts             # 🛠️ Neovim, Zellij, VS Code, GitKraken, LazyGit, LazyDocker
 │           ├── fastfetch.ts       # 🖥️ System info
 │           ├── btop.ts            # 📊 Monitor de sistema
-│           ├── fonts.ts           # 🔤 Nerd Fonts
-│           ├── vivaldi.ts         # 🌐 Vivaldi Browser
-│           ├── opera.ts           # 🌐 Opera Browser
-│           ├── vscode.ts          # 💻 Visual Studio Code
-│           ├── gitkraken.ts       # 🐙 GitKraken
+│           ├── apps.ts            # 📦 LibreOffice, Sublime, VLC, Obsidian...
+│           ├── gaming.ts          # 🎮 Steam, Lutris, Wine, Discord...
 │           ├── keybinds.ts        # ⌨️ Gerador de keybinds
 │           └── power.ts           # ⚡ Energia (desktop/laptop)
 ├── local.example/                 # 📋 Template de overrides locais

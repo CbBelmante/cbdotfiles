@@ -261,16 +261,14 @@ export const apps: IModule = {
     }
 
     // Seleciona quais instalar
+    const installedIds = new Set(installed.map((a) => a.id));
     let toInstall: IApp[] = [];
 
-    if (available.length > 0) {
-      if (ctx.isAll) {
-        toInstall = available;
-      } else {
-        toInstall = await checkboxWithAll("Quais apps deseja instalar?", available);
-      }
+    if (ctx.isAll) {
+      toInstall = available;
     } else {
-      log.dim("Todos os apps ja estao instalados");
+      const selected = await checkboxWithAll("Quais apps deseja instalar?", APPS, installedIds);
+      toInstall = selected.filter((a) => !installedIds.has(a.id));
     }
 
     // Instala os selecionados

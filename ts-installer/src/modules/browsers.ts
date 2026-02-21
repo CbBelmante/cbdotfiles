@@ -254,18 +254,15 @@ export const browsers: IModule = {
       }
     }
 
-    // Seleciona quais instalar (dos que ainda nao estao)
+    // Seleciona quais instalar
+    const installedIds = new Set(installed.map((b) => b.id));
     let toInstall: IBrowser[] = [];
 
-    if (available.length > 0) {
-      if (ctx.isAll) {
-        // --all: instala todos os browsers disponíveis
-        toInstall = available;
-      } else {
-        toInstall = await checkboxWithAll("Quais browsers deseja instalar?", available);
-      }
+    if (ctx.isAll) {
+      toInstall = available;
     } else {
-      log.dim("Todos os browsers ja estao instalados");
+      const selected = await checkboxWithAll("Quais browsers deseja instalar?", BROWSERS, installedIds);
+      toInstall = selected.filter((b) => !installedIds.has(b.id));
     }
 
     // Instala os selecionados

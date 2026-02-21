@@ -169,7 +169,7 @@ export async function saveSelectedModules(moduleIds: string[]) {
   await Bun.write(MODULES_FILE, moduleIds.join("\n") + "\n");
 }
 
-// Migra IDs de modulos antigos para os novos (browsers unificado)
+// Migra IDs de modulos antigos para os novos (agrupados)
 const LEGACY_MODULE_MAP: Record<string, string> = {
   vivaldi: "browsers",
   opera: "browsers",
@@ -178,6 +178,10 @@ const LEGACY_MODULE_MAP: Record<string, string> = {
   vscode: "dev",
   gitkraken: "dev",
   lazygit: "dev",
+  zsh: "shell-tools",
+  nvm: "shell-tools",
+  git: "shell-tools",
+  kitty: "shell-tools",
 };
 
 export function loadSavedModules(): string[] | null {
@@ -229,7 +233,8 @@ interface ICheckboxItem {
 
 export async function checkboxWithAll<T extends ICheckboxItem>(
   message: string,
-  items: T[]
+  items: T[],
+  installedIds: Set<string> = new Set()
 ): Promise<T[]> {
   const ALL_VALUE = "__all__";
 
@@ -237,12 +242,18 @@ export async function checkboxWithAll<T extends ICheckboxItem>(
     message,
     choices: [
       { name: "✅ Todos", value: ALL_VALUE },
-      ...items.map((item) => ({
-        name: `${item.emoji} ${item.name}`,
-        value: item.id,
-        checked: false,
-      })),
+      ...items.map((item) => {
+        const done = installedIds.has(item.id);
+        return {
+          name: done
+            ? `${item.emoji} ${item.name} (ja instalado)`
+            : `${item.emoji} ${item.name}`,
+          value: item.id,
+          checked: false,
+        };
+      }),
     ],
+    required: true,
   });
 
   if (selected.includes(ALL_VALUE)) {

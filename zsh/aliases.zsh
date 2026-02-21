@@ -188,3 +188,10 @@ cbdotUpdate() {
     git -C "$dotdir" pull && "$dotdir/install.sh" --update && source ~/.zshrc
     echo "=== cbdotfiles atualizado! ==="
 }
+
+# Reinstalar dotfiles: limpa selecao salva e reabre menu do zero
+cbdotReinstall() {
+    local dotdir="$HOME/Workspaces/cbdotfiles"
+    rm -f "$dotdir/local/.modules"
+    "$dotdir/install.sh" && source ~/.zshrc
+}

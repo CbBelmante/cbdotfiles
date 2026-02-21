@@ -318,18 +318,17 @@ export const dev: IModule = {
       }
     }
 
-    // Seleciona quais instalar (dos que ainda nao estao)
-    let toInstall: IDevTool[] = [];
+    // Seleciona quais instalar
+    const installedIds = new Set(installed.map((t) => t.id));
+    let selected: IDevTool[] = [];
 
-    if (available.length > 0) {
-      if (ctx.isAll) {
-        toInstall = available;
-      } else {
-        toInstall = await checkboxWithAll("Quais dev tools deseja instalar?", available);
-      }
+    if (ctx.isAll) {
+      selected = DEV_TOOLS;
     } else {
-      log.dim("Todas as dev tools ja estao instaladas");
+      selected = await checkboxWithAll("Quais dev tools deseja instalar?", DEV_TOOLS, installedIds);
     }
+
+    const toInstall = selected.filter((t) => !installedIds.has(t.id));
 
     // Instala os selecionados
     if (toInstall.length > 0) {
@@ -349,9 +348,9 @@ export const dev: IModule = {
       }
     }
 
-    // Configura symlinks para todas as tools instaladas
-    for (const tool of installed) {
-      if (tool.configure) {
+    // Configura symlinks para todas as tools selecionadas (instaladas ou nao)
+    for (const tool of selected) {
+      if (tool.configure && (await tool.isInstalled())) {
         try {
           await tool.configure();
         } catch {

@@ -231,18 +231,15 @@ export const gaming: IModule = {
       }
     }
 
-    // Seleciona quais instalar (dos que ainda nao estao)
+    // Seleciona quais instalar
+    const installedIds = new Set(installed.map((t) => t.id));
     let toInstall: IGamingTool[] = [];
 
-    if (available.length > 0) {
-      if (ctx.isAll) {
-        // --all: instala todas as gaming tools
-        toInstall = available;
-      } else {
-        toInstall = await checkboxWithAll("Quais gaming tools deseja instalar?", available);
-      }
+    if (ctx.isAll) {
+      toInstall = available;
     } else {
-      log.dim("Todas as gaming tools ja estao instaladas");
+      const selected = await checkboxWithAll("Quais gaming tools deseja instalar?", GAMING_TOOLS, installedIds);
+      toInstall = selected.filter((t) => !installedIds.has(t.id));
     }
 
     // Instala os selecionados

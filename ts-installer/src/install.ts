@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
 import { $ } from "bun";
-import { checkbox, confirm, select } from "@inquirer/prompts";
+import { checkbox, select } from "@inquirer/prompts";
 import { ALL_MODULES, getModuleById, type IModule, type IRunContext } from "./modules/index";
 import { changeDefaultBrowser } from "./modules/browsers";
 import {
@@ -79,14 +79,14 @@ async function pickModules(): Promise<IModule[]> {
 // Menu interativo: Padrao / Custom
 // ---------------------------------------------------------------------------
 
-async function interactiveMenu(): Promise<IModule[]> {
+async function interactiveMenu(): Promise<{ modules: IModule[]; isAll: boolean }> {
   const mode = await select({
     message: "Como deseja instalar?",
     choices: [
       {
         name: "Padrao (todos os modulos)",
         value: "default" as const,
-        description: "Instala todos os modulos na ordem correta",
+        description: "Instala todos os modulos sem perguntar",
       },
       {
         name: "Custom (selecionar modulos)",
@@ -97,9 +97,9 @@ async function interactiveMenu(): Promise<IModule[]> {
   });
 
   if (mode === "default") {
-    return ALL_MODULES;
+    return { modules: ALL_MODULES, isAll: true };
   }
-  return pickModules();
+  return { modules: await pickModules(), isAll: false };
 }
 
 // ---------------------------------------------------------------------------
@@ -120,19 +120,23 @@ async function main() {
 
   // Determina quais modulos instalar
   let selectedModules: IModule[];
+  let runAll = isAll;
 
   if (isUpdate) {
-    // --update: reinstala os modulos da ultima selecao
+    // --update: reinstala os modulos da ultima selecao (sem prompts internos)
     const saved = loadSavedModules();
     if (saved) {
       selectedModules = saved
         .map((id) => getModuleById(id))
         .filter(Boolean) as IModule[];
+      runAll = true;
       console.log(`  Atualizando ${selectedModules.length} modulo(s) salvos...\n`);
     } else {
       // Sem selecao salva — mostra menu interativo
       log.warn("Nenhuma selecao salva. Escolha os modulos:\n");
-      selectedModules = await interactiveMenu();
+      const result = await interactiveMenu();
+      selectedModules = result.modules;
+      runAll = result.isAll;
     }
   } else if (isAll) {
     selectedModules = ALL_MODULES;
@@ -150,28 +154,9 @@ async function main() {
 
     console.log(`  Modulos: ${selectedModules.map((m) => m.id).join(", ")}\n`);
   } else {
-    selectedModules = await interactiveMenu();
-  }
-
-  // Confirma antes de executar
-  console.log();
-  console.log("  Modulos selecionados:");
-  for (const mod of selectedModules) {
-    const badge = mod.installsSoftware ? " (instala software)" : " (symlink)";
-    console.log(`    ${mod.emoji} ${mod.id}${badge}`);
-  }
-  console.log();
-
-  if (!isAll) {
-    const ok = await confirm({
-      message: `Instalar ${selectedModules.length} modulo(s)?`,
-      default: true,
-    });
-
-    if (!ok) {
-      console.log("\n  Cancelado.\n");
-      process.exit(0);
-    }
+    const result = await interactiveMenu();
+    selectedModules = result.modules;
+    runAll = result.isAll;
   }
 
   // ---------------------------------------------------------------------------
@@ -179,7 +164,7 @@ async function main() {
   // ---------------------------------------------------------------------------
 
   const results: Array<{ name: string; status: IModuleStatus }> = [];
-  const ctx: IRunContext = { overrides, isAll };
+  const ctx: IRunContext = { overrides, isAll: runAll };
 
   for (const mod of selectedModules) {
     try {

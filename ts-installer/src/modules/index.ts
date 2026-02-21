@@ -1,10 +1,6 @@
-import { git } from "./git";
-import { zsh } from "./zsh";
-import { nvm } from "./nvm";
 import { fonts } from "./fonts";
 import { drivers } from "./drivers";
 import { shellTools } from "./shell-tools";
-import { kitty } from "./kitty";
 import { browsers } from "./browsers";
 import { dev } from "./dev";
 import { fastfetch } from "./fastfetch";
@@ -30,13 +26,9 @@ export interface IModule {
 
 // Ordem de instalacao
 export const ALL_MODULES: IModule[] = [
-  zsh,
-  nvm,
-  git,
+  shellTools,
   fonts,
   drivers,
-  shellTools,
-  kitty,
   browsers,
   dev,
   fastfetch,
