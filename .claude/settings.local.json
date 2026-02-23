@@ -8,7 +8,9 @@
       "WebFetch(domain:www.npmjs.com)",
       "WebFetch(domain:app.unpkg.com)",
       "WebFetch(domain:omarchy.org)",
-      "WebFetch(domain:learn.omacom.io)"
+      "WebFetch(domain:learn.omacom.io)",
+      "Bash(journalctl --user -b -g \"vivaldi|notion\" --no-pager -n 50 2>/dev/null; echo \"===\"; journalctl -b -g \"vivaldi|notion\" --no-pager -n 50 2>/dev/null | tail -30)",
+      "Bash(journalctl --user -b -g \"crash|segfault|SIGSEGV|killed|OOM|oom\" --no-pager -n 30 2>/dev/null)"
     ]
   }
 }
