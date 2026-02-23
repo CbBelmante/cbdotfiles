@@ -1,5 +1,6 @@
 import { fonts } from "./fonts";
 import { drivers } from "./drivers";
+import { desktopTools } from "./desktop-tools";
 import { shellTools } from "./shell-tools";
 import { browsers } from "./browsers";
 import { dev } from "./dev";
@@ -29,6 +30,7 @@ export const ALL_MODULES: IModule[] = [
   shellTools,
   fonts,
   drivers,
+  desktopTools,
   browsers,
   dev,
   fastfetch,

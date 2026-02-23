@@ -22,7 +22,7 @@ export const keybinds: IModule = {
 
     // Aplicar Hyprland
     const hyprDir = `${HOME}/.config/hypr`;
-    if (desktop === "omarchy" || existsSync(hyprDir)) {
+    if (desktop === "omarchy" || desktop === "hyprland" || existsSync(hyprDir)) {
       const hyprBindings = `${generated}/hyprland-bindings.conf`;
       if (existsSync(hyprBindings)) {
         await symlink(hyprBindings, `${hyprDir}/bindings.conf`);
@@ -48,8 +48,8 @@ export const keybinds: IModule = {
       log.ok("COSMIC terminal padrao -> kitty");
     }
 
-    if (desktop === "unknown") {
-      log.warn("Ambiente desktop nao detectado (Hyprland/COSMIC)");
+    if (!["omarchy", "hyprland", "sway", "cosmic"].includes(desktop)) {
+      log.warn(`Desktop '${desktop}' nao suporta keybinds automaticos`);
       log.warn("Configs gerados em: keybinds/generated/");
     }
   },

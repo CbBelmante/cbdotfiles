@@ -232,8 +232,10 @@ async function setupKitty() {
 
   switch (desktop) {
     case "omarchy":
+    case "hyprland":
+    case "sway":
       await symlink(`${DOTFILES_DIR}/kitty/omarchy.conf`, envConf);
-      log.ok("env: omarchy (opacity 0.65)");
+      log.ok(`env: ${desktop} (opacity 0.65)`);
       break;
 
     case "cosmic": {
@@ -250,8 +252,9 @@ async function setupKitty() {
     }
 
     default:
+      // GNOME, KDE, Cinnamon, XFCE, etc. — usa config padrao
       await symlink(`${DOTFILES_DIR}/kitty/omarchy.conf`, envConf);
-      log.warn("Desktop nao detectado, usando config omarchy como padrao");
+      log.ok(`env: ${desktop} (usando config padrao)`);
       break;
   }
 

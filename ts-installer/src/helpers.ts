@@ -28,22 +28,40 @@ export async function getDistro(): Promise<Distro> {
 // Detecta desktop environment
 // ---------------------------------------------------------------------------
 
-export type Desktop = "omarchy" | "cosmic" | "unknown";
+export type Desktop =
+  | "omarchy"
+  | "cosmic"
+  | "hyprland"
+  | "sway"
+  | "gnome"
+  | "kde"
+  | "cinnamon"
+  | "xfce"
+  | "unknown";
 
 export async function getDesktop(): Promise<Desktop> {
-  if (
-    existsSync(`${HOME}/.config/omarchy`) ||
-    (await commandExists("hyprctl"))
-  ) {
+  // Omarchy: tem diretorio proprio
+  if (existsSync(`${HOME}/.config/omarchy`)) {
     return "omarchy";
   }
-  if (
-    process.env.XDG_CURRENT_DESKTOP === "COSMIC" ||
-    (await commandExists("cosmic-comp"))
-  ) {
-    return "cosmic";
-  }
+
+  // XDG_CURRENT_DESKTOP e a forma padrao de detectar DE
+  const xdg = (process.env.XDG_CURRENT_DESKTOP || "").toUpperCase();
+
+  if (xdg === "COSMIC" || (await commandExists("cosmic-comp"))) return "cosmic";
+  if (xdg.includes("GNOME")) return "gnome";
+  if (xdg.includes("KDE") || xdg.includes("PLASMA")) return "kde";
+  if (xdg.includes("CINNAMON") || xdg.includes("X-CINNAMON")) return "cinnamon";
+  if (xdg.includes("XFCE")) return "xfce";
+  if (xdg.includes("HYPRLAND") || (await commandExists("hyprctl"))) return "hyprland";
+  if (xdg.includes("SWAY") || (await commandExists("swaymsg"))) return "sway";
+
   return "unknown";
+}
+
+// DEs completos que ja trazem launcher, clipboard, screenshots, notificacoes, lock
+export function hasIntegratedDesktop(desktop: Desktop): boolean {
+  return ["omarchy", "cosmic", "gnome", "kde", "cinnamon", "xfce"].includes(desktop);
 }
 
 // ---------------------------------------------------------------------------
