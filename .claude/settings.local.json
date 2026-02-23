@@ -7,8 +7,6 @@
       "WebFetch(domain:raw.githubusercontent.com)",
       "WebFetch(domain:www.npmjs.com)",
       "WebFetch(domain:app.unpkg.com)",
-      "Bash(/bin/cat /home/belmante/Workspaces/cbdotfiles/ts-installer/node_modules/@inquirer/prompts/package.json | head -5)",
-      "Bash(git push)",
       "WebFetch(domain:omarchy.org)",
       "WebFetch(domain:learn.omacom.io)"
     ]
