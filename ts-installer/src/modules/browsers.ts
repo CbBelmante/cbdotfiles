@@ -30,7 +30,9 @@ const BROWSERS: IBrowser[] = [
           await pkgInstall("vivaldi");
           break;
         case "debian":
-          await $`curl -fsSL https://repo.vivaldi.com/archive/linux_signing_key.pub | sudo gpg --dearmor -o /usr/share/keyrings/vivaldi-browser.gpg`;
+          await $`curl -fsSL https://repo.vivaldi.com/archive/linux_signing_key.pub -o /tmp/vivaldi-key.pub`;
+          await $`sudo gpg --yes --dearmor -o /usr/share/keyrings/vivaldi-browser.gpg /tmp/vivaldi-key.pub`;
+          await $`rm -f /tmp/vivaldi-key.pub`;
           await $`echo "deb [signed-by=/usr/share/keyrings/vivaldi-browser.gpg] https://repo.vivaldi.com/archive/deb/ stable main" | sudo tee /etc/apt/sources.list.d/vivaldi.list > /dev/null`;
           await $`sudo apt update -qq`.quiet();
           await $`sudo apt install -y vivaldi-stable`;
@@ -54,7 +56,9 @@ const BROWSERS: IBrowser[] = [
           await pkgInstall("opera");
           break;
         case "debian":
-          await $`curl -fsSL https://deb.opera.com/archive.key | sudo gpg --dearmor -o /usr/share/keyrings/opera-browser.gpg`;
+          await $`curl -fsSL https://deb.opera.com/archive.key -o /tmp/opera-key.pub`;
+          await $`sudo gpg --yes --dearmor -o /usr/share/keyrings/opera-browser.gpg /tmp/opera-key.pub`;
+          await $`rm -f /tmp/opera-key.pub`;
           await $`echo "deb [signed-by=/usr/share/keyrings/opera-browser.gpg] https://deb.opera.com/opera-stable/ stable non-free" | sudo tee /etc/apt/sources.list.d/opera.list > /dev/null`;
           await $`sudo apt update -qq`.quiet();
           await $`sudo apt install -y opera-stable`;
@@ -112,15 +116,12 @@ REPO`;
           }
           break;
         case "debian":
-          await $`curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | sudo gpg --dearmor -o /usr/share/keyrings/google-chrome.gpg`;
-          await $`echo "deb [signed-by=/usr/share/keyrings/google-chrome.gpg] https://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list > /dev/null`;
-          await $`sudo apt update -qq`.quiet();
-          await $`sudo apt install -y google-chrome-stable`;
+          await $`curl -fsSL https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o /tmp/google-chrome.deb`;
+          await $`sudo apt install -y /tmp/google-chrome.deb`;
+          await $`rm -f /tmp/google-chrome.deb`;
           break;
         case "fedora":
-          await $`sudo dnf config-manager --add-repo https://dl.google.com/linux/chrome/rpm/stable/x86_64`;
-          await $`sudo rpm --import https://dl.google.com/linux/linux_signing_key.pub`;
-          await $`sudo dnf install -y google-chrome-stable`;
+          await $`sudo dnf install -y https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm`;
           break;
       }
     },
@@ -279,8 +280,9 @@ export const browsers: IModule = {
           } else {
             log.warn(`${browser.name}: instalacao pode ter falhado`);
           }
-        } catch {
-          log.warn(`Falha ao instalar ${browser.name}`);
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : String(err);
+          log.error(`Falha ao instalar ${browser.name}: ${msg}`);
         }
       }
     }
