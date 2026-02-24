@@ -110,7 +110,7 @@ export async function detectGPU(): Promise<GPU> {
 
 export async function commandExists(cmd: string): Promise<boolean> {
   try {
-    await $`command -v ${cmd}`.quiet();
+    await $`which ${cmd}`.quiet();
     return true;
   } catch {
     return false;

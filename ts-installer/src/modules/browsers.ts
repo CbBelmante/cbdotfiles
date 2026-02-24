@@ -115,11 +115,14 @@ REPO`;
             log.warn("Instale google-chrome via AUR (yay -S google-chrome)");
           }
           break;
-        case "debian":
-          await $`curl -fsSL https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o /tmp/google-chrome.deb`;
-          await $`sudo apt install -y /tmp/google-chrome.deb`;
-          await $`rm -f /tmp/google-chrome.deb`;
+        case "debian": {
+          const dl = await $`bash -c 'curl -fsSL https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o /tmp/google-chrome.deb'`.nothrow();
+          if (dl.exitCode !== 0) throw new Error("Falha ao baixar .deb do Chrome");
+          const inst = await $`sudo apt install -y /tmp/google-chrome.deb`.nothrow();
+          await $`rm -f /tmp/google-chrome.deb`.nothrow();
+          if (inst.exitCode !== 0) throw new Error(`apt install falhou (exit ${inst.exitCode})`);
           break;
+        }
         case "fedora":
           await $`sudo dnf install -y https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm`;
           break;
