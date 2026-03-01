@@ -93,6 +93,7 @@ Ao selecionar o modulo `browsers`, o instalador mostra checkbox dos navegadores 
 | 📊 `btop` | Config Btop (monitor de sistema) | ❌ Apenas symlink |
 | 📦 `apps` | LibreOffice + Sublime + VLC + Obsidian + Kdenlive + PeaZip + qBittorrent | ✅ Apps selecionados |
 | 🎮 `gaming` | Steam + Lutris + ProtonUp-Qt + MangoHud + Gamemode + Wine + Discord | ✅ Gaming tools |
+| 🖥️ `virtualization` | VirtualBox | ✅ VirtualBox + ext-pack |
 | ⌨️ `keybinds` | Gera e aplica keybinds (Hyprland/COSMIC) | ❌ Gera configs |
 | ⚡ `power` | Energia (suspend auto-detecta desktop/laptop) | ❌ Apenas gsettings |
 

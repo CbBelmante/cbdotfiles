@@ -10,6 +10,7 @@ import { keybinds } from "./keybinds";
 import { power } from "./power";
 import { gaming } from "./gaming";
 import { apps } from "./apps";
+import { virtualization } from "./virtualization";
 
 export interface IRunContext {
   overrides: Record<string, string>;
@@ -37,6 +38,7 @@ export const ALL_MODULES: IModule[] = [
   btop,
   apps,
   gaming,
+  virtualization,
   keybinds,
   power,
 ];
