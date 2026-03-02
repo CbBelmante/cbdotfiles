@@ -29,7 +29,9 @@ async function setupZsh() {
       log.add("Diretorio ~/.oh-my-zsh incompleto, reinstalando...");
       await $`rm -rf ${HOME}/.oh-my-zsh`;
     }
-    await $`sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc`;
+    await $`curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh -o /tmp/omz-install.sh`;
+    await $`sh /tmp/omz-install.sh --unattended --keep-zshrc`;
+    await $`rm -f /tmp/omz-install.sh`;
     log.ok("Oh My Zsh instalado");
   } else {
     log.ok("Oh My Zsh ja instalado");
@@ -101,7 +103,9 @@ async function setupNvm() {
 
   if (!existsSync(nvmDir) && !existsSync(nvmAlt)) {
     log.add("Instalando NVM...");
-    await $`curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash`;
+    await $`curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh -o /tmp/nvm-install.sh`;
+    await $`bash /tmp/nvm-install.sh`;
+    await $`rm -f /tmp/nvm-install.sh`;
   } else {
     log.ok("NVM ja instalado");
   }
@@ -143,7 +147,9 @@ async function setupCliTools() {
       cmd: "zoxide",
       packages: ["zoxide"],
       fallback: async () => {
-        await $`curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh`;
+        await $`curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh -o /tmp/zoxide-install.sh`;
+        await $`sh /tmp/zoxide-install.sh`;
+        await $`rm -f /tmp/zoxide-install.sh`;
       },
     },
     {

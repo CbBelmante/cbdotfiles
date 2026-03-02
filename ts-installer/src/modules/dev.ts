@@ -54,7 +54,9 @@ const DEV_TOOLS: IDevTool[] = [
       } else {
         await $`mkdir -p ${HOME}/.local/bin ${HOME}/.local/nvim`;
         log.add("Baixando Neovim do GitHub (latest stable)...");
-        await $`curl -sL https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz | tar xz --strip-components=1 -C ${HOME}/.local/nvim/`;
+        await $`curl -sL https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz -o /tmp/nvim.tar.gz`;
+        await $`tar xz --strip-components=1 -C ${HOME}/.local/nvim/ -f /tmp/nvim.tar.gz`;
+        await $`rm -f /tmp/nvim.tar.gz`;
         await $`ln -sf ${HOME}/.local/nvim/bin/nvim ${HOME}/.local/bin/nvim`;
         await $`chmod +x ${HOME}/.local/bin/nvim`;
       }
@@ -109,7 +111,9 @@ const DEV_TOOLS: IDevTool[] = [
         await pkgInstall("zellij");
       } else {
         await $`mkdir -p ${HOME}/.local/bin`;
-        await $`curl -sL https://github.com/zellij-org/zellij/releases/latest/download/zellij-x86_64-unknown-linux-musl.tar.gz | tar xz -C ${HOME}/.local/bin/`;
+        await $`curl -sL https://github.com/zellij-org/zellij/releases/latest/download/zellij-x86_64-unknown-linux-musl.tar.gz -o /tmp/zellij.tar.gz`;
+        await $`tar xz -C ${HOME}/.local/bin/ -f /tmp/zellij.tar.gz`;
+        await $`rm -f /tmp/zellij.tar.gz`;
         await $`chmod +x ${HOME}/.local/bin/zellij`;
       }
       log.ok("Zellij instalado");
@@ -156,14 +160,16 @@ const DEV_TOOLS: IDevTool[] = [
           await pkgInstall("code");
           break;
         case "debian":
-          await $`curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | sudo gpg --dearmor -o /usr/share/keyrings/microsoft.gpg`;
-          await $`echo "deb [signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/code stable main" | sudo tee /etc/apt/sources.list.d/vscode.list > /dev/null`;
+          await $`curl -fsSL https://packages.microsoft.com/keys/microsoft.asc -o /tmp/microsoft-key.asc`;
+          await $`sudo gpg --yes --dearmor -o /usr/share/keyrings/microsoft.gpg /tmp/microsoft-key.asc`;
+          await $`rm -f /tmp/microsoft-key.asc`;
+          await $`sudo bash -c 'echo "deb [signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list'`;
           await $`sudo apt update -qq`.quiet();
           await $`sudo apt install -y code`;
           break;
         case "fedora":
           await $`sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc`;
-          await $`echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" | sudo tee /etc/yum.repos.d/vscode.repo > /dev/null`;
+          await $`sudo bash -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'`;
           await $`sudo dnf install -y code`;
           break;
       }
@@ -254,6 +260,42 @@ const DEV_TOOLS: IDevTool[] = [
     },
   },
   {
+    id: "gh",
+    name: "GitHub CLI",
+    emoji: "🐙",
+    async isInstalled() {
+      return commandExists("gh");
+    },
+    async install(distro) {
+      if (await commandExists("gh")) {
+        const version = (await $`gh --version`.text()).split("\n")[0].trim();
+        log.ok(`GitHub CLI ja instalado: ${version}`);
+        return;
+      }
+
+      log.add("Instalando GitHub CLI...");
+      switch (distro) {
+        case "arch":
+          await pkgInstall("github-cli");
+          break;
+        case "debian": {
+          await $`curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg -o /tmp/gh-keyring.gpg`;
+          await $`sudo install -o root -g root -m 644 /tmp/gh-keyring.gpg /etc/apt/keyrings/githubcli-archive-keyring.gpg`;
+          await $`rm -f /tmp/gh-keyring.gpg`;
+          const arch = (await $`dpkg --print-architecture`.text()).trim();
+          await $`sudo bash -c 'echo "deb [arch=${arch} signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" > /etc/apt/sources.list.d/github-cli.list'`;
+          await $`sudo apt update -qq`.quiet();
+          await $`sudo apt install -y gh`;
+          break;
+        }
+        case "fedora":
+          await $`sudo dnf install -y gh`;
+          break;
+      }
+      if (await commandExists("gh")) log.ok("GitHub CLI instalado");
+    },
+  },
+  {
     id: "lazydocker",
     name: "LazyDocker",
     emoji: "🐳",
@@ -299,7 +341,7 @@ export const dev: IModule = {
   id: "dev",
   name: "Dev Tools",
   emoji: "🛠️",
-  description: "Neovim + Zellij + VS Code + GitKraken + LazyGit + LazyDocker",
+  description: "Neovim + Zellij + VS Code + GitKraken + GitHub CLI + LazyGit + LazyDocker",
   installsSoftware: true,
 
   async run(ctx: IRunContext) {

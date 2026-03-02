@@ -41,7 +41,8 @@ const GAMING_TOOLS: IGamingTool[] = [
           break;
         case "fedora":
           try {
-            await $`sudo dnf install -y https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm`.quiet();
+            const fedoraVer = (await $`rpm -E %fedora`.text()).trim();
+            await $`sudo dnf install -y https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-${fedoraVer}.noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-${fedoraVer}.noarch.rpm`.quiet();
           } catch {
             log.dim("RPM Fusion ja configurado");
           }

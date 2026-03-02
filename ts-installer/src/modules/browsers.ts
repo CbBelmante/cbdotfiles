@@ -33,7 +33,7 @@ const BROWSERS: IBrowser[] = [
           await $`curl -fsSL https://repo.vivaldi.com/archive/linux_signing_key.pub -o /tmp/vivaldi-key.pub`;
           await $`sudo gpg --yes --dearmor -o /usr/share/keyrings/vivaldi-browser.gpg /tmp/vivaldi-key.pub`;
           await $`rm -f /tmp/vivaldi-key.pub`;
-          await $`echo "deb [signed-by=/usr/share/keyrings/vivaldi-browser.gpg] https://repo.vivaldi.com/archive/deb/ stable main" | sudo tee /etc/apt/sources.list.d/vivaldi.list > /dev/null`;
+          await $`sudo bash -c 'echo "deb [signed-by=/usr/share/keyrings/vivaldi-browser.gpg] https://repo.vivaldi.com/archive/deb/ stable main" > /etc/apt/sources.list.d/vivaldi.list'`;
           await $`sudo apt update -qq`.quiet();
           await $`sudo apt install -y vivaldi-stable`;
           break;
@@ -59,20 +59,13 @@ const BROWSERS: IBrowser[] = [
           await $`curl -fsSL https://deb.opera.com/archive.key -o /tmp/opera-key.pub`;
           await $`sudo gpg --yes --dearmor -o /usr/share/keyrings/opera-browser.gpg /tmp/opera-key.pub`;
           await $`rm -f /tmp/opera-key.pub`;
-          await $`echo "deb [signed-by=/usr/share/keyrings/opera-browser.gpg] https://deb.opera.com/opera-stable/ stable non-free" | sudo tee /etc/apt/sources.list.d/opera.list > /dev/null`;
+          await $`sudo bash -c 'echo "deb [signed-by=/usr/share/keyrings/opera-browser.gpg] https://deb.opera.com/opera-stable/ stable non-free" > /etc/apt/sources.list.d/opera.list'`;
           await $`sudo apt update -qq`.quiet();
           await $`sudo apt install -y opera-stable`;
           break;
         case "fedora":
           await $`sudo rpm --import https://rpm.opera.com/rpmrepo.key`;
-          await $`sudo tee /etc/yum.repos.d/opera.repo > /dev/null << 'REPO'
-[opera]
-name=Opera packages
-baseurl=https://rpm.opera.com/rpm
-gpgcheck=1
-gpgkey=https://rpm.opera.com/rpmrepo.key
-enabled=1
-REPO`;
+          await $`sudo bash -c 'echo -e "[opera]\nname=Opera packages\nbaseurl=https://rpm.opera.com/rpm\ngpgcheck=1\ngpgkey=https://rpm.opera.com/rpmrepo.key\nenabled=1" > /etc/yum.repos.d/opera.repo'`;
           await $`sudo dnf install -y opera-stable`;
           break;
       }

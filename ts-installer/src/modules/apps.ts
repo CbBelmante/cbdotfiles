@@ -57,8 +57,10 @@ const APPS: IApp[] = [
           }
           break;
         case "debian":
-          await $`curl -fsSL https://download.sublimetext.com/sublimehq-pub.gpg | sudo gpg --dearmor -o /usr/share/keyrings/sublimehq.gpg`;
-          await $`echo "deb [signed-by=/usr/share/keyrings/sublimehq.gpg] https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list > /dev/null`;
+          await $`curl -fsSL https://download.sublimetext.com/sublimehq-pub.gpg -o /tmp/sublimehq-pub.gpg`;
+          await $`sudo gpg --yes --dearmor -o /usr/share/keyrings/sublimehq.gpg /tmp/sublimehq-pub.gpg`;
+          await $`rm -f /tmp/sublimehq-pub.gpg`;
+          await $`sudo bash -c 'echo "deb [signed-by=/usr/share/keyrings/sublimehq.gpg] https://download.sublimetext.com/ apt/stable/" > /etc/apt/sources.list.d/sublime-text.list'`;
           await $`sudo apt update -qq`.quiet();
           await $`sudo apt install -y sublime-text`;
           break;
@@ -109,7 +111,8 @@ const APPS: IApp[] = [
         case "fedora":
           // VLC precisa do RPM Fusion
           try {
-            await $`sudo dnf install -y https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm`.quiet();
+            const fedoraVer = (await $`rpm -E %fedora`.text()).trim();
+            await $`sudo dnf install -y https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-${fedoraVer}.noarch.rpm`.quiet();
           } catch {
             log.dim("RPM Fusion ja configurado");
           }
