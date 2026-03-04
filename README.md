@@ -88,7 +88,7 @@ Ao selecionar o modulo `browsers`, o instalador mostra checkbox dos navegadores 
 | 🔤 `fonts` | Fontes Nerd Font | ✅ Fontes |
 | 🎮 `drivers` | Drivers GPU (AMD/Intel/NVIDIA) + Bluetooth Mac | ✅ Mesa, VA-API, firmware |
 | 🌐 `browsers` | Navegadores (Vivaldi, Opera, Firefox, Chrome, Chromium) | ✅ Browsers selecionados |
-| 🛠️ `dev` | Neovim + Zellij + VS Code + GitKraken + LazyGit + LazyDocker | ✅ Dev tools selecionados |
+| 🛠️ `dev` | Neovim + Zellij + tmux + VS Code + GitKraken + LazyGit + LazyDocker | ✅ Dev tools selecionados |
 | 🖥️ `fastfetch` | Config Fastfetch (system info) | ❌ Apenas symlink |
 | 📊 `btop` | Config Btop (monitor de sistema) | ❌ Apenas symlink |
 | 📦 `apps` | LibreOffice + Sublime + VLC + Obsidian + Kdenlive + PeaZip + qBittorrent | ✅ Apps selecionados |
@@ -147,6 +147,9 @@ cbdotfiles/
 ├── zellij/
 │   ├── config.kdl                 # ⌨️ Keybinds e config principal
 │   └── CbWorkTemplate1.kdl       # 📐 Layout: nvim + 6 terminais
+├── tmux/
+│   ├── tmux.conf                  # ⚙️ Config tmux (catppuccin, vim nav, passthrough)
+│   └── CbWorkTemplate1.sh        # 📐 Layout equivalente ao Zellij
 ├── zsh/
 │   ├── .zshrc                     # 🐚 Config Zsh principal
 │   └── aliases.zsh                # 🔗 Aliases e funcoes (z-new, z-tab, etc)
@@ -188,6 +191,8 @@ cbdotfiles/
 ~/.config/kitty/env.conf              → cbdotfiles/kitty/{omarchy,cosmic}.conf
 ~/.config/kitty/local.conf            → cbdotfiles/local/kitty/kitty.conf (se existir)
 ~/.config/lazygit/config.yml          → cbdotfiles/lazygit/config.yml
+~/.tmux.conf                          → cbdotfiles/tmux/tmux.conf
+~/.markdownlint-cli2.yaml             → cbdotfiles/nvim/.markdownlint-cli2.yaml
 ~/.config/fastfetch/config.jsonc      → cbdotfiles/fastfetch/config.jsonc
 ~/.config/btop/btop.conf              → cbdotfiles/btop/btop.conf
 ```
@@ -249,17 +254,18 @@ Layout estilo VSCode com Neovim central e terminais ao redor:
 
 ### 🚀 Comandos Zellij Customizados
 
-#### Nova sessao (fora do Zellij)
+#### Abrir/reconectar sessao
 
 ```bash
-z-new <layout> <diretorio|alias>
+zj <layout> <diretorio|alias>
 
-z-new cbw1 mns                    # resolve alias mns -> ~/Workspaces/mnesis_frontend
-z-new cbw1 volan                  # resolve alias volan -> ~/Workspaces/volan_admin
-z-new cbw1 ~/projetos/meu-app    # caminho completo
+zj cbw1 mns                      # cria sessao "mnesis_frontend" ou reconecta se ja existe
+zj cbw1 volan                    # resolve alias volan -> ~/Workspaces/volan_admin
+zj cbw1 ~/projetos/meu-app      # caminho completo
 ```
 
-> Aceita qualquer alias de navegacao (`cd ...`) cadastrado no `aliases.zsh`. Sem alias, faz fallback para `~/Workspaces/<nome>`.
+> Se a sessao ja existe, reconecta automaticamente. Se nao, cria nova com o layout.
+> Aceita qualquer alias de navegacao (`cd ...`) cadastrado no `aliases.zsh`.
 
 #### Nova tab (dentro do Zellij)
 
@@ -270,6 +276,15 @@ z-tab cbw1 volan
 z-tab cbw1 cbadmin
 z-tab cbw1 radar
 ```
+
+#### Outros comandos
+
+| Comando | Acao |
+|---------|------|
+| `zjl` | Listar sessoes ativas |
+| `zja` | Attach na ultima sessao |
+| `zjk <nome>` | Matar sessao especifica |
+| `zjka` | Matar todas as sessoes |
 
 ### ⌨️ Atalhos do Zellij
 
@@ -459,16 +474,16 @@ O modulo `drivers` detecta o hardware e instala automaticamente:
 ## ➕ Adicionando Novos Layouts
 
 1. Crie o arquivo `.kdl` em `cbdotfiles/zellij/`
-2. Adicione o nome curto no `case` das funcoes `z-new` e `z-tab` no `aliases.zsh`:
+2. Adicione o nome curto no `case` das funcoes `zj` e `z-tab` no `aliases.zsh`:
 
 ```bash
 case "$layout" in
-    cbw1) layout="CbWorkTemplate1" ;;
-    cbw2) layout="CbWorkTemplate2" ;;  # novo
+    cbw1) layout_name="CbWorkTemplate1" ;;
+    cbw2) layout_name="CbWorkTemplate2" ;;  # novo
 esac
 ```
 
-3. Rode `cbdotUpdate` ou `./install.sh zellij`
+3. Rode `cbdotUpdate` ou `./install.sh dev`
 
 ## ➕ Adicionando Novos Modulos
 
@@ -499,6 +514,19 @@ export const nome: IModule = {
 
 3. Rode `./install.sh nome` para testar
 
+## ✏️ Plugins Neovim (customizados)
+
+Alem do LazyVim base, os seguintes plugins sao adicionados:
+
+| Plugin | Descricao |
+|--------|-----------|
+| `cb-headscale.nvim` | Headings markdown com fonte grande via Kitty OSC 66 (h1=3x, h2=2x) |
+| `render-markdown.nvim` | Renderiza markdown (bullets, headings, code, tabelas, checkboxes) |
+| `mini.map` | Minimap lateral (code overview) |
+| `markdownlint-cli2` | Linter de markdown (MD012/13/58/60 desabilitados) |
+
+> O `cb-headscale.nvim` so funciona no Kitty >= 0.40 direto (sem Zellij/tmux). O instalador instala Kitty do site oficial.
+
 ## 🛠️ Tecnologias
 
 ### Instalador
@@ -507,8 +535,9 @@ export const nome: IModule = {
 ### Ferramentas instaladas
 - **🐚 Zsh** + Oh My Zsh + Powerlevel10k
 - **🖥️ Zellij** - Multiplexador de terminal (Rust)
-- **✏️ Neovim** - Editor (LazyVim)
-- **🐱 Kitty** - Terminal emulator (config por ambiente)
+- **🪟 tmux** - Multiplexador alternativo (catppuccin, vim nav, TPM)
+- **✏️ Neovim** - Editor (LazyVim + cb-headscale.nvim)
+- **🐱 Kitty** >= 0.40 - Terminal emulator (instalado do site oficial)
 - **🌐 Vivaldi** / **Opera** - Browsers
 - **💻 VS Code** - Editor GUI
 - **🐙 GitKraken** - Git GUI

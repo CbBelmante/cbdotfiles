@@ -1,3 +1,9 @@
+-- So carrega se plugins.theme existir (Omarchy). No COSMIC nao existe.
+local theme_path = vim.fn.stdpath("config") .. "/lua/plugins/theme.lua"
+if vim.fn.filereadable(theme_path) == 0 then
+	return {}
+end
+
 return {
 	{
 		name = "theme-hotreload",

@@ -125,29 +125,55 @@ _resolve_dir() {
     echo "$HOME/Workspaces/$input"
 }
 
-# Nova sessao: z-new <layout> <diretorio|alias>
-# Ex: z-new cbw1 mns
-# Ex: z-new cbw1 ~/Workspaces/meu-projeto
-z-new() {
+# Abrir sessao: z <layout> <diretorio|alias>
+# Se sessao ja existe, reconecta. Se nao, cria nova.
+# Ex: z cbw1 mns
+# Ex: z cbw1 ~/Workspaces/meu-projeto
+zj() {
     local layout="$1"
     local dir="$2"
 
     if [[ -z "$layout" || -z "$dir" ]]; then
-        echo "Uso: z-new <layout> <diretorio|alias>"
-        echo "Ex:  z-new cbw1 mns"
-        echo "Ex:  z-new cbw1 volan"
-        echo "Ex:  z-new cbw1 ~/Workspaces/meu-projeto"
+        echo "Uso: zj <layout> <diretorio|alias>"
+        echo "Ex:  zj cbw1 mns"
+        echo "Ex:  zj cbw1 volan"
+        echo "Ex:  zj cbw1 ~/Workspaces/meu-projeto"
         return 1
     fi
 
     dir=$(_resolve_dir "$dir")
+    local session_name="$(basename "$dir")"
 
+    local layout_name
     case "$layout" in
-        cbw1) layout="CbWorkTemplate1" ;;
+        cbw1) layout_name="CbWorkTemplate1" ;;
+        *) layout_name="$layout" ;;
     esac
 
-    zellij --layout "$layout" options --default-cwd "$dir"
+    # Se sessao ja existe, reconecta. Senao, cria nova.
+    local sessions
+    sessions=$(zellij list-sessions --no-formatting --short 2>&1 || true)
+    if echo "$sessions" | grep -qx "$session_name" 2>/dev/null; then
+        zellij attach "$session_name"
+    else
+        cd "$dir" && zellij --new-session-with-layout "$layout_name" -s "$session_name"
+    fi
 }
+
+# Alias retrocompativel
+alias z-new='zj'
+
+# Listar sessoes
+alias zjl='zellij list-sessions'
+
+# Attach na ultima sessao
+alias zja='zellij attach'
+
+# Matar todas as sessoes
+alias zjka='zellij kill-all-sessions --yes && zellij delete-all-sessions --yes'
+
+# Matar sessao especifica: zjk <nome>
+alias zjk='zellij kill-session'
 
 # Nova tab dentro do Zellij: z-tab <layout> <diretorio|alias>
 # Ex: z-tab cbw1 mns
