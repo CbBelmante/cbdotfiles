@@ -130,6 +130,60 @@ const DEV_TOOLS: IDevTool[] = [
     },
   },
   {
+    id: "tmux",
+    name: "tmux",
+    emoji: "🪟",
+    async isInstalled() {
+      return commandExists("tmux");
+    },
+    async install(distro) {
+      if (await commandExists("tmux")) {
+        const version = (await $`tmux -V`.text()).trim();
+        log.ok(`tmux ja instalado: ${version}`);
+        return;
+      }
+
+      log.add("Instalando tmux...");
+      await pkgInstall("tmux");
+      if (await commandExists("tmux")) {
+        const version = (await $`tmux -V`.text()).trim();
+        log.ok(`tmux instalado: ${version}`);
+      } else {
+        log.warn("Falha ao instalar tmux");
+      }
+    },
+    async configure() {
+      // Symlink config
+      await symlink(
+        `${DOTFILES_DIR}/tmux/tmux.conf`,
+        `${HOME}/.tmux.conf`
+      );
+      log.ok("~/.tmux.conf -> cbdotfiles");
+
+      // Instalar TPM (Tmux Plugin Manager)
+      const tpmDir = `${HOME}/.tmux/plugins/tpm`;
+      if (!existsSync(tpmDir)) {
+        log.add("Instalando TPM (Tmux Plugin Manager)...");
+        await $`git clone https://github.com/tmux-plugins/tpm ${tpmDir}`.nothrow();
+        if (existsSync(tpmDir)) {
+          log.ok("TPM instalado");
+        } else {
+          log.warn("Falha ao instalar TPM — instale manualmente");
+        }
+      } else {
+        log.ok("TPM ja instalado");
+      }
+
+      // Instalar plugins via TPM
+      const tpmInstall = `${tpmDir}/bin/install_plugins`;
+      if (existsSync(tpmInstall)) {
+        log.add("Instalando plugins do tmux...");
+        await $`${tpmInstall}`.nothrow();
+        log.ok("Plugins do tmux instalados");
+      }
+    },
+  },
+  {
     id: "zellij",
     name: "Zellij",
     emoji: "🖥️",

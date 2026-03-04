@@ -173,6 +173,40 @@ z-tab() {
 }
 
 # ───────────────────────────────────────────────────────────────────────────────
+# tmux
+# ───────────────────────────────────────────────────────────────────────────────
+# Nova sessao: t-new <layout> <diretorio|alias>
+# Ex: t-new cbw1 mns
+# Ex: t-new cbw1 ~/Workspaces/meu-projeto
+t-new() {
+    local layout="$1"
+    local dir="$2"
+
+    if [[ -z "$layout" || -z "$dir" ]]; then
+        echo "Uso: t-new <layout> <diretorio|alias>"
+        echo "Ex:  t-new cbw1 mns"
+        echo "Ex:  t-new cbw1 volan"
+        echo "Ex:  t-new cbw1 ~/Workspaces/meu-projeto"
+        return 1
+    fi
+
+    dir=$(_resolve_dir "$dir")
+
+    local script
+    case "$layout" in
+        cbw1) script="$HOME/Workspaces/cbdotfiles/tmux/CbWorkTemplate1.sh" ;;
+        *) echo "Layout desconhecido: $layout"; return 1 ;;
+    esac
+
+    bash "$script" "$dir"
+}
+
+# Aliases rapidos
+alias ta='tmux attach'
+alias tl='tmux list-sessions'
+alias tk='tmux kill-session -t'
+
+# ───────────────────────────────────────────────────────────────────────────────
 # CbDotfiles
 # ───────────────────────────────────────────────────────────────────────────────
 # Instalar dotfiles: abre o menu interativo (Padrao / Custom)
