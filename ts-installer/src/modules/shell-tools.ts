@@ -1,7 +1,7 @@
 import { $ } from "bun";
 import { existsSync } from "fs";
 import type { IModule } from "./index";
-import { DOTFILES_DIR, HOME, commandExists, getDesktop, getDistro, pkgInstall, symlink } from "../helpers";
+import { DOTFILES_DIR, HOME, commandExists, getDesktop, getDistro, pkgInstall, symlink, versionGte } from "../helpers";
 import { log } from "../log";
 
 // ---------------------------------------------------------------------------
@@ -212,17 +212,46 @@ async function setupCliTools() {
 async function setupKitty() {
   log.title("kitty", "Kitty");
 
-  // Instalar kitty se nao instalado
-  if (!(await commandExists("kitty"))) {
-    log.add("Instalando Kitty...");
-    if (await pkgInstall("kitty")) {
-      log.ok("Kitty instalado");
+  const KITTY_MIN_VERSION = "0.40.0";
+  const kittyApp = `${HOME}/.local/kitty.app/bin/kitty`;
+
+  // Checa se ja tem kitty >= 0.40 (instalado via site oficial)
+  let needsInstall = true;
+  if (existsSync(kittyApp)) {
+    const ver = (await $`${kittyApp} --version`.text().catch(() => "")).match(/\d+\.\d+\.\d+/)?.[0];
+    if (ver && versionGte(ver, KITTY_MIN_VERSION)) {
+      log.ok(`Kitty ja instalado: v${ver} (>= ${KITTY_MIN_VERSION})`);
+      needsInstall = false;
+    } else {
+      log.warn(`Kitty v${ver || "?"} encontrado, precisa >= ${KITTY_MIN_VERSION}`);
     }
-  } else {
-    const version = (
-      await $`kitty --version`.text().catch(() => "kitty")
-    ).trim();
-    log.ok(`Kitty ja instalado: ${version}`);
+  } else if (await commandExists("kitty")) {
+    const ver = (await $`kitty --version`.text().catch(() => "")).match(/\d+\.\d+\.\d+/)?.[0];
+    if (ver && versionGte(ver, KITTY_MIN_VERSION)) {
+      log.ok(`Kitty ja instalado: v${ver} (>= ${KITTY_MIN_VERSION})`);
+      needsInstall = false;
+    } else {
+      log.warn(`Kitty v${ver || "?"} do sistema, precisa >= ${KITTY_MIN_VERSION}`);
+    }
+  }
+
+  if (needsInstall) {
+    log.add("Instalando Kitty do site oficial (latest)...");
+    await $`curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin launch=n`.nothrow();
+    if (existsSync(kittyApp)) {
+      const ver = (await $`${kittyApp} --version`.text().catch(() => "")).match(/\d+\.\d+\.\d+/)?.[0];
+      log.ok(`Kitty v${ver} instalado`);
+    } else {
+      log.warn("Falha ao instalar Kitty — instale manualmente: https://sw.kovidgoyal.net/kitty/");
+    }
+  }
+
+  // Symlinks pra ~/.local/bin (garante que 'kitty' aponta pro novo)
+  await $`mkdir -p ${HOME}/.local/bin`.nothrow();
+  if (existsSync(kittyApp)) {
+    await $`ln -sf ${kittyApp} ${HOME}/.local/bin/kitty`.nothrow();
+    await $`ln -sf ${HOME}/.local/kitty.app/bin/kitten ${HOME}/.local/bin/kitten`.nothrow();
+    log.ok("~/.local/bin/kitty -> kitty.app (latest)");
   }
 
   // Symlink config base

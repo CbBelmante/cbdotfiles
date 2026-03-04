@@ -90,6 +90,43 @@ const DEV_TOOLS: IDevTool[] = [
 
       await $`ln -sfn ${DOTFILES_DIR}/nvim ${nvimConfig}`;
       log.ok("~/.config/nvim -> cbdotfiles");
+
+      // markdownlint-cli2 config (desabilita MD013/MD058)
+      await symlink(
+        `${DOTFILES_DIR}/nvim/.markdownlint-cli2.yaml`,
+        `${HOME}/.markdownlint-cli2.yaml`
+      );
+      log.ok("~/.markdownlint-cli2.yaml -> cbdotfiles");
+
+      // luarocks para image.nvim (magick rock)
+      if (!(await commandExists("luarocks"))) {
+        log.add("Instalando luarocks (dependencia do image.nvim)...");
+        await pkgInstall("luarocks");
+        if (await commandExists("luarocks")) {
+          log.ok("luarocks instalado");
+        } else {
+          log.warn("Falha ao instalar luarocks — instale manualmente");
+        }
+      } else {
+        log.ok("luarocks ja instalado");
+      }
+
+      // Mermaid CLI (mmdc) para diagram.nvim renderizar Mermaid no terminal
+      if (!(await commandExists("mmdc"))) {
+        if (await commandExists("npm")) {
+          log.add("Instalando mermaid-cli (mmdc)...");
+          await $`npm install -g @mermaid-js/mermaid-cli`.nothrow();
+          if (await commandExists("mmdc")) {
+            log.ok("mmdc instalado (mermaid-cli)");
+          } else {
+            log.warn("Falha ao instalar mmdc — instale manualmente: npm i -g @mermaid-js/mermaid-cli");
+          }
+        } else {
+          log.warn("npm nao encontrado — mmdc nao instalado (instale Node primeiro via shell-tools)");
+        }
+      } else {
+        log.ok("mmdc ja instalado (mermaid-cli)");
+      }
     },
   },
   {
