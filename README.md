@@ -547,6 +547,21 @@ Alem do LazyVim base, os seguintes plugins sao adicionados:
 | `bufferline.nvim` | Tabs com icone de fechar corrigido |
 | `markdownlint-cli2` | Linter de markdown (MD012/13/58/60 desabilitados) |
 
+### 🎨 Tema do Neovim
+
+Dois temas de fundo disponiveis em `nvim/lua/config/nvim-theme.lua`:
+
+| Tema | Estilo |
+|------|--------|
+| `blue` | Azul escuro |
+| `gray` | Cinza estilo WebStorm |
+
+Para trocar, edite o arquivo e mude:
+
+```lua
+local current = "gray"  -- "blue" ou "gray"
+```
+
 > O `cb-headscale.nvim` so funciona no Kitty >= 0.40 direto (sem Zellij/tmux). O instalador instala Kitty do site oficial.
 
 ## 🛠️ Tecnologias
