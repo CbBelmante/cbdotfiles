@@ -141,6 +141,11 @@ zj() {
         return 1
     fi
 
+    if [[ -n "$ZELLIJ" ]]; then
+        echo "Ja esta dentro do Zellij! Use zj-tab pra abrir nova tab ou saia primeiro."
+        return 1
+    fi
+
     dir=$(_resolve_dir "$dir")
     local session_name="$(basename "$dir")"
 
@@ -162,31 +167,31 @@ zj() {
 }
 
 # Alias retrocompativel
-alias z-new='zj'
+alias zj-new='zj'
 
 # Listar sessoes
-alias zjl='zellij list-sessions'
+alias zj-l='zellij list-sessions'
 
 # Attach na ultima sessao
-alias zja='zellij attach'
+alias zj-a='zellij attach'
 
 # Matar todas as sessoes
-alias zjka='zellij kill-all-sessions --yes && zellij delete-all-sessions --yes'
+alias zj-ka='zellij kill-all-sessions --yes && zellij delete-all-sessions --yes'
 
-# Matar sessao especifica: zjk <nome>
-alias zjk='zellij kill-session'
+# Matar sessao especifica: zj-k <nome>
+alias zj-k='zellij kill-session'
 
-# Nova tab dentro do Zellij: z-tab <layout> <diretorio|alias>
-# Ex: z-tab cbw1 mns
-z-tab() {
+# Nova tab dentro do Zellij: zj-tab <layout> <diretorio|alias>
+# Ex: zj-tab cbw1 mns
+zj-tab() {
     local layout="$1"
     local dir="$2"
 
     if [[ -z "$layout" || -z "$dir" ]]; then
-        echo "Uso: z-tab <layout> <diretorio|alias>"
-        echo "Ex:  z-tab cbw1 mns"
-        echo "Ex:  z-tab cbw1 volan"
-        echo "Ex:  z-tab cbw1 ~/Workspaces/meu-projeto"
+        echo "Uso: zj-tab <layout> <diretorio|alias>"
+        echo "Ex:  zj-tab cbw1 mns"
+        echo "Ex:  zj-tab cbw1 volan"
+        echo "Ex:  zj-tab cbw1 ~/Workspaces/meu-projeto"
         return 1
     fi
 

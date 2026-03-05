@@ -146,13 +146,14 @@ cbdotfiles/
 │   └── .gitconfig                 # Configuracao global do Git
 ├── zellij/
 │   ├── config.kdl                 # ⌨️ Keybinds e config principal
-│   └── CbWorkTemplate1.kdl       # 📐 Layout: nvim + 6 terminais
+│   ├── CbWorkTemplate1.kdl       # 📐 Layout: nvim + 6 terminais
+│   └── CbWorkTemplate2.kdl       # 📐 Layout: nvim + 4 terminais
 ├── tmux/
 │   ├── tmux.conf                  # ⚙️ Config tmux (catppuccin, vim nav, passthrough)
 │   └── CbWorkTemplate1.sh        # 📐 Layout equivalente ao Zellij
 ├── zsh/
 │   ├── .zshrc                     # 🐚 Config Zsh principal
-│   └── aliases.zsh                # 🔗 Aliases e funcoes (z-new, z-tab, etc)
+│   └── aliases.zsh                # 🔗 Aliases e funcoes (zj-new, zj-tab, etc)
 ├── nvim/                          # ✏️ Config completa Neovim (LazyVim)
 │   ├── init.lua
 │   ├── lua/
@@ -252,6 +253,24 @@ Layout estilo VSCode com Neovim central e terminais ao redor:
 └──────────────────────────────────────────────────┘
 ```
 
+### 📐 CbWorkTemplate2 (`cbw2`)
+
+Layout mais limpo com Neovim central e 4 terminais:
+
+```
+┌──────────────────────────────────────────────────┐
+│                    tab-bar                        │
+├─────────┬────────────────────────┬───────────────┤
+│         │                        │               │
+│terminal │        nvim            │  terminal     │
+│  (20%)  │       (editor)         │   (20%)       │
+│         ├───────────┬────────────┤               │
+│         │ terminal  │  terminal  │               │
+├─────────┴───────────┴────────────┴───────────────┤
+│                   status-bar                      │
+└──────────────────────────────────────────────────┘
+```
+
 ### 🚀 Comandos Zellij Customizados
 
 #### Abrir/reconectar sessao
@@ -270,21 +289,21 @@ zj cbw1 ~/projetos/meu-app      # caminho completo
 #### Nova tab (dentro do Zellij)
 
 ```bash
-z-tab <layout> <diretorio|alias>
+zj-tab <layout> <diretorio|alias>
 
-z-tab cbw1 volan
-z-tab cbw1 cbadmin
-z-tab cbw1 radar
+zj-tab cbw1 volan
+zj-tab cbw1 cbadmin
+zj-tab cbw1 radar
 ```
 
 #### Outros comandos
 
 | Comando | Acao |
 |---------|------|
-| `zjl` | Listar sessoes ativas |
-| `zja` | Attach na ultima sessao |
-| `zjk <nome>` | Matar sessao especifica |
-| `zjka` | Matar todas as sessoes |
+| `zj-l` | Listar sessoes ativas |
+| `zj-a` | Attach na ultima sessao |
+| `zj-k <nome>` | Matar sessao especifica |
+| `zj-ka` | Matar todas as sessoes |
 
 ### ⌨️ Atalhos do Zellij
 
@@ -474,7 +493,7 @@ O modulo `drivers` detecta o hardware e instala automaticamente:
 ## ➕ Adicionando Novos Layouts
 
 1. Crie o arquivo `.kdl` em `cbdotfiles/zellij/`
-2. Adicione o nome curto no `case` das funcoes `zj` e `z-tab` no `aliases.zsh`:
+2. Adicione o nome curto no `case` das funcoes `zj` e `zj-tab` no `aliases.zsh`:
 
 ```bash
 case "$layout" in
@@ -523,6 +542,9 @@ Alem do LazyVim base, os seguintes plugins sao adicionados:
 | `cb-headscale.nvim` | Headings markdown com fonte grande via Kitty OSC 66 (h1=3x, h2=2x) |
 | `render-markdown.nvim` | Renderiza markdown (bullets, headings, code, tabelas, checkboxes) |
 | `mini.map` | Minimap lateral (code overview) |
+| `nvim-notify` | Notificacoes com animacao (fade + slide) |
+| `vim-move` | Move linhas/blocos com Alt+j/k |
+| `bufferline.nvim` | Tabs com icone de fechar corrigido |
 | `markdownlint-cli2` | Linter de markdown (MD012/13/58/60 desabilitados) |
 
 > O `cb-headscale.nvim` so funciona no Kitty >= 0.40 direto (sem Zellij/tmux). O instalador instala Kitty do site oficial.
