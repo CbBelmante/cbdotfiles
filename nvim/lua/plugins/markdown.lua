@@ -1,5 +1,4 @@
 return {
-	-- Headings bonitos, bold, com icones e background
 	{
 		"MeanderingProgrammer/render-markdown.nvim",
 		ft = "markdown",
@@ -45,39 +44,6 @@ return {
 				enabled = true,
 				style = "full",
 			},
-		},
-	},
-
-	-- Renderiza Mermaid/PlantUML como imagem inline no terminal (Kitty)
-	{
-		"3rd/diagram.nvim",
-		ft = "markdown",
-		dependencies = {
-			"3rd/image.nvim",
-		},
-		opts = {
-			renderer_options = {
-				mermaid = {
-					theme = "dark",
-				},
-			},
-		},
-	},
-
-	-- Backend de imagem para Kitty terminal
-	{
-		"3rd/image.nvim",
-		lazy = true,
-		opts = {
-			backend = "kitty",
-			integrations = {
-				markdown = {
-					enabled = true,
-					sizing_strategy = "auto",
-				},
-			},
-			max_width = 100,
-			max_height = 30,
 		},
 	},
 }

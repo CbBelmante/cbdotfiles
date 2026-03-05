@@ -1,1 +1,0 @@
-/home/cbbelmante/.config/omarchy/current/theme/neovim.lua

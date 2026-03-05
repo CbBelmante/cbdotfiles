@@ -1,6 +1,8 @@
--- So carrega se plugins.theme existir (Omarchy). No COSMIC nao existe.
+-- So carrega se plugins.theme existir e for legivel (Omarchy).
+-- No COSMIC o symlink existe mas aponta pra arquivo inexistente.
 local theme_path = vim.fn.stdpath("config") .. "/lua/plugins/theme.lua"
-if vim.fn.filereadable(theme_path) == 0 then
+local stat = vim.uv.fs_stat(theme_path)
+if not stat then
 	return {}
 end
 

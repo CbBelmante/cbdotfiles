@@ -98,6 +98,28 @@ const DEV_TOOLS: IDevTool[] = [
       );
       log.ok("~/.markdownlint-cli2.yaml -> cbdotfiles");
 
+      // ImageMagick 7 (dependencia do image.nvim — v6 nao suporta SVG inline)
+      if (await commandExists("magick")) {
+        log.ok("ImageMagick 7 (magick) ja instalado");
+      } else {
+        const distro = await getDistro();
+        if (distro === "arch") {
+          log.add("Instalando ImageMagick...");
+          await pkgInstall("imagemagick");
+        } else {
+          // Debian/Ubuntu/Pop: apt instala v6, precisa baixar v7 binario
+          log.add("Instalando ImageMagick 7 (AppImage)...");
+          await $`mkdir -p ${HOME}/.local/bin`;
+          await $`curl -sL https://imagemagick.org/archive/binaries/magick -o ${HOME}/.local/bin/magick`.nothrow();
+          await $`chmod +x ${HOME}/.local/bin/magick`.nothrow();
+        }
+        if (await commandExists("magick")) {
+          log.ok("ImageMagick 7 instalado");
+        } else {
+          log.warn("Falha ao instalar ImageMagick 7 — instale manualmente");
+        }
+      }
+
       // luarocks para image.nvim (magick rock)
       if (!(await commandExists("luarocks"))) {
         log.add("Instalando luarocks (dependencia do image.nvim)...");
@@ -109,6 +131,20 @@ const DEV_TOOLS: IDevTool[] = [
         }
       } else {
         log.ok("luarocks ja instalado");
+      }
+
+      // luarocks magick (binding Lua para ImageMagick)
+      if (await commandExists("luarocks")) {
+        try {
+          const rocks = await $`luarocks --local list magick 2>/dev/null`.text();
+          if (!rocks.includes("magick")) {
+            log.add("Instalando luarocks magick...");
+            await $`luarocks --local --lua-version=5.1 install magick`.nothrow();
+          }
+          log.ok("luarocks magick instalado");
+        } catch {
+          log.warn("Falha ao instalar luarocks magick — instale manualmente: luarocks --local --lua-version=5.1 install magick");
+        }
       }
 
       // Mermaid CLI (mmdc) para diagram.nvim renderizar Mermaid no terminal

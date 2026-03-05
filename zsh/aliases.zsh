@@ -147,6 +147,7 @@ zj() {
     local layout_name
     case "$layout" in
         cbw1) layout_name="CbWorkTemplate1" ;;
+        cbw2) layout_name="CbWorkTemplate2" ;;
         *) layout_name="$layout" ;;
     esac
 
@@ -193,6 +194,7 @@ z-tab() {
 
     case "$layout" in
         cbw1) layout="CbWorkTemplate1" ;;
+        cbw2) layout="CbWorkTemplate2" ;;
     esac
 
     zellij action new-tab --layout "$layout" --cwd "$dir"

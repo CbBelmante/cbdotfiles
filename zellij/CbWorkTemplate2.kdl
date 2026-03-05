@@ -1,0 +1,38 @@
+layout {
+    tab_template name="ui" {
+        pane size=1 borderless=true {
+            plugin location="zellij:tab-bar"
+        }
+        children
+        pane size=1 borderless=true {
+            plugin location="zellij:status-bar"
+        }
+    }
+
+    new_tab_template {
+        pane size=1 borderless=true {
+            plugin location="zellij:tab-bar"
+        }
+        pane
+        pane size=1 borderless=true {
+            plugin location="zellij:status-bar"
+        }
+    }
+
+    ui {
+        pane split_direction="vertical" {
+            // Esquerda
+            pane name="terminal" size="20%"
+            // Centro - nvim + 2 terminais embaixo
+            pane split_direction="horizontal" size="60%" {
+                pane command="nvim" name="editor" size="75%"
+                pane split_direction="vertical" size="25%" {
+                    pane name="terminal"
+                    pane name="terminal"
+                }
+            }
+            // Direita
+            pane name="terminal" size="20%"
+        }
+    }
+}
