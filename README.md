@@ -545,6 +545,9 @@ Alem do LazyVim base, os seguintes plugins sao adicionados:
 | `nvim-notify` | Notificacoes com animacao (fade + slide) |
 | `vim-move` | Move linhas/blocos com Alt+j/k |
 | `bufferline.nvim` | Tabs com icone de fechar corrigido |
+| `dropbar.nvim` | Breadcrumbs no topo (arquivo > classe > funcao) estilo VS Code |
+| `nvim-navic` | Contexto do codigo via LSP (dentro de qual funcao/classe) |
+| `claudecode.nvim` | Integracao Claude Code com diff no Neovim via WebSocket |
 | `markdownlint-cli2` | Linter de markdown (MD012/13/58/60 desabilitados) |
 
 ### 🎨 Tema do Neovim
