@@ -164,32 +164,7 @@ const DEV_TOOLS: IDevTool[] = [
         log.ok("mmdc ja instalado (mermaid-cli)");
       }
 
-      // neovim-remote (nvr) — diff tool pro Claude Code dentro do Neovim
-      if (!(await commandExists("nvr"))) {
-        log.add("Instalando neovim-remote (nvr)...");
-        if (!(await commandExists("pip3"))) {
-          const distro = await getDistro();
-          if (distro === "arch") {
-            await pkgInstall("python-pip");
-          } else {
-            await pkgInstall("python3-pip");
-          }
-        }
-        await $`pip3 install --user --break-system-packages neovim-remote`.nothrow();
-        if (await commandExists("nvr")) {
-          log.ok("neovim-remote (nvr) instalado");
-        } else {
-          log.warn("Falha ao instalar nvr — instale manualmente: pip3 install --user neovim-remote");
-        }
-      } else {
-        log.ok("neovim-remote (nvr) ja instalado");
-      }
-
-      // Claude Code diffTool config
-      if (await commandExists("claude")) {
-        await $`claude config set diffTool "nvr -d"`.nothrow();
-        log.ok("Claude Code diffTool configurado (nvr -d)");
-      }
+      // claudecode.nvim cuida da integracao Claude Code <-> Neovim via WebSocket
     },
   },
   {

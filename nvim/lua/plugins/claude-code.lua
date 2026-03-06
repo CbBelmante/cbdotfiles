@@ -1,5 +1,7 @@
 return {
-	"greggh/claude-code.nvim",
-	dependencies = { "nvim-lua/plenary.nvim" },
+	"coder/claudecode.nvim",
 	config = true,
+	keys = {
+		{ "<leader>ac", "<cmd>ClaudeCodeStart<cr>", desc = "Start Claude Code connection" },
+	},
 }

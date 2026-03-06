@@ -96,16 +96,7 @@ fi
 # ───────────────────────────────────────────────────────────────────────────────
 # Ferramentas
 # ───────────────────────────────────────────────────────────────────────────────
-n() {
-    # Abre nvim com server name baseado no diretorio (pra nvr achar)
-    local server="/tmp/nvim-$(basename "$PWD").sock"
-    if [ "$#" -eq 0 ]; then
-        nvim --listen "$server" .
-    else
-        nvim --listen "$server" "$@"
-    fi
-}
-export NVIM_LISTEN_ADDRESS="/tmp/nvim-default.sock"
+n() { if [ "$#" -eq 0 ]; then nvim .; else nvim "$@"; fi; }
 alias d='docker'
 
 open() {
