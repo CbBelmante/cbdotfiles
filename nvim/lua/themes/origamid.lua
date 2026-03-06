@@ -125,9 +125,9 @@ function M.setup()
 	hl("Constant", { fg = c.blue })
 
 	-- ─── Treesitter ───────────────────────────────────────
-	hl("@variable", { fg = c.blue2 })
+	hl("@variable", { fg = c.fg })
 	hl("@variable.builtin", { fg = c.blue })
-	hl("@variable.parameter", { fg = c.blue2 })
+	hl("@variable.parameter", { fg = c.fg })
 	hl("@variable.member", { fg = c.yellow })
 	hl("@constant", { fg = c.blue })
 	hl("@constant.builtin", { fg = c.blue })
@@ -252,6 +252,16 @@ function M.setup()
 	-- ─── Dropbar ──────────────────────────────────────────
 	hl("DropBarCurrentContext", { bg = c.bg3 })
 	hl("DropBarIconUISeparator", { fg = c.muted })
+
+	-- ─── Render Markdown ──────────────────────────────────
+	hl("RenderMarkdownCode", { bg = "#292929" })
+	hl("RenderMarkdownCodeInline", { bg = "#292929" })
+	hl("RenderMarkdownH1Bg", { bg = "#2a2a10" })
+	hl("RenderMarkdownH2Bg", { bg = "#1a2a1a" })
+	hl("RenderMarkdownH3Bg", { bg = "#1a1a2a" })
+	hl("RenderMarkdownH4Bg", { bg = "#2a1a2a" })
+	hl("RenderMarkdownH5Bg", { bg = "#1a2a2a" })
+	hl("RenderMarkdownH6Bg", { bg = "#2a2a2a" })
 end
 
 return M
