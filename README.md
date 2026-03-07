@@ -548,22 +548,43 @@ Alem do LazyVim base, os seguintes plugins sao adicionados:
 | `dropbar.nvim` | Breadcrumbs no topo (arquivo > classe > funcao) estilo VS Code |
 | `nvim-navic` | Contexto do codigo via LSP (dentro de qual funcao/classe) |
 | `claudecode.nvim` | Integracao Claude Code com diff no Neovim via WebSocket |
+| `git-blame.nvim` | Blame inline na linha atual (estilo GitLens) |
+| `harpoon` | Marca e pula entre arquivos frequentes (`<leader>1-4`) |
+| `todo-comments.nvim` | Destaca e lista TODO/FIXME/HACK no codigo |
+| `noice.nvim` | Cmdline popup e notificacoes com visual polido |
 | `markdownlint-cli2` | Linter de markdown (MD012/13/58/60 desabilitados) |
 
 ### 🎨 Tema do Neovim
 
-Dois temas de fundo disponiveis em `nvim/lua/config/nvim-theme.lua`:
+Tema padrao: **Origamid** (port do VS Code theme do Andre Rafael).
+
+Temas disponiveis (troque com `:colorscheme <nome>`):
 
 | Tema | Estilo |
 |------|--------|
-| `blue` | Azul escuro |
-| `gray` | Cinza estilo WebStorm |
+| `origamid` | Escuro com verde/amarelo/azul (padrao) |
+| `moonlight` | Azul escuro |
+| `catppuccin` | Pastel escuro |
+| `gruvbox` | Retro warm |
+| `tokyonight` | Azul moderno |
+| `kanagawa` | Inspirado em arte japonesa |
+| `rose-pine` | Tons suaves |
+| `nightfox` | Escuro contrastado |
+| `onedark` | Estilo Atom |
+| `vscode` | Estilo VS Code |
 
-Para trocar, edite o arquivo e mude:
+Para mudar o padrao, edite `nvim/lua/plugins/themes.lua`:
 
 ```lua
-local current = "gray"  -- "blue" ou "gray"
+{ "LazyVim/LazyVim", opts = { colorscheme = "catppuccin" } },
 ```
+
+### ⚙️ Opcoes extras
+
+| Opcao | Descricao |
+|-------|-----------|
+| Auto-save | Salva automaticamente ao trocar buffer |
+| Spell check | Desativado globalmente (inclusive markdown) |
 
 > O `cb-headscale.nvim` so funciona no Kitty >= 0.40 direto (sem Zellij/tmux). O instalador instala Kitty do site oficial.
 
