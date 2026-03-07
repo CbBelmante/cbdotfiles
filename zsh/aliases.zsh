@@ -262,3 +262,10 @@ cbdotReinstall() {
     rm -f "$dotdir/local/.modules"
     "$dotdir/install.sh" && source ~/.zshrc
 }
+
+# Recriar symlinks: refaz todos os links sem reinstalar nada
+cbdotResymlink() {
+    local dotdir="$HOME/Workspaces/cbdotfiles"
+    local bun="${BUN_INSTALL:-$HOME/.bun}/bin/bun"
+    cd "$dotdir/ts-installer" && "$bun" run src/resymlink.ts && source ~/.zshrc
+}
