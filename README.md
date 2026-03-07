@@ -579,12 +579,33 @@ Para mudar o padrao, edite `nvim/lua/plugins/themes.lua`:
 { "LazyVim/LazyVim", opts = { colorscheme = "catppuccin" } },
 ```
 
+### ⌨️ Atalhos customizados do Neovim
+
+Overrides pra evitar conflito com Zellij e melhorar produtividade:
+
+| Atalho | Acao | Obs |
+|--------|------|-----|
+| `Tab` | Alternar entre paineis (neo-tree / editor) | Substitui `Ctrl+w w` |
+| `<leader>p` | Buscar arquivo (Telescope) | Substitui `Ctrl+p` (conflita com Zellij) |
+| `<leader>e` | Abrir/fechar neo-tree | Padrao LazyVim |
+| `<leader>ff` | Buscar arquivo (Telescope) | Padrao LazyVim |
+| `<leader>ac` | Iniciar Claude Code | claudecode.nvim |
+| `<leader>ha` | Marcar arquivo no Harpoon | harpoon |
+| `<leader>hh` | Menu do Harpoon | harpoon |
+| `<leader>1-4` | Pular pro arquivo 1-4 do Harpoon | harpoon |
+| `<leader>st` | Buscar TODO/FIXME/HACK | todo-comments |
+| `<leader>gb` | Git blame da linha | gitsigns (LazyVim) |
+| `Alt+j/k` | Mover linha/bloco | vim-move |
+
+> Neo-tree abre automaticamente ao iniciar o Neovim.
+
 ### ⚙️ Opcoes extras
 
 | Opcao | Descricao |
 |-------|-----------|
-| Auto-save | Salva automaticamente ao trocar buffer |
+| Auto-save | Salva automaticamente ao trocar buffer (exceto diffs do Claude) |
 | Spell check | Desativado globalmente (inclusive markdown) |
+| Neo-tree auto-open | Sidebar sempre visivel ao abrir |
 
 > O `cb-headscale.nvim` so funciona no Kitty >= 0.40 direto (sem Zellij/tmux). O instalador instala Kitty do site oficial.
 
