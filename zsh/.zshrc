@@ -143,3 +143,6 @@ export XDG_DATA_DIRS="$XDG_DATA_DIRS:/var/lib/flatpak/exports/share:$HOME/.local
 
 # bun completions
 [ -s "/home/cbbelmante/.bun/_bun" ] && source "/home/cbbelmante/.bun/_bun"
+
+# opencode
+export PATH=/home/belmante/.opencode/bin:$PATH
