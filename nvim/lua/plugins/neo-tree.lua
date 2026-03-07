@@ -1,5 +1,15 @@
 return {
 	"nvim-neo-tree/neo-tree.nvim",
+	lazy = false,
+	init = function()
+		vim.api.nvim_create_autocmd("VimEnter", {
+			callback = function()
+				vim.defer_fn(function()
+					pcall(vim.cmd, "Neotree show")
+				end, 200)
+			end,
+		})
+	end,
 	opts = {
 		default_component_configs = {
 			icon = {
