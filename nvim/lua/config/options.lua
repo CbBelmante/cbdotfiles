@@ -3,4 +3,14 @@
 -- Add any additional options here
 vim.opt.relativenumber = false
 vim.opt.spell = false
-vim.o.autowriteall = true
+-- Auto-save ao trocar buffer (exceto diffs do Claude Code)
+vim.api.nvim_create_autocmd("BufLeave", {
+  callback = function(ev)
+    local buf = ev.buf
+    if vim.bo[buf].modified and vim.bo[buf].buftype ~= "acwrite" and vim.bo[buf].modifiable then
+      vim.api.nvim_buf_call(buf, function()
+        vim.cmd("silent! write")
+      end)
+    end
+  end,
+})

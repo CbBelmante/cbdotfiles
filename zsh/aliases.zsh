@@ -33,7 +33,9 @@ alias ....='cd ../../..'
 # ───────────────────────────────────────────────────────────────────────────────
 # Enhanced ls with icons (eza)
 # ───────────────────────────────────────────────────────────────────────────────
-alias ls='eza --icons'
+alias ls='eza --tree --level=2 --icons'
+alias ls3='eza --tree --level=3 --icons'
+alias lsl='eza --icons'
 alias ll='eza -lah --icons'
 alias la='eza -A --icons'
 alias tree='eza --tree --level=3 --icons'
