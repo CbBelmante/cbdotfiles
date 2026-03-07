@@ -141,8 +141,10 @@ export XDG_DATA_DIRS="$XDG_DATA_DIRS:/var/lib/flatpak/exports/share:$HOME/.local
 [[ -f ~/.config/cb/aliases.zsh ]] && source ~/.config/cb/aliases.zsh
 [[ -f ~/.config/cb/local.zsh ]]   && source ~/.config/cb/local.zsh
 
-# bun completions
-[ -s "/home/cbbelmante/.bun/_bun" ] && source "/home/cbbelmante/.bun/_bun"
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+[ -s "$BUN_INSTALL/_bun" ] && source "$BUN_INSTALL/_bun"
 
 # opencode
 export PATH=/home/belmante/.opencode/bin:$PATH
