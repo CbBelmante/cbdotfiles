@@ -6,11 +6,12 @@ import { log } from "../log";
 interface IFont {
   name: string;
   archPkg: string;
+  fcName: string;
 }
 
 const FONTS: IFont[] = [
-  { name: "CaskaydiaMono", archPkg: "ttf-cascadia-mono-nerd" },
-  { name: "JetBrainsMono", archPkg: "ttf-jetbrains-mono-nerd" },
+  { name: "CascadiaMono", archPkg: "ttf-cascadia-mono-nerd", fcName: "CaskaydiaMono" },
+  { name: "JetBrainsMono", archPkg: "ttf-jetbrains-mono-nerd", fcName: "JetBrainsMono" },
 ];
 
 export const fonts: IModule = {
@@ -29,8 +30,8 @@ export const fonts: IModule = {
       // Checa se ja esta instalada
       try {
         const fcList = await $`fc-list`.text();
-        if (fcList.toLowerCase().includes(font.name.toLowerCase())) {
-          log.ok(`${font.name} Nerd Font ja instalada`);
+        if (fcList.toLowerCase().includes(font.fcName.toLowerCase())) {
+          log.ok(`${font.fcName} Nerd Font ja instalada`);
           continue;
         }
       } catch {}
