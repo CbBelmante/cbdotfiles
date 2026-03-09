@@ -7,7 +7,10 @@ vim.opt.spell = false
 vim.api.nvim_create_autocmd("BufLeave", {
   callback = function(ev)
     local buf = ev.buf
-    if vim.bo[buf].modified and vim.bo[buf].buftype ~= "acwrite" and vim.bo[buf].modifiable then
+    local bt = vim.bo[buf].buftype
+    local name = vim.api.nvim_buf_get_name(buf)
+    local is_claude_diff = bt == "acwrite" or bt == "nofile" or name:match("NEW FILE") or name:match("claudecode")
+    if vim.bo[buf].modified and not is_claude_diff and vim.bo[buf].modifiable then
       vim.api.nvim_buf_call(buf, function()
         vim.cmd("silent! write")
       end)
