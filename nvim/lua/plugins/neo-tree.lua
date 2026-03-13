@@ -11,6 +11,13 @@ return {
 		})
 	end,
 	opts = {
+		filesystem = {
+			filtered_items = {
+				visible = true,
+				hide_dotfiles = false,
+				hide_gitignored = false,
+			},
+		},
 		default_component_configs = {
 			icon = {
 				folder_open = "\u{f07c}",
