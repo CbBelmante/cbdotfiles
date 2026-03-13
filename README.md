@@ -88,7 +88,7 @@ Ao selecionar o modulo `browsers`, o instalador mostra checkbox dos navegadores 
 | 🔤 `fonts` | Fontes Nerd Font | ✅ Fontes |
 | 🎮 `drivers` | Drivers GPU (AMD/Intel/NVIDIA) + Bluetooth Mac | ✅ Mesa, VA-API, firmware |
 | 🌐 `browsers` | Navegadores (Vivaldi, Opera, Firefox, Chrome, Chromium) | ✅ Browsers selecionados |
-| 🛠️ `dev` | Neovim + Zellij + tmux + VS Code + GitKraken + LazyGit + LazyDocker | ✅ Dev tools selecionados |
+| 🛠️ `dev` | Neovim + Zellij + tmux + VS Code + GitKraken + GitHub CLI + LazyGit + LazyDocker + Docker | ✅ Dev tools selecionados |
 | 🖥️ `fastfetch` | Config Fastfetch (system info) | ❌ Apenas symlink |
 | 📊 `btop` | Config Btop (monitor de sistema) | ❌ Apenas symlink |
 | 📦 `apps` | LibreOffice + Sublime + VLC + Obsidian + Kdenlive + PeaZip + qBittorrent | ✅ Apps selecionados |
@@ -129,7 +129,7 @@ cbdotfiles/
 │           ├── fonts.ts           # 🔤 Nerd Fonts
 │           ├── drivers.ts         # 🎮 GPU + Bluetooth (detecta hardware)
 │           ├── browsers.ts        # 🌐 Vivaldi, Opera, Firefox, Chrome, Chromium
-│           ├── dev.ts             # 🛠️ Neovim, Zellij, VS Code, GitKraken, LazyGit, LazyDocker
+│           ├── dev.ts             # 🛠️ Neovim, Zellij, VS Code, GitKraken, GitHub CLI, LazyGit, LazyDocker, Docker
 │           ├── fastfetch.ts       # 🖥️ System info
 │           ├── btop.ts            # 📊 Monitor de sistema
 │           ├── apps.ts            # 📦 LibreOffice, Sublime, VLC, Obsidian...

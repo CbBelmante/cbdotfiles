@@ -460,6 +460,76 @@ const DEV_TOOLS: IDevTool[] = [
       log.ok("LazyDocker instalado");
     },
   },
+  {
+    id: "docker",
+    name: "Docker",
+    emoji: "🐋",
+    async isInstalled() {
+      return commandExists("docker");
+    },
+    async install(distro) {
+      if (await commandExists("docker")) {
+        const version = (await $`docker --version`.text()).trim();
+        log.ok(`Docker ja instalado: ${version}`);
+        return;
+      }
+
+      log.add("Instalando Docker...");
+      switch (distro) {
+        case "arch":
+          await pkgInstall("docker", "docker-compose");
+          break;
+        case "debian": {
+          // Dependencias
+          await $`sudo apt install -y ca-certificates curl`;
+          await $`sudo install -m 0755 -d /etc/apt/keyrings`;
+
+          // GPG key
+          await $`curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /tmp/docker-key.asc`;
+          await $`sudo gpg --yes --dearmor -o /etc/apt/keyrings/docker.gpg /tmp/docker-key.asc`;
+          await $`rm -f /tmp/docker-key.asc`;
+          await $`sudo chmod a+r /etc/apt/keyrings/docker.gpg`;
+
+          // Repo (detecta codename: ubuntu ou debian)
+          const codename = (await $`bash -c '. /etc/os-release && echo $VERSION_CODENAME'`.text()).trim();
+          const id = (await $`bash -c '. /etc/os-release && echo $ID'`.text()).trim();
+          // Pop!_OS usa Ubuntu como base
+          const baseId = id === "pop" ? "ubuntu" : id;
+          const baseCodename = codename || (await $`bash -c '. /etc/os-release && echo $UBUNTU_CODENAME'`.text()).trim();
+
+          await $`sudo bash -c 'echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/${baseId} ${baseCodename} stable" > /etc/apt/sources.list.d/docker.list'`;
+          await $`sudo apt update -qq`.quiet();
+          await $`sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin`;
+          break;
+        }
+        case "fedora":
+          await $`sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo`;
+          await $`sudo dnf install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin`;
+          break;
+      }
+
+      // Adiciona usuario ao grupo docker (sem precisar sudo)
+      try {
+        await $`sudo groupadd docker`.nothrow();
+        await $`sudo usermod -aG docker ${process.env.USER}`;
+        log.ok("Usuario adicionado ao grupo docker (efetivo no proximo login)");
+      } catch {}
+
+      // Habilita e inicia o servico
+      try {
+        await $`sudo systemctl enable docker`;
+        await $`sudo systemctl start docker`;
+        log.ok("Docker servico habilitado e iniciado");
+      } catch {
+        log.warn("Falha ao iniciar servico Docker — inicie manualmente: sudo systemctl start docker");
+      }
+
+      if (await commandExists("docker")) {
+        const version = (await $`docker --version`.text()).trim();
+        log.ok(`Docker instalado: ${version}`);
+      }
+    },
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -470,7 +540,7 @@ export const dev: IModule = {
   id: "dev",
   name: "Dev Tools",
   emoji: "🛠️",
-  description: "Neovim + Zellij + VS Code + GitKraken + GitHub CLI + LazyGit + LazyDocker",
+  description: "Neovim + Zellij + VS Code + GitKraken + GitHub CLI + LazyGit + LazyDocker + Docker",
   installsSoftware: true,
 
   async run(ctx: IRunContext) {
