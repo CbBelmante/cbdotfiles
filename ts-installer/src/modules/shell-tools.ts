@@ -2,7 +2,7 @@ import { $ } from "bun";
 import { existsSync } from "fs";
 import type { IModule } from "./index";
 import { DOTFILES_DIR, HOME, commandExists, getDesktop, getDistro, pkgInstall, symlink, versionGte } from "../helpers";
-import { log } from "../log";
+import { log, tracker } from "../log";
 
 // ---------------------------------------------------------------------------
 // Zsh + Oh My Zsh + plugins
@@ -16,9 +16,11 @@ async function setupZsh() {
     log.add("Instalando zsh...");
     await pkgInstall("zsh");
     log.ok("Zsh instalado");
+    tracker.installed("Zsh");
   } else {
     const version = (await $`zsh --version`.text()).trim();
     log.ok(`Zsh ja instalado: ${version}`);
+    tracker.skipped("Zsh");
   }
 
   // Oh My Zsh
@@ -33,8 +35,10 @@ async function setupZsh() {
     await $`sh /tmp/omz-install.sh --unattended --keep-zshrc`;
     await $`rm -f /tmp/omz-install.sh`;
     log.ok("Oh My Zsh instalado");
+    tracker.installed("Oh My Zsh");
   } else {
     log.ok("Oh My Zsh ja instalado");
+    tracker.skipped("Oh My Zsh");
   }
 
   // Powerlevel10k
@@ -44,8 +48,10 @@ async function setupZsh() {
   if (!existsSync(p10kDir)) {
     log.add("Instalando Powerlevel10k...");
     await $`git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${p10kDir}`;
+    tracker.installed("Powerlevel10k");
   } else {
     log.ok("Powerlevel10k ja instalado");
+    tracker.skipped("Powerlevel10k");
   }
 
   // Plugins
@@ -59,8 +65,10 @@ async function setupZsh() {
     if (!existsSync(pluginDir)) {
       log.add(`Instalando ${plugin.name}...`);
       await $`git clone ${plugin.repo} ${pluginDir}`;
+      tracker.installed(plugin.name);
     } else {
       log.ok(`${plugin.name} ja instalado`);
+      tracker.skipped(plugin.name);
     }
   }
 
@@ -89,6 +97,8 @@ async function setupZsh() {
     await symlink(localAliases, `${HOME}/.config/cb/local.zsh`);
     log.ok("~/.config/cb/local.zsh -> local override");
   }
+
+  tracker.configured("zsh configs");
 }
 
 // ---------------------------------------------------------------------------
@@ -106,8 +116,10 @@ async function setupNvm() {
     await $`curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh -o /tmp/nvm-install.sh`;
     await $`bash /tmp/nvm-install.sh`;
     await $`rm -f /tmp/nvm-install.sh`;
+    tracker.installed("NVM");
   } else {
     log.ok("NVM ja instalado");
+    tracker.skipped("NVM");
   }
 
   log.ok("NVM instalado. Para instalar Node LTS:");
@@ -123,6 +135,7 @@ async function setupGit() {
 
   await symlink(`${DOTFILES_DIR}/git/.gitconfig`, `${HOME}/.gitconfig`);
   log.ok("~/.gitconfig -> cbdotfiles");
+  tracker.configured("git");
 }
 
 // ---------------------------------------------------------------------------
@@ -188,8 +201,10 @@ async function setupCliTools() {
         await pkgInstall(...tool.packages);
       }
       log.ok(`${tool.name} instalado`);
+      tracker.installed(tool.name);
     } else {
       log.ok(`${tool.name} ja instalado`);
+      tracker.skipped(tool.name);
     }
   }
 
@@ -222,6 +237,7 @@ async function setupKitty() {
     if (ver && versionGte(ver, KITTY_MIN_VERSION)) {
       log.ok(`Kitty ja instalado: v${ver} (>= ${KITTY_MIN_VERSION})`);
       needsInstall = false;
+      tracker.skipped("Kitty");
     } else {
       log.warn(`Kitty v${ver || "?"} encontrado, precisa >= ${KITTY_MIN_VERSION}`);
     }
@@ -230,6 +246,7 @@ async function setupKitty() {
     if (ver && versionGte(ver, KITTY_MIN_VERSION)) {
       log.ok(`Kitty ja instalado: v${ver} (>= ${KITTY_MIN_VERSION})`);
       needsInstall = false;
+      tracker.skipped("Kitty");
     } else {
       log.warn(`Kitty v${ver || "?"} do sistema, precisa >= ${KITTY_MIN_VERSION}`);
     }
@@ -237,12 +254,16 @@ async function setupKitty() {
 
   if (needsInstall) {
     log.add("Instalando Kitty do site oficial (latest)...");
-    await $`curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin launch=n`.nothrow();
+    await $`curl -sSL https://sw.kovidgoyal.net/kitty/installer.sh -o /tmp/kitty-installer.sh`.nothrow();
+    await $`sh /tmp/kitty-installer.sh launch=n`.nothrow();
+    await $`rm -f /tmp/kitty-installer.sh`.nothrow();
     if (existsSync(kittyApp)) {
       const ver = (await $`${kittyApp} --version`.text().catch(() => "")).match(/\d+\.\d+\.\d+/)?.[0];
       log.ok(`Kitty v${ver} instalado`);
+      tracker.installed("Kitty");
     } else {
       log.warn("Falha ao instalar Kitty — instale manualmente: https://sw.kovidgoyal.net/kitty/");
+      tracker.warning("Kitty");
     }
   }
 
@@ -299,6 +320,8 @@ async function setupKitty() {
     await symlink(localKitty, `${HOME}/.config/kitty/local.conf`);
     log.ok("~/.config/kitty/local.conf -> local override");
   }
+
+  tracker.configured("kitty configs");
 }
 
 // ---------------------------------------------------------------------------

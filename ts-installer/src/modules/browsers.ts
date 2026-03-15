@@ -2,7 +2,7 @@ import { $ } from "bun";
 import { select } from "@inquirer/prompts";
 import type { IModule, IRunContext } from "./index";
 import { checkboxWithAll, commandExists, getDistro, pkgInstall } from "../helpers";
-import { log } from "../log";
+import { log, tracker } from "../log";
 
 // ---------------------------------------------------------------------------
 // Browser definitions
@@ -246,6 +246,7 @@ export const browsers: IModule = {
       if (await isInstalled(b)) {
         log.ok(`${b.emoji} ${b.name} ja instalado`);
         installed.push(b);
+        tracker.skipped(b.name);
       } else {
         available.push(b);
       }
@@ -273,12 +274,15 @@ export const browsers: IModule = {
           if (await isInstalled(browser)) {
             log.ok(`${browser.name} instalado`);
             installed.push(browser);
+            tracker.installed(browser.name);
           } else {
             log.warn(`${browser.name}: instalacao pode ter falhado`);
+            tracker.warning(browser.name);
           }
         } catch (err) {
           const msg = err instanceof Error ? err.message : String(err);
           log.error(`Falha ao instalar ${browser.name}: ${msg}`);
+          tracker.warning(browser.name);
         }
       }
     }

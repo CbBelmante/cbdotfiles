@@ -11,7 +11,7 @@ import {
   symlink,
   versionGte,
 } from "../helpers";
-import { log } from "../log";
+import { log, tracker } from "../log";
 
 // ---------------------------------------------------------------------------
 // Dev tool definitions
@@ -621,6 +621,7 @@ export const dev: IModule = {
       if (await tool.isInstalled()) {
         log.ok(`${tool.emoji} ${tool.name} ja instalado`);
         installed.push(tool);
+        tracker.skipped(tool.name);
       } else {
         available.push(tool);
       }
@@ -647,11 +648,14 @@ export const dev: IModule = {
           await tool.install(distro);
           if (await tool.isInstalled()) {
             installed.push(tool);
+            tracker.installed(tool.name);
           } else {
             log.warn(`${tool.name}: instalacao pode ter falhado`);
+            tracker.warning(tool.name);
           }
         } catch {
           log.warn(`Falha ao instalar ${tool.name}`);
+          tracker.warning(tool.name);
         }
       }
     }
@@ -661,8 +665,10 @@ export const dev: IModule = {
       if (tool.configure && (await tool.isInstalled())) {
         try {
           await tool.configure();
+          tracker.configured(tool.name);
         } catch {
           log.warn(`Falha ao configurar ${tool.name}`);
+          tracker.warning(tool.name);
         }
       }
     }

@@ -11,7 +11,7 @@ import {
   loadSavedModules,
   saveSelectedModules,
 } from "./helpers";
-import { log, showHeader, showSummary, type IModuleStatus } from "./log";
+import { log, showHeader, showSummary, tracker, type IModuleStatus } from "./log";
 
 // ---------------------------------------------------------------------------
 // CLI args
@@ -198,12 +198,15 @@ async function main() {
   const ctx: IRunContext = { overrides, isAll: runAll };
 
   for (const mod of selectedModules) {
+    tracker.start(mod.id);
     try {
       await mod.run(ctx);
+      tracker.setStatus(mod.id, "ok");
       results.push({ name: mod.id, status: "ok" });
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       console.error(`  x [${mod.id}] ${msg}`);
+      tracker.setStatus(mod.id, "erro");
       results.push({ name: mod.id, status: "erro" });
     }
   }

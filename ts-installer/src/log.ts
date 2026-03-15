@@ -7,6 +7,84 @@ const BOLD = "\x1b[1m";
 const DIM = "\x1b[2m";
 const NC = "\x1b[0m";
 
+// ---------------------------------------------------------------------------
+// Tracker: coleta o que cada modulo fez pra mostrar na tabela final
+// ---------------------------------------------------------------------------
+
+export interface IModuleResult {
+  name: string;
+  status: IModuleStatus;
+  installed: string[];
+  configured: string[];
+  skipped: string[];
+  warnings: string[];
+}
+
+const moduleResults: Map<string, IModuleResult> = new Map();
+let currentModule: string | null = null;
+
+function getOrCreate(id: string): IModuleResult {
+  if (!moduleResults.has(id)) {
+    moduleResults.set(id, {
+      name: id,
+      status: "ok",
+      installed: [],
+      configured: [],
+      skipped: [],
+      warnings: [],
+    });
+  }
+  return moduleResults.get(id)!;
+}
+
+export const tracker = {
+  /** Define o modulo ativo (chamado pelo install.ts antes de cada mod.run) */
+  start(id: string) {
+    currentModule = id;
+    getOrCreate(id);
+  },
+
+  /** Registra algo que foi instalado */
+  installed(item: string) {
+    if (currentModule) getOrCreate(currentModule).installed.push(item);
+  },
+
+  /** Registra algo que foi configurado (symlink, config gerado, etc.) */
+  configured(item: string) {
+    if (currentModule) getOrCreate(currentModule).configured.push(item);
+  },
+
+  /** Registra algo que ja existia / foi pulado */
+  skipped(item: string) {
+    if (currentModule) getOrCreate(currentModule).skipped.push(item);
+  },
+
+  /** Registra um aviso */
+  warning(item: string) {
+    if (currentModule) getOrCreate(currentModule).warnings.push(item);
+  },
+
+  /** Marca status do modulo */
+  setStatus(id: string, status: IModuleStatus) {
+    getOrCreate(id).status = status;
+  },
+
+  /** Retorna todos os resultados na ordem de execucao */
+  getResults(): IModuleResult[] {
+    return Array.from(moduleResults.values());
+  },
+
+  /** Limpa tudo */
+  clear() {
+    moduleResults.clear();
+    currentModule = null;
+  },
+};
+
+// ---------------------------------------------------------------------------
+// Log (output em tempo real durante a instalacao)
+// ---------------------------------------------------------------------------
+
 export const log = {
   ok: (msg: string) => console.log(`  ${GREEN}+${NC} ${msg}`),
   add: (msg: string) => console.log(`  ${CYAN}+${NC} ${msg}`),
@@ -51,10 +129,54 @@ export type IModuleStatus = "ok" | "skipped" | "erro";
 export function showSummary(
   results: Array<{ name: string; status: IModuleStatus }>
 ) {
+  const tracked = tracker.getResults();
+
+  // Calcula largura dinamica da coluna "Detalhes"
+  const detailLines: string[] = [];
+  for (const r of results) {
+    const t = tracked.find((t) => t.name === r.name);
+    detailLines.push(buildDetail(t));
+  }
+  const maxDetail = Math.max(20, ...detailLines.map((d) => stripAnsi(d).length));
+  const detailCol = Math.min(maxDetail, 52); // limita pra nao explodir
+
+  const modCol = 16;
+  const statusCol = 8;
+
+  const line = (m: number, s: number, d: number) =>
+    `${"─".repeat(m)}┬${"─".repeat(s)}┬${"─".repeat(d)}`;
+
+  console.log();
+  console.log(`  ${BOLD}┌${line(modCol, statusCol, detailCol + 2)}┐${NC}`);
+  console.log(
+    `  ${BOLD}│${NC} ${"Modulo".padEnd(modCol - 2)} ${BOLD}│${NC} ${"Status".padEnd(statusCol - 2)} ${BOLD}│${NC} ${"Detalhes".padEnd(detailCol)} ${BOLD}│${NC}`
+  );
+  console.log(`  ${BOLD}├${"─".repeat(modCol)}┼${"─".repeat(statusCol)}┼${"─".repeat(detailCol + 2)}┤${NC}`);
+
+  for (let i = 0; i < results.length; i++) {
+    const r = results[i];
+    const statusStr =
+      r.status === "ok"
+        ? `${GREEN}ok${NC}`
+        : r.status === "skipped"
+          ? `${DIM}skip${NC}`
+          : `${RED}erro${NC}`;
+
+    const detail = detailLines[i];
+    const detailVisible = stripAnsi(detail);
+    const detailPadded = detail + " ".repeat(Math.max(0, detailCol - detailVisible.length));
+
+    console.log(
+      `  ${BOLD}│${NC} ${r.name.padEnd(modCol - 2)} ${BOLD}│${NC} ${statusStr}${" ".repeat(Math.max(0, statusCol - 2 - stripAnsi(statusStr).length))} ${BOLD}│${NC} ${detailPadded} ${BOLD}│${NC}`
+    );
+  }
+
+  console.log(`  ${BOLD}└${"─".repeat(modCol)}┴${"─".repeat(statusCol)}┴${"─".repeat(detailCol + 2)}┘${NC}`);
+
+  // Contadores
   let okCount = 0;
   let skippedCount = 0;
   let errorCount = 0;
-
   for (const r of results) {
     if (r.status === "ok") okCount++;
     else if (r.status === "skipped") skippedCount++;
@@ -62,26 +184,8 @@ export function showSummary(
   }
 
   console.log();
-  console.log(`  ${BOLD}┌───────────────┬─────────────┐${NC}`);
-  console.log(`  ${BOLD}│ Modulo        │ Status      │${NC}`);
-  console.log(`  ${BOLD}├───────────────┼─────────────┤${NC}`);
-
-  for (const r of results) {
-    const statusStr =
-      r.status === "ok"
-        ? `${GREEN} ok${NC}`
-        : r.status === "skipped"
-          ? `${DIM} skipped${NC}`
-          : `${RED} erro${NC}`;
-    console.log(
-      `  ${BOLD}│${NC} ${r.name.padEnd(13)} ${BOLD}│${NC} ${statusStr}  ${BOLD}│${NC}`
-    );
-  }
-
-  console.log(`  ${BOLD}└───────────────┴─────────────┘${NC}`);
-  console.log();
   console.log(
-    `    ${GREEN} ${okCount} ok${NC}   ${DIM} ${skippedCount} skipped${NC}   ${RED} ${errorCount} erro(s)${NC}`
+    `    ${GREEN}${okCount} ok${NC}   ${DIM}${skippedCount} skipped${NC}   ${RED}${errorCount} erro(s)${NC}`
   );
 
   console.log();
@@ -106,4 +210,40 @@ export function showSummary(
   console.log();
   console.log(`  ${DIM}Rode:${NC} ${BOLD}source ~/.zshrc${NC}`);
   console.log();
+}
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function stripAnsi(s: string): string {
+  return s.replace(/\x1b\[[0-9;]*m/g, "");
+}
+
+function buildDetail(t: IModuleResult | undefined): string {
+  if (!t) return `${DIM}—${NC}`;
+
+  const parts: string[] = [];
+
+  if (t.installed.length > 0) {
+    parts.push(`${GREEN}+${t.installed.length} instalado${t.installed.length > 1 ? "s" : ""}${NC} ${DIM}(${t.installed.join(", ")})${NC}`);
+  }
+
+  if (t.configured.length > 0) {
+    parts.push(`${CYAN}${t.configured.length} config${NC}`);
+  }
+
+  if (t.skipped.length > 0) {
+    parts.push(`${DIM}${t.skipped.length} ja ok${NC}`);
+  }
+
+  if (t.warnings.length > 0) {
+    parts.push(`${YELLOW}${t.warnings.length} aviso${t.warnings.length > 1 ? "s" : ""}${NC}`);
+  }
+
+  if (parts.length === 0) {
+    return `${DIM}apenas config${NC}`;
+  }
+
+  return parts.join("  ");
 }

@@ -1,6 +1,6 @@
 import type { IModule } from "./index";
 import { DOTFILES_DIR, HOME, commandExists, pkgInstall, symlink } from "../helpers";
-import { log } from "../log";
+import { log, tracker } from "../log";
 import { $ } from "bun";
 
 export const btop: IModule = {
@@ -17,9 +17,11 @@ export const btop: IModule = {
       log.add("Instalando Btop...");
       await pkgInstall("btop");
       log.ok("Btop instalado");
+      tracker.installed("Btop");
     } else {
       const version = (await $`btop --version`.text().catch(() => "btop")).trim();
       log.ok(`Btop ja instalado: ${version}`);
+      tracker.skipped("Btop");
     }
 
     await symlink(
@@ -27,5 +29,6 @@ export const btop: IModule = {
       `${HOME}/.config/btop/btop.conf`
     );
     log.ok("~/.config/btop/btop.conf -> cbdotfiles");
+    tracker.configured("btop");
   },
 };
