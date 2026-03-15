@@ -64,7 +64,7 @@ No modo **Custom**, selecione os modulos com checkbox:
 ? Selecione os modulos para instalar:
   ◻ 🐚 shell-tools    Zsh + NVM + Git + CLI tools
   ◻ 🛠️ dev            Neovim + Zellij + VS Code + LazyGit...
-  ◻ 🐱 kitty          Config Kitty + override por ambiente
+  ◻ 🖥️ desktop-tools  Wofi + clipboard + screenshots...
   ...
 ```
 
@@ -88,7 +88,8 @@ Ao selecionar o modulo `browsers`, o instalador mostra checkbox dos navegadores 
 | 🔤 `fonts` | Fontes Nerd Font | ✅ Fontes |
 | 🎮 `drivers` | Drivers GPU (AMD/Intel/NVIDIA) + Bluetooth Mac | ✅ Mesa, VA-API, firmware |
 | 🌐 `browsers` | Navegadores (Vivaldi, Opera, Firefox, Chrome, Chromium) | ✅ Browsers selecionados |
-| 🛠️ `dev` | Neovim + Zellij + tmux + VS Code + GitKraken + GitHub CLI + LazyGit + LazyDocker + Docker | ✅ Dev tools selecionados |
+| 🖥️ `desktop-tools` | Ferramentas de desktop (wofi, clipboard, screenshots, notificacoes) | ✅ Apenas em tiling WMs |
+| 🛠️ `dev` | Neovim + Zellij + tmux + VS Code + GitKraken + GitHub CLI + LazyGit + Tauri Dev + LazyDocker + Docker | ✅ Dev tools selecionados |
 | 🖥️ `fastfetch` | Config Fastfetch (system info) | ❌ Apenas symlink |
 | 📊 `btop` | Config Btop (monitor de sistema) | ❌ Apenas symlink |
 | 📦 `apps` | LibreOffice + Sublime + VLC + Obsidian + Kdenlive + PeaZip + qBittorrent | ✅ Apps selecionados |
@@ -129,7 +130,8 @@ cbdotfiles/
 │           ├── fonts.ts           # 🔤 Nerd Fonts
 │           ├── drivers.ts         # 🎮 GPU + Bluetooth (detecta hardware)
 │           ├── browsers.ts        # 🌐 Vivaldi, Opera, Firefox, Chrome, Chromium
-│           ├── dev.ts             # 🛠️ Neovim, Zellij, VS Code, GitKraken, GitHub CLI, LazyGit, LazyDocker, Docker
+│           ├── desktop-tools.ts   # 🖥️ Wofi, clipboard, screenshots (tiling WMs)
+│           ├── dev.ts             # 🛠️ Neovim, Zellij, VS Code, GitKraken, GitHub CLI, LazyGit, Tauri Dev, LazyDocker, Docker
 │           ├── fastfetch.ts       # 🖥️ System info
 │           ├── btop.ts            # 📊 Monitor de sistema
 │           ├── apps.ts            # 📦 LibreOffice, Sublime, VLC, Obsidian...
