@@ -500,14 +500,15 @@ const DEV_TOOLS: IDevTool[] = [
           await pkgInstall(
             "libwebkit2gtk-4.1-dev", "build-essential", "curl", "wget",
             "file", "libxdo-dev", "libssl-dev", "libgtk-3-dev",
-            "libayatana-appindicator3-dev", "librsvg2-dev", "patchelf"
+            "libsoup-3.0-dev", "libayatana-appindicator3-dev",
+            "librsvg2-dev", "patchelf"
           );
           break;
         case "fedora":
           await pkgInstall(
             "webkit2gtk4.1-devel", "openssl-devel", "curl", "wget",
             "file", "libappindicator-gtk3-devel", "librsvg2-devel",
-            "gtk3-devel", "patchelf"
+            "gtk3-devel", "libsoup3-devel", "patchelf"
           );
           break;
       }
