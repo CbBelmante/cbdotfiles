@@ -201,6 +201,17 @@ async function setupCliTools() {
       name: "fzf",
       cmd: "fzf",
       packages: ["fzf"],
+      fallback: async () => {
+        await $`curl -fsSL https://github.com/junegunn/fzf/releases/latest/download/fzf-$(curl -s https://api.github.com/repos/junegunn/fzf/releases/latest | grep tag_name | cut -d'"' -f4)-linux_amd64.tar.gz -o /tmp/fzf.tar.gz`.nothrow();
+        // fallback simples: git clone
+        if (!existsSync("/tmp/fzf.tar.gz")) {
+          await $`git clone --depth 1 https://github.com/junegunn/fzf.git ${HOME}/.fzf`;
+          await $`${HOME}/.fzf/install --all --no-bash --no-fish`;
+        } else {
+          await $`tar xf /tmp/fzf.tar.gz -C ${HOME}/.local/bin/`;
+          await $`rm -f /tmp/fzf.tar.gz`;
+        }
+      },
     },
     {
       name: "ripgrep",
@@ -216,6 +227,19 @@ async function setupCliTools() {
       name: "eza",
       cmd: "eza",
       packages: ["eza"],
+      fallback: async () => {
+        // eza nao esta nos repos padrao do Ubuntu/Debian antigo
+        // Adiciona o repo oficial do eza
+        await $`sudo mkdir -p /etc/apt/keyrings`;
+        await $`curl -fsSL https://raw.githubusercontent.com/eza-community/eza/main/deb.asc -o /tmp/eza-key.asc`;
+        await $`sudo gpg --yes --dearmor -o /etc/apt/keyrings/gierens.gpg /tmp/eza-key.asc`;
+        await $`rm -f /tmp/eza-key.asc`;
+        await $`sudo chmod 644 /etc/apt/keyrings/gierens.gpg`;
+        await $`sudo bash -c 'echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" > /etc/apt/sources.list.d/gierens.list'`;
+        await $`sudo chmod 644 /etc/apt/sources.list.d/gierens.list`;
+        await $`sudo apt update -qq`.quiet();
+        await $`sudo apt install -y eza`;
+      },
     },
   ];
 
@@ -227,10 +251,16 @@ async function setupCliTools() {
 
     if (!exists) {
       log.add(`Instalando ${tool.name}...`);
-      if (distro !== "arch" && tool.fallback) {
-        await tool.fallback();
-      } else {
-        await pkgInstall(...tool.packages);
+      const installed = await pkgInstall(...tool.packages);
+      // Se pkgInstall falhou e tem fallback, tenta o fallback
+      if (!installed && tool.fallback) {
+        try {
+          await tool.fallback();
+        } catch {
+          log.warn(`Falha ao instalar ${tool.name}`);
+          tracker.warning(tool.name);
+          continue;
+        }
       }
       log.ok(`${tool.name} instalado`);
       tracker.installed(tool.name);
