@@ -124,8 +124,26 @@ async function setupNvm() {
     tracker.skipped("NVM");
   }
 
-  log.ok("NVM instalado. Para instalar Node LTS:");
-  log.dim("  source ~/.nvm/nvm.sh && nvm install --lts --default");
+  // Instala Node LTS se nao tem node/npm
+  const nvmSh = existsSync(nvmDir) ? `${nvmDir}/nvm.sh` : `${nvmAlt}/nvm.sh`;
+  if (existsSync(nvmSh) && !(await commandExists("node"))) {
+    log.add("Instalando Node LTS via NVM...");
+    await $`bash -c 'source ${nvmSh} && nvm install --lts --default'`.nothrow();
+    // Verifica se instalou
+    const nodeBin = await $`bash -c 'source ${nvmSh} && which node'`.text().catch(() => "");
+    if (nodeBin.trim()) {
+      const version = (await $`bash -c 'source ${nvmSh} && node --version'`.text()).trim();
+      log.ok(`Node ${version} instalado (LTS)`);
+      tracker.installed("Node LTS");
+    } else {
+      log.warn("Falha ao instalar Node LTS");
+      tracker.warning("Node LTS");
+    }
+  } else if (await commandExists("node")) {
+    const version = (await $`node --version`.text()).trim();
+    log.ok(`Node ja instalado: ${version}`);
+    tracker.skipped("Node");
+  }
 }
 
 // ---------------------------------------------------------------------------
