@@ -36,5 +36,6 @@ else
 fi
 
 # Roda o instalador (cuida de Bun + deps + TS installer)
+# Redireciona stdin de /dev/tty pra funcionar via curl | bash
 echo ""
-"$DEST/install.sh" "$@"
+"$DEST/install.sh" "$@" < /dev/tty

@@ -31,4 +31,9 @@ bun install --frozen-lockfile 2>/dev/null || bun install --silent
 # ---------------------------------------------------------------------------
 # Roda o instalador TypeScript
 # ---------------------------------------------------------------------------
-bun run src/install.ts "$@"
+# Se stdin nao e terminal (ex: curl | bash), redireciona de /dev/tty
+if [ -t 0 ]; then
+  bun run src/install.ts "$@"
+else
+  bun run src/install.ts "$@" < /dev/tty
+fi
