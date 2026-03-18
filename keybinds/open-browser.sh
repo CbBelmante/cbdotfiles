@@ -36,7 +36,7 @@ get_stability_flags() {
   case "$BROWSER" in
     firefox*) echo "" ;;  # Firefox nao precisa
     *)
-      echo "--enable-features=VaapiVideoDecodeLinuxGL --disable-features=UseChromeOSDirectVideoDecoder"
+      echo "--disable-gpu --enable-features=VaapiVideoDecodeLinuxGL --disable-features=UseChromeOSDirectVideoDecoder"
       ;;
   esac
 }
