@@ -698,7 +698,7 @@ const DEV_TOOLS: IDevTool[] = [
             if (distro === "debian") await $`sudo apt install -y flatpak`;
           }
           await $`flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo`.quiet();
-          await $`flatpak install -y flathub com.getpostman.Postman`;
+          await $`flatpak install --user -y flathub com.getpostman.Postman`;
           break;
       }
       if (await commandExists("postman") || (await $`flatpak list --app 2>/dev/null`.text()).includes("Postman")) {

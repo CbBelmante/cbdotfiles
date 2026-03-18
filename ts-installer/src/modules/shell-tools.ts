@@ -357,12 +357,18 @@ async function setupKitty() {
       break;
 
     case "cosmic": {
-      // Tenta gerar tema COSMIC
+      // Tenta gerar tema COSMIC (nao falha se tema nao existe)
       const themeDir = `${HOME}/.config/cosmic/com.system76.CosmicTheme.Dark/v1`;
       if (existsSync(themeDir)) {
         log.add("Detectando tema COSMIC...");
-        await $`bash ${DOTFILES_DIR}/kitty/generate-cosmic-theme.sh`;
-        log.ok("cosmic.conf gerado a partir do tema COSMIC ativo");
+        const result = await $`bash ${DOTFILES_DIR}/kitty/generate-cosmic-theme.sh`.nothrow();
+        if (result.exitCode === 0) {
+          log.ok("cosmic.conf gerado a partir do tema COSMIC ativo");
+        } else {
+          log.warn("Falha ao gerar tema COSMIC — usando cosmic.conf padrao");
+        }
+      } else {
+        log.dim("Tema COSMIC Dark nao encontrado — usando cosmic.conf padrao");
       }
       await symlink(`${DOTFILES_DIR}/kitty/cosmic.conf`, envConf);
       log.ok("env: cosmic");

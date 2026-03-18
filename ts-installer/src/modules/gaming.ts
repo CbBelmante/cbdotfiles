@@ -100,7 +100,7 @@ const GAMING_TOOLS: IGamingTool[] = [
         }
       }
       await $`flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo`.quiet();
-      await $`flatpak install -y flathub net.davidotek.pupgui2`;
+      await $`flatpak install --user -y flathub net.davidotek.pupgui2`;
     },
   },
   {
@@ -199,7 +199,7 @@ const GAMING_TOOLS: IGamingTool[] = [
             break;
           }
           await $`flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo`.quiet();
-          await $`flatpak install -y flathub com.discordapp.Discord`;
+          await $`flatpak install --user -y flathub com.discordapp.Discord`;
           break;
       }
     },
