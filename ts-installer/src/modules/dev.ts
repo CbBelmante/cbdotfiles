@@ -12,7 +12,7 @@ import {
   versionGte,
 } from "../helpers";
 import { log, tracker } from "../log";
-import { EDITOR } from "../defaults";
+import { EDITOR, DEV_TOOLS_ENABLED } from "../defaults";
 
 // ---------------------------------------------------------------------------
 // Dev tool definitions
@@ -619,7 +619,11 @@ export const dev: IModule = {
     const installed: IDevTool[] = [];
     const available: IDevTool[] = [];
 
-    for (const tool of DEV_TOOLS) {
+    const enabledIds = DEV_TOOLS_ENABLED.map((t) => t.id);
+    const activeIds = DEV_TOOLS_ENABLED.filter((t) => t.active).map((t) => t.id);
+    const enabledTools = DEV_TOOLS.filter((t) => enabledIds.includes(t.id));
+
+    for (const tool of enabledTools) {
       if (await tool.isInstalled()) {
         log.ok(`${tool.emoji} ${tool.name} ja instalado`);
         installed.push(tool);
@@ -634,9 +638,9 @@ export const dev: IModule = {
     let selected: IDevTool[] = [];
 
     if (ctx.isAll) {
-      selected = DEV_TOOLS;
+      selected = enabledTools.filter((t) => activeIds.includes(t.id));
     } else {
-      selected = await checkboxWithAll("Quais dev tools deseja instalar?", DEV_TOOLS, installedIds);
+      selected = await checkboxWithAll("Quais dev tools deseja instalar?", enabledTools, installedIds);
     }
 
     const toInstall = selected.filter((t) => !installedIds.has(t.id));

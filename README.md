@@ -456,6 +456,23 @@ Todos os defaults do projeto ficam em **dois arquivos**:
 | `NVM.version` | `0.40.1` | Versao do NVM |
 | `FONTS` | `CascadiaMono, JetBrainsMono` | Nerd Fonts instaladas |
 
+### Listas de tools (`active`)
+
+Cada modulo tem uma lista de tools com `active: true/false` no `defaults.ts`:
+
+- **`active: true`** = incluso no modo **Padrao** (instalar tudo)
+- **`active: false`** = disponivel apenas no modo **Custom** (selecao manual)
+
+| Lista | Tools `false` (apenas Custom) |
+|-------|-------------------------------|
+| `DEV_TOOLS_ENABLED` | Tauri |
+| `BROWSERS_ENABLED` | Opera, Chromium |
+| `APPS_ENABLED` | Kdenlive |
+| `GAMING_ENABLED` | (todos active) |
+| `VIRTUALIZATION_ENABLED` | VirtualBox |
+
+> Quer que o Docker nao instale por padrao? Mude `{ id: "docker", active: false }` no `defaults.ts`. No modo Custom ele ainda aparece pra selecionar.
+
 ### `vars.conf` (keybinds por desktop)
 
 ```bash

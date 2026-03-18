@@ -129,3 +129,61 @@ export const MULTIPLEXERS = {
   tmuxTheme: "catppuccin-mocha",
   tmuxSaveInterval: 10, // minutos
 };
+
+// ---------------------------------------------------------------------------
+// Listas de tools por modulo
+// ---------------------------------------------------------------------------
+// active: true  = incluso no modo "Padrao" (instalar tudo)
+// active: false = disponivel apenas no modo "Custom" (selecao manual)
+// ---------------------------------------------------------------------------
+
+interface IToolToggle {
+  id: string;
+  active: boolean;
+}
+
+export const DEV_TOOLS_ENABLED: IToolToggle[] = [
+  { id: "nvim", active: true },
+  { id: "tmux", active: true },
+  { id: "zellij", active: true },
+  { id: "vscode", active: true },
+  { id: "gitkraken", active: true },
+  { id: "lazygit", active: true },
+  { id: "gh", active: true },
+  { id: "lazydocker", active: true },
+  { id: "tauri", active: false },
+  { id: "docker", active: true },
+];
+
+export const APPS_ENABLED: IToolToggle[] = [
+  { id: "libreoffice", active: true },
+  { id: "sublime", active: true },
+  { id: "pavucontrol", active: true },
+  { id: "vlc", active: true },
+  { id: "obsidian", active: true },
+  { id: "kdenlive", active: false },
+  { id: "peazip", active: true },
+  { id: "qbittorrent", active: true },
+];
+
+export const GAMING_ENABLED: IToolToggle[] = [
+  { id: "steam", active: true },
+  { id: "lutris", active: true },
+  { id: "protonup-qt", active: true },
+  { id: "mangohud", active: true },
+  { id: "gamemode", active: true },
+  { id: "wine", active: true },
+  { id: "discord", active: true },
+];
+
+export const BROWSERS_ENABLED: IToolToggle[] = [
+  { id: "vivaldi", active: true },
+  { id: "opera", active: false },
+  { id: "firefox", active: true },
+  { id: "chrome", active: true },
+  { id: "chromium", active: false },
+];
+
+export const VIRTUALIZATION_ENABLED: IToolToggle[] = [
+  { id: "virtualbox", active: false },
+];

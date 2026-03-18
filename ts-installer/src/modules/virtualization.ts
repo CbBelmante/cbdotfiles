@@ -2,6 +2,7 @@ import { $ } from "bun";
 import type { IModule, IRunContext } from "./index";
 import { checkboxWithAll, commandExists, getDistro, pkgInstall } from "../helpers";
 import { log, tracker } from "../log";
+import { VIRTUALIZATION_ENABLED } from "../defaults";
 
 // ---------------------------------------------------------------------------
 // Virtualization tool definitions
@@ -66,7 +67,11 @@ export const virtualization: IModule = {
     const installed: IVirtTool[] = [];
     const available: IVirtTool[] = [];
 
-    for (const tool of VIRT_TOOLS) {
+    const enabledIds = VIRTUALIZATION_ENABLED.map((t) => t.id);
+    const activeIds = VIRTUALIZATION_ENABLED.filter((t) => t.active).map((t) => t.id);
+    const enabledTools = VIRT_TOOLS.filter((t) => enabledIds.includes(t.id));
+
+    for (const tool of enabledTools) {
       if (await tool.isInstalled()) {
         log.ok(`${tool.emoji} ${tool.name} ja instalado`);
         installed.push(tool);
@@ -81,9 +86,9 @@ export const virtualization: IModule = {
     let toInstall: IVirtTool[] = [];
 
     if (ctx.isAll) {
-      toInstall = available;
+      toInstall = available.filter((t) => activeIds.includes(t.id));
     } else {
-      const selected = await checkboxWithAll("Quais virtualization tools deseja instalar?", VIRT_TOOLS, installedIds);
+      const selected = await checkboxWithAll("Quais virtualization tools deseja instalar?", enabledTools, installedIds);
       toInstall = selected.filter((t) => !installedIds.has(t.id));
     }
 

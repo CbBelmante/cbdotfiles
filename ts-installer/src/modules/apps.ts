@@ -2,6 +2,7 @@ import { $ } from "bun";
 import type { IModule, IRunContext } from "./index";
 import { checkboxWithAll, commandExists, getDistro, pkgInstall } from "../helpers";
 import { log, tracker } from "../log";
+import { APPS_ENABLED } from "../defaults";
 
 // ---------------------------------------------------------------------------
 // App definitions
@@ -254,7 +255,11 @@ export const apps: IModule = {
     const installed: IApp[] = [];
     const available: IApp[] = [];
 
-    for (const app of APPS) {
+    const enabledIds = APPS_ENABLED.map((a) => a.id);
+    const activeIds = APPS_ENABLED.filter((a) => a.active).map((a) => a.id);
+    const enabledApps = APPS.filter((a) => enabledIds.includes(a.id));
+
+    for (const app of enabledApps) {
       if (await app.isInstalled()) {
         log.ok(`${app.emoji} ${app.name} ja instalado`);
         installed.push(app);
@@ -269,9 +274,9 @@ export const apps: IModule = {
     let toInstall: IApp[] = [];
 
     if (ctx.isAll) {
-      toInstall = available;
+      toInstall = available.filter((a) => activeIds.includes(a.id));
     } else {
-      const selected = await checkboxWithAll("Quais apps deseja instalar?", APPS, installedIds);
+      const selected = await checkboxWithAll("Quais apps deseja instalar?", enabledApps, installedIds);
       toInstall = selected.filter((a) => !installedIds.has(a.id));
     }
 

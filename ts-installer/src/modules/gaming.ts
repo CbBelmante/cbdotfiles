@@ -2,6 +2,7 @@ import { $ } from "bun";
 import type { IModule, IRunContext } from "./index";
 import { checkboxWithAll, commandExists, getDistro, pkgInstall } from "../helpers";
 import { log, tracker } from "../log";
+import { GAMING_ENABLED } from "../defaults";
 
 // ---------------------------------------------------------------------------
 // Gaming tool definitions
@@ -223,7 +224,11 @@ export const gaming: IModule = {
     const installed: IGamingTool[] = [];
     const available: IGamingTool[] = [];
 
-    for (const tool of GAMING_TOOLS) {
+    const enabledIds = GAMING_ENABLED.map((t) => t.id);
+    const activeIds = GAMING_ENABLED.filter((t) => t.active).map((t) => t.id);
+    const enabledTools = GAMING_TOOLS.filter((t) => enabledIds.includes(t.id));
+
+    for (const tool of enabledTools) {
       if (await tool.isInstalled()) {
         log.ok(`${tool.emoji} ${tool.name} ja instalado`);
         installed.push(tool);
@@ -238,9 +243,9 @@ export const gaming: IModule = {
     let toInstall: IGamingTool[] = [];
 
     if (ctx.isAll) {
-      toInstall = available;
+      toInstall = available.filter((t) => activeIds.includes(t.id));
     } else {
-      const selected = await checkboxWithAll("Quais gaming tools deseja instalar?", GAMING_TOOLS, installedIds);
+      const selected = await checkboxWithAll("Quais gaming tools deseja instalar?", enabledTools, installedIds);
       toInstall = selected.filter((t) => !installedIds.has(t.id));
     }
 

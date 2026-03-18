@@ -3,7 +3,7 @@ import { select } from "@inquirer/prompts";
 import type { IModule, IRunContext } from "./index";
 import { checkboxWithAll, commandExists, getDistro, pkgInstall } from "../helpers";
 import { log, tracker } from "../log";
-import { BROWSER } from "../defaults";
+import { BROWSER, BROWSERS_ENABLED } from "../defaults";
 
 // ---------------------------------------------------------------------------
 // Browser definitions
@@ -243,7 +243,11 @@ export const browsers: IModule = {
     const installed: IBrowser[] = [];
     const available: IBrowser[] = [];
 
-    for (const b of BROWSERS) {
+    const enabledIds = BROWSERS_ENABLED.map((b) => b.id);
+    const activeIds = BROWSERS_ENABLED.filter((b) => b.active).map((b) => b.id);
+    const enabledBrowsers = BROWSERS.filter((b) => enabledIds.includes(b.id));
+
+    for (const b of enabledBrowsers) {
       if (await isInstalled(b)) {
         log.ok(`${b.emoji} ${b.name} ja instalado`);
         installed.push(b);
@@ -258,9 +262,9 @@ export const browsers: IModule = {
     let toInstall: IBrowser[] = [];
 
     if (ctx.isAll) {
-      toInstall = available;
+      toInstall = available.filter((b) => activeIds.includes(b.id));
     } else {
-      const selected = await checkboxWithAll("Quais browsers deseja instalar?", BROWSERS, installedIds);
+      const selected = await checkboxWithAll("Quais browsers deseja instalar?", enabledBrowsers, installedIds);
       toInstall = selected.filter((b) => !installedIds.has(b.id));
     }
 
