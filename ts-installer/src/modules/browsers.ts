@@ -3,6 +3,7 @@ import { select } from "@inquirer/prompts";
 import type { IModule, IRunContext } from "./index";
 import { checkboxWithAll, commandExists, getDistro, pkgInstall } from "../helpers";
 import { log } from "../log";
+import { BROWSER } from "../defaults";
 
 // ---------------------------------------------------------------------------
 // Browser definitions
@@ -286,10 +287,10 @@ export const browsers: IModule = {
     // Browser padrao
     if (installed.length > 0) {
       if (ctx.isAll) {
-        // --all: Vivaldi como padrao automaticamente
-        const vivaldi = BROWSERS.find((b) => b.id === "vivaldi")!;
-        if (await isInstalled(vivaldi)) {
-          await setDefaultBrowser(vivaldi);
+        // --all: browser padrao definido em defaults.ts
+        const defaultBrowser = BROWSERS.find((b) => b.id === BROWSER.default)!;
+        if (await isInstalled(defaultBrowser)) {
+          await setDefaultBrowser(defaultBrowser);
         }
       } else {
         const choices = installed.map((b) => ({

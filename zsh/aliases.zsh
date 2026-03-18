@@ -8,28 +8,7 @@
 # ───────────────────────────────────────────────────────────────────────────────
 alias ws='cd ~/Workspaces'
 alias workspaces='cd ~/Workspaces'
-alias volan='cd ~/Workspaces/volan_admin'
-alias mnesis='cd ~/Workspaces/mnesis_frontend'
-alias mne='cd ~/Workspaces/mnesis_frontend'
-alias mns='cd ~/Workspaces/mnesis_frontend'
-alias mnsapi='cd ~/Workspaces/mnesis-api/'
-alias mnsa='cd ~/Workspaces/mnesis-api/'
-alias mnesisapi='cd ~/Workspaces/mnesis-api/'
-alias mnesis-api='cd ~/Workspaces/mnesis-api/'
-alias cbadmin='cd ~/Workspaces/CbAdmin'
-alias temporeal='cd ~/Workspaces/temporeal_admin/'
-alias tempo='cd ~/Workspaces/temporeal_admin/'
-alias tmpreal='cd ~/Workspaces/temporeal_admin/'
-alias radareleitoral='cd ~/Workspaces/radarEleitoral/'
-alias radar='cd ~/Workspaces/radarEleitoral/'
-alias corp='cd ~/Workspaces/corp-components/'
-alias elas='cd ~/Workspaces/elas_podem_website/'
-alias vlcomponents='cd ~/Workspaces/VLComponents_vue/'
 alias cbdotfiles='cd ~/Workspaces/cbdotfiles'
-alias cbcadence='cd ~/Workspaces/CbCadence'
-alias cbc='cd ~/Workspaces/CbCadence'
-alias cbcomponents='cd ~/Workspaces/cbcomponents'
-alias cbcomp='cd ~/Workspaces/cbcomponents'
 
 # ───────────────────────────────────────────────────────────────────────────────
 # Navigation - System

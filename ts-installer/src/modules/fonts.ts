@@ -2,6 +2,7 @@ import { $ } from "bun";
 import type { IModule } from "./index";
 import { HOME, getDistro, pkgInstall } from "../helpers";
 import { log } from "../log";
+import { FONTS as FONT_DEFAULTS } from "../defaults";
 
 interface IFont {
   name: string;
@@ -9,10 +10,11 @@ interface IFont {
   fcName: string;
 }
 
-const FONTS: IFont[] = [
-  { name: "CascadiaMono", archPkg: "ttf-cascadia-mono-nerd", fcName: "CaskaydiaMono" },
-  { name: "JetBrainsMono", archPkg: "ttf-jetbrains-mono-nerd", fcName: "JetBrainsMono" },
-];
+const FONTS: IFont[] = FONT_DEFAULTS.map((f) => ({
+  name: f.name,
+  archPkg: `ttf-${f.name.toLowerCase()}-nerd`,
+  fcName: f.name === "CascadiaMono" ? "CaskaydiaMono" : f.name,
+}));
 
 export const fonts: IModule = {
   id: "fonts",

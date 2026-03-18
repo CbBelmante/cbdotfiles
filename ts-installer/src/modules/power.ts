@@ -2,6 +2,7 @@ import { $ } from "bun";
 import type { IModule, IRunContext } from "./index";
 import { isApple, isLaptop, commandExists } from "../helpers";
 import { log } from "../log";
+import { POWER as POWER_DEFAULTS } from "../defaults";
 
 export const power: IModule = {
   id: "power",
@@ -28,13 +29,13 @@ export const power: IModule = {
       suspend = ctx.overrides.CB_SUSPEND as "on" | "off";
       log.ok(`Suspend override: ${suspend} (via local.sh)`);
     } else if (isApple()) {
-      suspend = "off";
+      suspend = POWER_DEFAULTS.suspendApple ? "on" : "off";
       log.ok("Suspend desabilitado (Apple hardware — ACPI sleep nao funciona no Linux)");
     } else if (isLaptop()) {
-      suspend = "on";
+      suspend = POWER_DEFAULTS.suspendLaptop ? "on" : "off";
       log.ok("Laptop detectado (bateria presente)");
     } else {
-      suspend = "off";
+      suspend = POWER_DEFAULTS.suspendDesktop ? "on" : "off";
       log.ok("Desktop detectado (sem bateria)");
     }
 
@@ -58,7 +59,7 @@ export const power: IModule = {
     } else {
       if (hasGsettings) {
         await $`gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type 'suspend'`;
-        await $`gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-timeout 1800`;
+        await $`gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-timeout ${POWER_DEFAULTS.idleTimeoutSecs}`;
         log.ok("Suspend habilitado (30min)");
       }
 

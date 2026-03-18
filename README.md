@@ -121,6 +121,7 @@ cbdotfiles/
 │   ├── tsconfig.json              # ⚙️ Config TypeScript
 │   └── src/
 │       ├── install.ts             # 🎯 Entry point (menu interativo)
+│       ├── defaults.ts            # 📋 Defaults centralizados (mude aqui!)
 │       ├── helpers.ts             # 🔧 Detecta distro, desktop, hardware
 │       ├── log.ts                 # 🎨 Log colorido + header + summary
 │       └── modules/               # 📦 Um arquivo por modulo
@@ -143,7 +144,7 @@ cbdotfiles/
 ├── local/                         # 🔒 Overrides dessa maquina (gitignored)
 │   └── ...                        # Mesma estrutura de local.example/
 ├── git/
-│   └── .gitconfig                 # Configuracao global do Git
+│   └── .gitconfig                 # Configuracao compartilhavel (incluida via git include.path)
 ├── zellij/
 │   ├── config.kdl                 # ⌨️ Keybinds e config principal
 │   ├── CbWorkTemplate1.kdl       # 📐 Layout: nvim + 6 terminais
@@ -184,7 +185,7 @@ cbdotfiles/
 ~/.zshrc                              → cbdotfiles/zsh/.zshrc
 ~/.config/cb/aliases.zsh              → cbdotfiles/zsh/aliases.zsh
 ~/.config/cb/local.zsh                → cbdotfiles/local/zsh/aliases.zsh (se existir)
-~/.gitconfig                          → cbdotfiles/git/.gitconfig
+~/.gitconfig                          → nome/email perguntados no install + include.path
 ~/.config/zellij/config.kdl           → cbdotfiles/zellij/config.kdl
 ~/.config/zellij/layouts/*.kdl        → cbdotfiles/zellij/*.kdl
 ~/.config/nvim/                       → cbdotfiles/nvim/
@@ -207,9 +208,9 @@ Ferramentas de linha de comando inspiradas no Omarchy:
 Lembra os diretorios visitados. Navegue com atalhos:
 
 ```bash
-cd ~/Workspaces/mnesis_frontend   # visita uma vez
+cd ~/Workspaces/meu-projeto       # visita uma vez
 cd ~                               # volta pro home
-cd mnesis                          # zoxide lembra e volta direto
+cd meu-projeto                    # zoxide lembra e volta direto
 ```
 
 ### fzf (busca fuzzy)
@@ -278,9 +279,8 @@ Layout mais limpo com Neovim central e 4 terminais:
 ```bash
 zj <layout> <diretorio|alias>
 
-zj cbw1 mns                      # cria sessao "mnesis_frontend" ou reconecta se ja existe
-zj cbw1 volan                    # resolve alias volan -> ~/Workspaces/volan_admin
-zj cbw1 ~/projetos/meu-app      # caminho completo
+zj cbw1 meu-projeto              # cria sessao ou reconecta se ja existe
+zj cbw1 ~/Workspaces/outro       # caminho completo
 ```
 
 > Se a sessao ja existe, reconecta automaticamente. Se nao, cria nova com o layout.
@@ -291,9 +291,8 @@ zj cbw1 ~/projetos/meu-app      # caminho completo
 ```bash
 zj-tab <layout> <diretorio|alias>
 
-zj-tab cbw1 volan
-zj-tab cbw1 cbadmin
-zj-tab cbw1 radar
+zj-tab cbw1 meu-projeto
+zj-tab cbw1 ~/Workspaces/outro
 ```
 
 #### Outros comandos
@@ -325,15 +324,9 @@ zj-tab cbw1 radar
 | Alias | Destino |
 |-------|---------|
 | `ws` / `workspaces` | ~/Workspaces |
-| `mnesis` / `mns` / `mne` | ~/Workspaces/mnesis_frontend |
-| `volan` | ~/Workspaces/volan_admin |
-| `cbadmin` | ~/Workspaces/CbAdmin |
-| `temporeal` / `tempo` | ~/Workspaces/temporeal_admin |
-| `radar` | ~/Workspaces/radarEleitoral |
-| `corp` | ~/Workspaces/corp-components |
-| `elas` | ~/Workspaces/elas_podem_website |
-| `vlcomponents` | ~/Workspaces/VLComponents_vue |
 | `cbdotfiles` | ~/Workspaces/cbdotfiles |
+
+> Aliases de projetos pessoais ficam em `local/zsh/aliases.zsh` (gitignored).
 
 ### 🔀 Git
 
@@ -433,6 +426,51 @@ COSMIC_BROWSER=vivaldi
 ./keybinds/generate.sh          # gera os arquivos
 ./install.sh keybinds            # gera + aplica symlinks
 ```
+
+## 📋 Defaults Centralizados
+
+Todos os defaults do projeto ficam em **dois arquivos**:
+
+| Arquivo | O que configura |
+|---------|----------------|
+| `ts-installer/src/defaults.ts` | Shell, terminal, editor, browser, fontes, power, NVM, CLI tools |
+| `keybinds/vars.conf` | Apps por desktop (terminal, browser, file manager, editor) |
+
+### `defaults.ts` (principais)
+
+| Default | Valor | Descricao |
+|---------|-------|-----------|
+| `SHELL.default` | `zsh` | Shell padrao |
+| `SHELL.theme` | `powerlevel10k` | Tema do Zsh |
+| `TERMINAL.app` | `kitty` | Terminal padrao |
+| `TERMINAL.font` | `CaskaydiaMono Nerd Font` | Fonte do terminal |
+| `TERMINAL.fontSize` | `7` | Tamanho da fonte |
+| `EDITOR.default` | `nvim` | Editor padrao |
+| `EDITOR.nvimMinVersion` | `0.11.2` | Versao minima do Neovim |
+| `BROWSER.default` | `vivaldi` | Browser padrao (--all) |
+| `POWER.suspendDesktop` | `false` | Suspend no desktop |
+| `POWER.suspendLaptop` | `true` | Suspend no laptop |
+| `POWER.idleTimeoutSecs` | `1800` | Timeout de idle (30min) |
+| `NVM.version` | `0.40.1` | Versao do NVM |
+| `FONTS` | `CascadiaMono, JetBrainsMono` | Nerd Fonts instaladas |
+
+### `vars.conf` (keybinds por desktop)
+
+```bash
+# Hyprland
+HYPR_TERMINAL=uwsm app -- kitty
+HYPR_BROWSER=uwsm app -- vivaldi
+
+# COSMIC
+COSMIC_TERMINAL=kitty
+COSMIC_BROWSER=vivaldi
+```
+
+> Quer mudar o browser padrao? Mude `BROWSER.default` no `defaults.ts` e `COSMIC_BROWSER`/`HYPR_BROWSER` no `vars.conf`.
+
+### Git
+
+Nome e email do Git sao **perguntados durante o install** (nao ficam no repositorio). As configs compartilhaveis (branch padrao, aliases, editor) ficam em `git/.gitconfig` e sao incluidas via `git config --global include.path`.
 
 ## 🔒 Local Overrides (configs por maquina)
 

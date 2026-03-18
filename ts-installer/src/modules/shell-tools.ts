@@ -1,8 +1,10 @@
 import { $ } from "bun";
 import { existsSync } from "fs";
+import { input } from "@inquirer/prompts";
 import type { IModule } from "./index";
 import { DOTFILES_DIR, HOME, commandExists, getDesktop, getDistro, pkgInstall, symlink, versionGte } from "../helpers";
 import { log } from "../log";
+import { NVM, TERMINAL } from "../defaults";
 
 // ---------------------------------------------------------------------------
 // Zsh + Oh My Zsh + plugins
@@ -103,7 +105,7 @@ async function setupNvm() {
 
   if (!existsSync(nvmDir) && !existsSync(nvmAlt)) {
     log.add("Instalando NVM...");
-    await $`curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh -o /tmp/nvm-install.sh`;
+    await $`curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v${NVM.version}/install.sh -o /tmp/nvm-install.sh`;
     await $`bash /tmp/nvm-install.sh`;
     await $`rm -f /tmp/nvm-install.sh`;
   } else {
@@ -121,8 +123,37 @@ async function setupNvm() {
 async function setupGit() {
   log.title("git", "Git");
 
-  await symlink(`${DOTFILES_DIR}/git/.gitconfig`, `${HOME}/.gitconfig`);
-  log.ok("~/.gitconfig -> cbdotfiles");
+  // Verifica se ja tem nome/email configurados
+  let currentName = "";
+  let currentEmail = "";
+  try {
+    currentName = (await $`git config --global user.name`.text()).trim();
+    currentEmail = (await $`git config --global user.email`.text()).trim();
+  } catch {}
+
+  if (currentName && currentEmail) {
+    log.ok(`Git ja configurado: ${currentName} <${currentEmail}>`);
+  } else {
+    const name = await input({
+      message: "Seu nome para commits Git:",
+      default: currentName || undefined,
+    });
+    const email = await input({
+      message: "Seu email para commits Git:",
+      default: currentEmail || undefined,
+    });
+
+    await $`git config --global user.name ${name}`;
+    await $`git config --global user.email ${email}`;
+    log.ok(`Git configurado: ${name} <${email}>`);
+  }
+
+  // Symlink das configs extras (aliases, core, etc) sem sobrescrever user
+  const gitconfigExtra = `${DOTFILES_DIR}/git/.gitconfig`;
+  if (existsSync(gitconfigExtra)) {
+    await $`git config --global include.path ${gitconfigExtra}`;
+    log.ok("git include.path -> cbdotfiles/.gitconfig");
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -212,7 +243,7 @@ async function setupCliTools() {
 async function setupKitty() {
   log.title("kitty", "Kitty");
 
-  const KITTY_MIN_VERSION = "0.40.0";
+  const KITTY_MIN_VERSION = TERMINAL.minVersion;
   const kittyApp = `${HOME}/.local/kitty.app/bin/kitty`;
 
   // Checa se ja tem kitty >= 0.40 (instalado via site oficial)

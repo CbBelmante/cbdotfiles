@@ -12,6 +12,7 @@ import {
   versionGte,
 } from "../helpers";
 import { log } from "../log";
+import { EDITOR } from "../defaults";
 
 // ---------------------------------------------------------------------------
 // Dev tool definitions
@@ -26,7 +27,7 @@ interface IDevTool {
   configure?: () => Promise<void>;
 }
 
-const NVIM_MIN_VERSION = "0.11.2";
+const NVIM_MIN_VERSION = EDITOR.nvimMinVersion;
 
 const DEV_TOOLS: IDevTool[] = [
   {

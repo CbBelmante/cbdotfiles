@@ -1,3 +1,31 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# CBDOTFILES GIT CONFIG (compartilhavel)
+# ═══════════════════════════════════════════════════════════════════════════════
+# Nome/email sao configurados durante o install (git config --global)
+# Este arquivo e incluido via: git config --global include.path <path>
+# ═══════════════════════════════════════════════════════════════════════════════
+
+[init]
+	defaultBranch = main
+
+[pull]
+	rebase = false
+
+[push]
+	autoSetupRemote = true
+
+[core]
+	editor = nvim
+	autocrlf = input
+
+[alias]
+	st = status
+	co = checkout
+	br = branch
+	ci = commit
+	lg = log --oneline --graph --decorate --all
+	last = log -1 HEAD
+	unstage = reset HEAD --
 [user]
-	email = guilherme.belmante@volan.com.br
 	name = CbBelmante
+	email = belmantgui@gmail.com
