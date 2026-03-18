@@ -89,7 +89,7 @@ Ao selecionar o modulo `browsers`, o instalador mostra checkbox dos navegadores 
 | 🎮 `drivers` | Drivers GPU (AMD/Intel/NVIDIA) + Bluetooth Mac | ✅ Mesa, VA-API, firmware |
 | 🌐 `browsers` | Navegadores (Vivaldi, Opera, Firefox, Chrome, Chromium) | ✅ Browsers selecionados |
 | 🖥️ `desktop-tools` | Ferramentas de desktop (wofi, clipboard, screenshots, notificacoes) | ✅ Apenas em tiling WMs |
-| 🛠️ `dev` | Neovim + Zellij + tmux + VS Code + GitKraken + GitHub CLI + LazyGit + Tauri Dev + LazyDocker + Docker | ✅ Dev tools selecionados |
+| 🛠️ `dev` | Neovim + Zellij + tmux + VS Code + GitKraken + GitHub CLI + LazyGit + LazyDocker + Docker + Firebase + Supabase + Postman + Insomnia | ✅ Dev tools selecionados |
 | 🖥️ `fastfetch` | Config Fastfetch (system info) | ❌ Apenas symlink |
 | 📊 `btop` | Config Btop (monitor de sistema) | ❌ Apenas symlink |
 | 📦 `apps` | LibreOffice + Sublime + VLC + Obsidian + Kdenlive + PeaZip + qBittorrent | ✅ Apps selecionados |
@@ -132,7 +132,7 @@ cbdotfiles/
 │           ├── drivers.ts         # 🎮 GPU + Bluetooth (detecta hardware)
 │           ├── browsers.ts        # 🌐 Vivaldi, Opera, Firefox, Chrome, Chromium
 │           ├── desktop-tools.ts   # 🖥️ Wofi, clipboard, screenshots (tiling WMs)
-│           ├── dev.ts             # 🛠️ Neovim, Zellij, VS Code, GitKraken, GitHub CLI, LazyGit, Tauri Dev, LazyDocker, Docker
+│           ├── dev.ts             # 🛠️ Neovim, Zellij, VS Code, GitKraken, GitHub CLI, LazyGit, LazyDocker, Docker, Firebase, Supabase, Postman, Insomnia
 │           ├── fastfetch.ts       # 🖥️ System info
 │           ├── btop.ts            # 📊 Monitor de sistema
 │           ├── apps.ts            # 📦 LibreOffice, Sublime, VLC, Obsidian...
@@ -465,7 +465,7 @@ Cada modulo tem uma lista de tools com `active: true/false` no `defaults.ts`:
 
 | Lista | Tools `false` (apenas Custom) |
 |-------|-------------------------------|
-| `DEV_TOOLS_ENABLED` | Tauri |
+| `DEV_TOOLS_ENABLED` | Tauri, Insomnia |
 | `BROWSERS_ENABLED` | Opera, Chromium |
 | `APPS_ENABLED` | Kdenlive |
 | `GAMING_ENABLED` | (todos active) |

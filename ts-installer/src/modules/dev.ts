@@ -599,6 +599,146 @@ const DEV_TOOLS: IDevTool[] = [
       }
     },
   },
+  {
+    id: "firebase",
+    name: "Firebase CLI",
+    emoji: "🔥",
+    async isInstalled() {
+      return commandExists("firebase");
+    },
+    async install() {
+      if (await commandExists("firebase")) {
+        const version = (await $`firebase --version`.text()).trim();
+        log.ok(`Firebase CLI ja instalado: ${version}`);
+        return;
+      }
+
+      log.add("Instalando Firebase CLI...");
+      if (await commandExists("npm")) {
+        await $`npm install -g firebase-tools`;
+      } else {
+        await $`curl -sL https://firebase.tools -o /tmp/firebase-install.sh`;
+        await $`bash /tmp/firebase-install.sh`;
+        await $`rm -f /tmp/firebase-install.sh`;
+      }
+      if (await commandExists("firebase")) {
+        const version = (await $`firebase --version`.text()).trim();
+        log.ok(`Firebase CLI instalado: ${version}`);
+      }
+    },
+  },
+  {
+    id: "supabase",
+    name: "Supabase CLI",
+    emoji: "⚡",
+    async isInstalled() {
+      return commandExists("supabase");
+    },
+    async install(distro) {
+      if (await commandExists("supabase")) {
+        const version = (await $`supabase --version`.text()).trim();
+        log.ok(`Supabase CLI ja instalado: ${version}`);
+        return;
+      }
+
+      log.add("Instalando Supabase CLI...");
+      if (await commandExists("npm")) {
+        await $`npm install -g supabase`;
+      } else if (await commandExists("brew")) {
+        await $`brew install supabase/tap/supabase`;
+      } else {
+        // Download binario direto
+        try {
+          const release = await fetch(
+            "https://api.github.com/repos/supabase/cli/releases/latest"
+          ).then((r) => r.json());
+          const version = (release as { tag_name: string }).tag_name.replace("v", "");
+          await $`curl -Lo /tmp/supabase.deb https://github.com/supabase/cli/releases/download/v${version}/supabase_${version}_linux_amd64.deb`;
+          await $`sudo apt install -y /tmp/supabase.deb`;
+          await $`rm -f /tmp/supabase.deb`;
+        } catch {
+          log.warn("Falha ao instalar Supabase CLI — instale manualmente: npm i -g supabase");
+          return;
+        }
+      }
+      if (await commandExists("supabase")) {
+        const version = (await $`supabase --version`.text()).trim();
+        log.ok(`Supabase CLI instalado: ${version}`);
+      }
+    },
+  },
+  {
+    id: "postman",
+    name: "Postman",
+    emoji: "📮",
+    async isInstalled() {
+      if (await commandExists("postman")) return true;
+      try {
+        const list = await $`flatpak list --app 2>/dev/null`.text();
+        return list.includes("com.getpostman.Postman");
+      } catch {
+        return false;
+      }
+    },
+    async install(distro) {
+      log.add("Instalando Postman...");
+      switch (distro) {
+        case "arch":
+          if (await commandExists("yay")) {
+            await $`yay -S --noconfirm postman-bin`;
+          } else if (await commandExists("paru")) {
+            await $`paru -S --noconfirm postman-bin`;
+          } else {
+            log.warn("Instale postman via AUR (yay -S postman-bin)");
+          }
+          break;
+        case "debian":
+        case "fedora":
+          if (!(await commandExists("flatpak"))) {
+            if (distro === "debian") await $`sudo apt install -y flatpak`;
+          }
+          await $`flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo`.quiet();
+          await $`flatpak install -y flathub com.getpostman.Postman`;
+          break;
+      }
+      if (await commandExists("postman") || (await $`flatpak list --app 2>/dev/null`.text()).includes("Postman")) {
+        log.ok("Postman instalado");
+      }
+    },
+  },
+  {
+    id: "insomnia",
+    name: "Insomnia",
+    emoji: "🌙",
+    async isInstalled() {
+      return commandExists("insomnia");
+    },
+    async install(distro) {
+      log.add("Instalando Insomnia...");
+      switch (distro) {
+        case "arch":
+          if (await commandExists("yay")) {
+            await $`yay -S --noconfirm insomnia-bin`;
+          } else if (await commandExists("paru")) {
+            await $`paru -S --noconfirm insomnia-bin`;
+          } else {
+            log.warn("Instale insomnia via AUR (yay -S insomnia-bin)");
+          }
+          break;
+        case "debian":
+          await $`curl -fsSL https://updates.insomnia.rest/downloads/ubuntu/latest -o /tmp/insomnia.deb`;
+          await $`sudo apt install -y /tmp/insomnia.deb`;
+          await $`rm -f /tmp/insomnia.deb`;
+          break;
+        case "fedora":
+          await $`curl -fsSL https://updates.insomnia.rest/downloads/ubuntu/latest -o /tmp/insomnia.deb`;
+          await $`sudo dnf install -y /tmp/insomnia.deb`.nothrow();
+          await $`rm -f /tmp/insomnia.deb`;
+          break;
+      }
+      if (await commandExists("insomnia")) log.ok("Insomnia instalado");
+    },
+  },
 ];
 
 // ---------------------------------------------------------------------------

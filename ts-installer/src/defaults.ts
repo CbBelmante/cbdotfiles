@@ -153,6 +153,10 @@ export const DEV_TOOLS_ENABLED: IToolToggle[] = [
   { id: "lazydocker", active: true },
   { id: "tauri", active: false },
   { id: "docker", active: true },
+  { id: "firebase", active: true },
+  { id: "supabase", active: true },
+  { id: "postman", active: true },
+  { id: "insomnia", active: false },
 ];
 
 export const APPS_ENABLED: IToolToggle[] = [
