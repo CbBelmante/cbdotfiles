@@ -8,7 +8,7 @@ import {
   pkgInstall,
   symlink,
 } from "../helpers";
-import { log } from "../log";
+import { log, tracker } from "../log";
 
 export const fastfetch: IModule = {
   id: "fastfetch",
@@ -29,9 +29,11 @@ export const fastfetch: IModule = {
       }
       await pkgInstall("fastfetch");
       log.ok("Fastfetch instalado");
+      tracker.installed("Fastfetch");
     } else {
       const version = (await $`fastfetch --version`.text()).split("\n")[0].trim();
       log.ok(`Fastfetch ja instalado: ${version}`);
+      tracker.skipped("Fastfetch");
     }
 
     await symlink(
@@ -39,5 +41,6 @@ export const fastfetch: IModule = {
       `${HOME}/.config/fastfetch/config.jsonc`
     );
     log.ok("~/.config/fastfetch/config.jsonc -> cbdotfiles");
+    tracker.configured("fastfetch");
   },
 };

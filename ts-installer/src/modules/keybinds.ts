@@ -2,7 +2,7 @@ import { $ } from "bun";
 import { existsSync } from "fs";
 import type { IModule } from "./index";
 import { DOTFILES_DIR, HOME, getDesktop, symlink } from "../helpers";
-import { log } from "../log";
+import { log, tracker } from "../log";
 
 export const keybinds: IModule = {
   id: "keybinds",
@@ -48,9 +48,12 @@ export const keybinds: IModule = {
       log.ok("COSMIC terminal padrao -> kitty");
     }
 
+    tracker.configured("keybinds");
+
     if (!["omarchy", "hyprland", "sway", "cosmic"].includes(desktop)) {
       log.warn(`Desktop '${desktop}' nao suporta keybinds automaticos`);
       log.warn("Configs gerados em: keybinds/generated/");
+      tracker.warning(`${desktop} sem suporte`);
     }
   },
 };

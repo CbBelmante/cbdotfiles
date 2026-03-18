@@ -11,7 +11,7 @@ import {
   symlink,
   versionGte,
 } from "../helpers";
-import { log } from "../log";
+import { log, tracker } from "../log";
 import { EDITOR } from "../defaults";
 
 // ---------------------------------------------------------------------------
@@ -462,6 +462,74 @@ const DEV_TOOLS: IDevTool[] = [
     },
   },
   {
+    id: "tauri",
+    name: "Tauri Dev",
+    emoji: "🦀",
+    async isInstalled() {
+      return commandExists("cargo");
+    },
+    async install(distro) {
+      // 1. Rust via rustup
+      if (!(await commandExists("cargo"))) {
+        log.add("Instalando Rust via rustup...");
+        await $`curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y`;
+        // Atualiza PATH pra sessao atual
+        process.env.PATH = `${HOME}/.cargo/bin:${process.env.PATH}`;
+        if (await commandExists("cargo")) {
+          const version = (await $`rustc --version`.text()).trim();
+          log.ok(`Rust instalado: ${version}`);
+        } else {
+          log.warn("Falha ao instalar Rust — instale manualmente: https://rustup.rs");
+          return;
+        }
+      } else {
+        const version = (await $`rustc --version`.text()).trim();
+        log.ok(`Rust ja instalado: ${version}`);
+      }
+
+      // 2. Libs de sistema pra Tauri (WebView nativo)
+      log.add("Instalando dependencias de sistema do Tauri...");
+      switch (distro) {
+        case "arch":
+          await pkgInstall(
+            "webkit2gtk-4.1", "base-devel", "curl", "wget", "file",
+            "openssl", "appmenu-gtk-module", "gtk3",
+            "libappindicator-gtk3", "librsvg", "patchelf"
+          );
+          break;
+        case "debian":
+          await pkgInstall(
+            "libwebkit2gtk-4.1-dev", "build-essential", "curl", "wget",
+            "file", "libxdo-dev", "libssl-dev", "libgtk-3-dev",
+            "libsoup-3.0-dev", "libayatana-appindicator3-dev",
+            "librsvg2-dev", "patchelf"
+          );
+          break;
+        case "fedora":
+          await pkgInstall(
+            "webkit2gtk4.1-devel", "openssl-devel", "curl", "wget",
+            "file", "libappindicator-gtk3-devel", "librsvg2-devel",
+            "gtk3-devel", "libsoup3-devel", "patchelf"
+          );
+          break;
+      }
+      log.ok("Dependencias de sistema do Tauri instaladas");
+
+      // 3. Tauri CLI
+      if (await commandExists("cargo-tauri")) {
+        log.ok("cargo-tauri ja instalado");
+      } else {
+        log.add("Instalando Tauri CLI via cargo (pode demorar)...");
+        await $`cargo install tauri-cli --locked`.nothrow();
+        if (await commandExists("cargo-tauri")) {
+          log.ok("Tauri CLI instalado");
+        } else {
+          log.warn("Falha ao instalar Tauri CLI — instale manualmente: cargo install tauri-cli");
+        }
+      }
+    },
+  },
+  {
     id: "docker",
     name: "Docker",
     emoji: "🐋",
@@ -541,7 +609,7 @@ export const dev: IModule = {
   id: "dev",
   name: "Dev Tools",
   emoji: "🛠️",
-  description: "Neovim + Zellij + VS Code + GitKraken + GitHub CLI + LazyGit + LazyDocker + Docker",
+  description: "Neovim + Zellij + VS Code + GitKraken + GitHub CLI + LazyGit + Tauri Dev + LazyDocker + Docker",
   installsSoftware: true,
 
   async run(ctx: IRunContext) {
@@ -555,6 +623,7 @@ export const dev: IModule = {
       if (await tool.isInstalled()) {
         log.ok(`${tool.emoji} ${tool.name} ja instalado`);
         installed.push(tool);
+        tracker.skipped(tool.name);
       } else {
         available.push(tool);
       }
@@ -581,11 +650,14 @@ export const dev: IModule = {
           await tool.install(distro);
           if (await tool.isInstalled()) {
             installed.push(tool);
+            tracker.installed(tool.name);
           } else {
             log.warn(`${tool.name}: instalacao pode ter falhado`);
+            tracker.warning(tool.name);
           }
         } catch {
           log.warn(`Falha ao instalar ${tool.name}`);
+          tracker.warning(tool.name);
         }
       }
     }
@@ -595,8 +667,10 @@ export const dev: IModule = {
       if (tool.configure && (await tool.isInstalled())) {
         try {
           await tool.configure();
+          tracker.configured(tool.name);
         } catch {
           log.warn(`Falha ao configurar ${tool.name}`);
+          tracker.warning(tool.name);
         }
       }
     }

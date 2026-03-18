@@ -11,7 +11,7 @@ import {
   loadSavedModules,
   saveSelectedModules,
 } from "./helpers";
-import { log, showHeader, showSummary, type IModuleStatus } from "./log";
+import { log, showHeader, showSummary, tracker, type IModuleStatus } from "./log";
 
 // ---------------------------------------------------------------------------
 // CLI args
@@ -106,6 +106,34 @@ async function interactiveMenu(): Promise<{ modules: IModule[]; isAll: boolean }
 // Main
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// sudo: pede senha uma unica vez no inicio e renova o cache periodicamente
+// ---------------------------------------------------------------------------
+
+let sudoKeepAlive: Timer | null = null;
+
+async function acquireSudo() {
+  log.add("Solicitando permissao de administrador...");
+  const result = await $`sudo -v`.nothrow();
+  if (result.exitCode !== 0) {
+    log.warn("Falha ao obter sudo — modulos que precisam de sudo podem falhar");
+    return;
+  }
+  log.ok("sudo ativo");
+
+  // Renova o cache a cada 55s (sudo expira em 5-15min dependendo da distro)
+  sudoKeepAlive = setInterval(async () => {
+    await $`sudo -n true`.nothrow().quiet();
+  }, 55_000);
+}
+
+function releaseSudo() {
+  if (sudoKeepAlive) {
+    clearInterval(sudoKeepAlive);
+    sudoKeepAlive = null;
+  }
+}
+
 async function main() {
   showHeader(DOTFILES_DIR);
 
@@ -117,6 +145,9 @@ async function main() {
     await changeDefaultBrowser();
     return;
   }
+
+  // Pede sudo logo no inicio pra nao interromper no meio
+  await acquireSudo();
 
   // Determina quais modulos instalar
   let selectedModules: IModule[];
@@ -167,12 +198,15 @@ async function main() {
   const ctx: IRunContext = { overrides, isAll: runAll };
 
   for (const mod of selectedModules) {
+    tracker.start(mod.id);
     try {
       await mod.run(ctx);
+      tracker.setStatus(mod.id, "ok");
       results.push({ name: mod.id, status: "ok" });
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       console.error(`  x [${mod.id}] ${msg}`);
+      tracker.setStatus(mod.id, "erro");
       results.push({ name: mod.id, status: "erro" });
     }
   }
@@ -196,9 +230,11 @@ async function main() {
   // ---------------------------------------------------------------------------
 
   showSummary(results);
+  releaseSudo();
 }
 
 main().catch((err) => {
+  releaseSudo();
   if (err?.name === "ExitPromptError") {
     console.log("\n  Cancelado.\n");
     process.exit(0);

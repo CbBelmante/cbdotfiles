@@ -1,7 +1,7 @@
 import { $ } from "bun";
 import type { IModule, IRunContext } from "./index";
 import { checkboxWithAll, commandExists, getDistro, pkgInstall } from "../helpers";
-import { log } from "../log";
+import { log, tracker } from "../log";
 
 // ---------------------------------------------------------------------------
 // Gaming tool definitions
@@ -227,6 +227,7 @@ export const gaming: IModule = {
       if (await tool.isInstalled()) {
         log.ok(`${tool.emoji} ${tool.name} ja instalado`);
         installed.push(tool);
+        tracker.skipped(tool.name);
       } else {
         available.push(tool);
       }
@@ -253,11 +254,14 @@ export const gaming: IModule = {
           await tool.install(distro);
           if (await tool.isInstalled()) {
             log.ok(`${tool.name} instalado`);
+            tracker.installed(tool.name);
           } else {
             log.warn(`${tool.name}: instalacao pode ter falhado`);
+            tracker.warning(tool.name);
           }
         } catch {
           log.warn(`Falha ao instalar ${tool.name}`);
+          tracker.warning(tool.name);
         }
       }
     }

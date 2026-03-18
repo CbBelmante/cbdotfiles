@@ -1,7 +1,7 @@
 import { $ } from "bun";
 import type { IModule, IRunContext } from "./index";
 import { isApple, isLaptop, commandExists } from "../helpers";
-import { log } from "../log";
+import { log, tracker } from "../log";
 import { POWER as POWER_DEFAULTS } from "../defaults";
 
 export const power: IModule = {
@@ -46,6 +46,7 @@ export const power: IModule = {
         await $`gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type 'nothing'`;
         await $`gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-timeout 0`;
         log.ok("Suspend desabilitado (gsettings)");
+        tracker.configured("suspend off");
       }
 
       if (isApple()) {
@@ -61,6 +62,7 @@ export const power: IModule = {
         await $`gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type 'suspend'`;
         await $`gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-timeout ${POWER_DEFAULTS.idleTimeoutSecs}`;
         log.ok("Suspend habilitado (30min)");
+        tracker.configured("suspend 30min");
       }
 
       await $`sudo systemctl unmask sleep.target suspend.target hibernate.target hybrid-sleep.target`.nothrow();

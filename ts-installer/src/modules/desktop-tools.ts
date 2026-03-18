@@ -1,6 +1,6 @@
 import type { IModule } from "./index";
 import { commandExists, getDesktop, getDistro, hasIntegratedDesktop, pkgInstall } from "../helpers";
-import { log } from "../log";
+import { log, tracker } from "../log";
 
 // ---------------------------------------------------------------------------
 // Ferramentas de desktop (Wayland/Hyprland)
@@ -99,6 +99,7 @@ export const desktopTools: IModule = {
 
     if (hasIntegratedDesktop(desktop)) {
       log.ok(`${desktop} detectado — ferramentas de desktop ja integradas`);
+      tracker.skipped("desktop integrado");
       return;
     }
 
@@ -110,6 +111,7 @@ export const desktopTools: IModule = {
     for (const tool of TOOLS) {
       if (await commandExists(tool.cmd)) {
         log.ok(`${tool.name} ja instalado`);
+        tracker.skipped(tool.name);
         continue;
       }
 
@@ -124,12 +126,14 @@ export const desktopTools: IModule = {
 
       if (packages.length === 0) {
         log.warn(`${tool.name} nao disponivel nos repos de ${distro}`);
+        tracker.warning(tool.name);
         continue;
       }
 
       log.add(`Instalando ${tool.name}...`);
       if (await pkgInstall(...packages)) {
         log.ok(`${tool.name} instalado`);
+        tracker.installed(tool.name);
       }
     }
   },

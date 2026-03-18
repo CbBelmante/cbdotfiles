@@ -1,7 +1,7 @@
 import { $ } from "bun";
 import type { IModule } from "./index";
 import { HOME, getDistro, pkgInstall } from "../helpers";
-import { log } from "../log";
+import { log, tracker } from "../log";
 import { FONTS as FONT_DEFAULTS } from "../defaults";
 
 interface IFont {
@@ -34,6 +34,7 @@ export const fonts: IModule = {
         const fcList = await $`fc-list`.text();
         if (fcList.toLowerCase().includes(font.fcName.toLowerCase())) {
           log.ok(`${font.fcName} Nerd Font ja instalada`);
+          tracker.skipped(font.fcName);
           continue;
         }
       } catch {}
@@ -43,6 +44,7 @@ export const fonts: IModule = {
       if (distro === "arch") {
         if (await pkgInstall(font.archPkg)) {
           log.ok(`${font.name} Nerd Font instalada`);
+          tracker.installed(font.fcName);
         }
       } else {
         // Debian/Fedora: baixa do GitHub
@@ -56,8 +58,10 @@ export const fonts: IModule = {
           await $`tar xf ${tmp} -C ${fontDir}`;
           await $`rm -f ${tmp}`;
           log.ok(`${font.name} Nerd Font instalada`);
+          tracker.installed(font.fcName);
         } catch {
           log.warn(`Falha ao instalar ${font.name} Nerd Font`);
+          tracker.warning(font.fcName);
         }
       }
     }

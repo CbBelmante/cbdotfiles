@@ -1,7 +1,7 @@
 import { $ } from "bun";
 import type { IModule } from "./index";
 import { detectGPU, getDistro, isApple, pkgInstall, commandExists } from "../helpers";
-import { log } from "../log";
+import { log, tracker } from "../log";
 
 const GPU_PACKAGES: Record<string, Record<string, string[]>> = {
   amd: {
@@ -31,6 +31,7 @@ export const drivers: IModule = {
 
     if (gpu === "unknown") {
       log.warn("GPU nao identificada. Instale drivers de video manualmente.");
+      tracker.warning("GPU desconhecida");
       return;
     }
 
@@ -51,6 +52,7 @@ export const drivers: IModule = {
     log.add(`Instalando: ${packages.join(" ")}`);
     await pkgInstall(...packages);
     log.ok(`Drivers ${gpu} instalados`);
+    tracker.installed(`drivers ${gpu}`);
 
     // VA-API check
     if (await commandExists("vainfo")) {

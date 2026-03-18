@@ -1,7 +1,7 @@
 import { $ } from "bun";
 import type { IModule, IRunContext } from "./index";
 import { checkboxWithAll, commandExists, getDistro, pkgInstall } from "../helpers";
-import { log } from "../log";
+import { log, tracker } from "../log";
 
 // ---------------------------------------------------------------------------
 // App definitions
@@ -152,7 +152,7 @@ const APPS: IApp[] = [
             if (distro === "debian") await $`sudo apt install -y flatpak`;
           }
           await $`flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo`.quiet();
-          await $`flatpak install -y flathub md.obsidian.Obsidian`;
+          await $`flatpak install --user -y flathub md.obsidian.Obsidian`;
           break;
       }
     },
@@ -208,7 +208,7 @@ const APPS: IApp[] = [
             if (distro === "debian") await $`sudo apt install -y flatpak`;
           }
           await $`flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo`.quiet();
-          await $`flatpak install -y flathub io.github.peazip.PeaZip`;
+          await $`flatpak install --user -y flathub io.github.peazip.PeaZip`;
           break;
       }
     },
@@ -258,6 +258,7 @@ export const apps: IModule = {
       if (await app.isInstalled()) {
         log.ok(`${app.emoji} ${app.name} ja instalado`);
         installed.push(app);
+        tracker.skipped(app.name);
       } else {
         available.push(app);
       }
@@ -284,11 +285,14 @@ export const apps: IModule = {
           await app.install(distro);
           if (await app.isInstalled()) {
             log.ok(`${app.name} instalado`);
+            tracker.installed(app.name);
           } else {
             log.warn(`${app.name}: instalacao pode ter falhado`);
+            tracker.warning(app.name);
           }
         } catch {
           log.warn(`Falha ao instalar ${app.name}`);
+          tracker.warning(app.name);
         }
       }
     }
