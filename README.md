@@ -230,7 +230,6 @@ cbdotfiles/
 ~/.zshrc                              → cbdotfiles/zsh/.zshrc
 ~/.config/cb/aliases.zsh              → cbdotfiles/zsh/aliases.zsh
 ~/.config/cb/local.zsh                → cbdotfiles/local/zsh/aliases.zsh (se existir)
-~/.gitconfig                          → nome/email perguntados no install + include.path
 ~/.config/zellij/config.kdl           → cbdotfiles/zellij/config.kdl
 ~/.config/zellij/layouts/*.kdl        → cbdotfiles/zellij/*.kdl
 ~/.config/nvim/                       → cbdotfiles/nvim/
@@ -242,6 +241,11 @@ cbdotfiles/
 ~/.markdownlint-cli2.yaml             → cbdotfiles/nvim/.markdownlint-cli2.yaml
 ~/.config/fastfetch/config.jsonc      → cbdotfiles/fastfetch/config.jsonc
 ~/.config/btop/btop.conf              → cbdotfiles/btop/btop.conf
+```
+
+**Arquivo criado (nao symlink):**
+```
+~/.gitconfig                          → arquivo real (user + include.path → cbdotfiles/git/.gitconfig)
 ```
 
 ## 🔍 Shell Tools
