@@ -248,9 +248,6 @@ async function applyWaylandFlags(installed: IBrowser[]) {
   // So aplica se estiver em Wayland
   if (process.env.XDG_SESSION_TYPE !== "wayland") return;
 
-  const localApps = `${HOME}/.local/share/applications`;
-  await $`mkdir -p ${localApps}`.nothrow();
-
   // Carrega flags extras do local override
   let extraFlags = "";
   try {
@@ -263,17 +260,49 @@ async function applyWaylandFlags(installed: IBrowser[]) {
   } catch {}
 
   const allFlags = `${WAYLAND_FLAGS} ${extraFlags}`.trim();
-  let count = 0;
+  const flagLines = allFlags.split(" ").join("\n");
 
+  // 1. Arquivos de flags globais (cobrem TODOS os apps Chromium/Electron)
+  const flagFiles: Record<string, string> = {
+    "electron-flags.conf": flagLines,           // Electron apps (VS Code, GitKraken, Discord, Obsidian)
+    "code-flags.conf": flagLines,               // VS Code especifico
+    "chromium-flags.conf": flagLines,            // Chromium
+    "chrome-flags.conf": flagLines,              // Google Chrome
+    "vivaldi-stable.conf": flagLines,            // Vivaldi
+  };
+
+  let count = 0;
+  for (const [file, content] of Object.entries(flagFiles)) {
+    const path = `${HOME}/.config/${file}`;
+    try {
+      if (existsSync(path)) {
+        const existing = await Bun.file(path).text();
+        if (existing.includes("VaapiVideoDecodeLinuxGL")) continue;
+      }
+      await Bun.write(path, content + "\n");
+      count++;
+    } catch {}
+  }
+
+  if (count > 0) {
+    log.ok(`Flags Wayland aplicadas em ${count} config(s) (browsers + Electron apps)`);
+    tracker.configured("wayland flags");
+  } else {
+    log.ok("Flags Wayland ja configuradas (browsers + Electron apps)");
+  }
+
+  // 2. Override .desktop dos browsers (pra launcher/links)
+  const localApps = `${HOME}/.local/share/applications`;
+  await $`mkdir -p ${localApps}`.nothrow();
+
+  let desktopCount = 0;
   for (const browser of installed) {
-    // Firefox nao precisa de flags
     if (browser.id === "firefox") continue;
 
     const desktopFiles = CHROMIUM_DESKTOP_FILES[browser.id];
     if (!desktopFiles) continue;
 
     for (const desktopFile of desktopFiles) {
-      // Procura o .desktop original no sistema
       const systemFile = `/usr/share/applications/${desktopFile}`;
       if (!existsSync(systemFile)) continue;
 
@@ -281,33 +310,28 @@ async function applyWaylandFlags(installed: IBrowser[]) {
         const content = await Bun.file(systemFile).text();
         const localFile = `${localApps}/${desktopFile}`;
 
-        // Verifica se as flags ja estao aplicadas
         if (existsSync(localFile)) {
           const existing = await Bun.file(localFile).text();
           if (existing.includes(WAYLAND_FLAGS)) continue;
         }
 
-        // Adiciona flags nas linhas Exec= (sem duplicar)
         const patched = content.replace(
           /^(Exec=\S+)(.*?)$/gm,
           (match, exec, args) => {
-            // Nao adiciona se ja tem as flags
             if (args.includes("VaapiVideoDecodeLinuxGL")) return match;
             return `${exec} ${allFlags}${args}`;
           }
         );
 
         await Bun.write(localFile, patched);
-        count++;
+        desktopCount++;
       } catch {}
     }
   }
 
-  if (count > 0) {
-    // Atualiza cache de desktop files
+  if (desktopCount > 0) {
     await $`update-desktop-database ${localApps}`.nothrow();
-    log.ok(`Flags VA-API aplicadas em ${count} .desktop file(s) (Wayland)`);
-    tracker.configured("wayland browser flags");
+    log.ok(`Override .desktop em ${desktopCount} browser(s)`);
   }
 }
 
