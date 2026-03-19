@@ -100,6 +100,7 @@ open() {
 # ───────────────────────────────────────────────────────────────────────────────
 alias cbhelp='bash ~/Workspaces/cbdotfiles/bin/cbhelp.sh'
 alias cbbrowser='~/Workspaces/cbdotfiles/install.sh --chbrowser'
+alias cbalias='${EDITOR:-nvim} ~/Workspaces/cbdotfiles/local/zsh/aliases.zsh && source ~/.zshrc'
 
 # ───────────────────────────────────────────────────────────────────────────────
 # Zellij Layouts
