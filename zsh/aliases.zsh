@@ -100,7 +100,12 @@ open() {
 # ───────────────────────────────────────────────────────────────────────────────
 alias cbhelp='bash ~/Workspaces/cbdotfiles/bin/cbhelp.sh'
 alias cbbrowser='~/Workspaces/cbdotfiles/install.sh --chbrowser'
-alias cbalias='${EDITOR:-nvim} ~/Workspaces/cbdotfiles/local/zsh/aliases.zsh && source ~/.zshrc'
+cbalias() {
+    local f=~/Workspaces/cbdotfiles/local/zsh/aliases.zsh
+    mkdir -p "$(dirname "$f")"
+    [ ! -f "$f" ] && echo "# Aliases pessoais (nao vai pro git)" > "$f"
+    ${EDITOR:-nvim} "$f" && source ~/.zshrc
+}
 
 # ───────────────────────────────────────────────────────────────────────────────
 # Zellij Layouts
