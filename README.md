@@ -84,10 +84,10 @@ Ao selecionar o modulo `browsers`, o instalador mostra checkbox dos navegadores 
 
 | Modulo | Descricao | Instala software? |
 |--------|-----------|-------------------|
-| 🐚 `shell-tools` | Zsh + Oh My Zsh + NVM + Git + Kitty + Zoxide + fzf + ripgrep + bat + eza | ✅ Zsh, NVM, Kitty, ferramentas CLI |
+| 🐚 `shell-tools` | Zsh + Oh My Zsh + NVM + Node LTS + Git + SSH key + Kitty + CLI tools | ✅ Zsh, NVM, Node, Kitty, CLI tools |
 | 🔤 `fonts` | Fontes Nerd Font | ✅ Fontes |
-| 🎮 `drivers` | Drivers GPU (AMD/Intel/NVIDIA) + Bluetooth Mac | ✅ Mesa, VA-API, firmware |
-| 🌐 `browsers` | Navegadores (Vivaldi, Opera, Firefox, Chrome, Chromium) | ✅ Browsers selecionados |
+| 🎮 `drivers` | Drivers GPU (AMD/Intel/NVIDIA) + diagnostico amdgpu/radeon + Bluetooth Mac | ✅ Mesa, VA-API, kernel params |
+| 🌐 `browsers` | Navegadores + flags Wayland (browsers + Electron apps) | ✅ Browsers + electron-flags |
 | 🖥️ `desktop-tools` | Ferramentas de desktop (wofi, clipboard, screenshots, notificacoes) | ✅ Apenas em tiling WMs |
 | 🛠️ `dev` | Neovim + Zellij + tmux + VS Code + GitKraken + GitHub CLI + LazyGit + LazyDocker + Docker + Firebase + Supabase + Postman + Insomnia | ✅ Dev tools selecionados |
 | 🖥️ `fastfetch` | Config Fastfetch (system info) | ❌ Apenas symlink |
@@ -110,6 +110,45 @@ Faz automaticamente: `git pull` → `install.sh --update` → `source ~/.zshrc`
 
 > O `--update` reinstala apenas os modulos que voce selecionou na instalacao (salvos em `local/.modules`). Se nao existe selecao salva, abre o menu interativo.
 
+## 🔧 Comandos uteis
+
+| Comando | Descricao |
+|---------|-----------|
+| `cbdotInstall` | Abre o menu de instalacao |
+| `cbdotUpdate` | Atualiza (git pull + reinstala modulos salvos) |
+| `cbdotReinstall` | Reinstala do zero (limpa selecao) |
+| `cbdotResymlink` | Refaz todos os symlinks |
+| `cbbrowser` | Trocar browser padrao |
+| `pcinfo` | Info completa do PC (hw, gpu, drivers, rede, software) |
+| `pcinfo gpu` | Diagnostico GPU (driver, vulkan, VA-API, kernel params) |
+| `cbhelp` | Referencia completa de comandos e atalhos |
+
+## 🔑 SSH
+
+O instalador gera automaticamente uma chave SSH `ed25519` com o email do Git. Se ja existe, mostra a chave publica. Depois do install:
+
+```bash
+cat ~/.ssh/id_ed25519.pub     # ver a chave
+# Cole em: https://github.com/settings/ssh/new
+```
+
+## 🌐 Flags Wayland (browsers + Electron)
+
+Em Wayland, o modulo `browsers` configura automaticamente:
+
+- `~/.config/electron-flags.conf` — VS Code, GitKraken, Discord, Obsidian
+- `~/.config/code-flags.conf` — VS Code especifico
+- `~/.config/chrome-flags.conf` — Google Chrome
+- `~/.config/vivaldi-stable.conf` — Vivaldi
+- Override `.desktop` dos browsers no launcher
+
+Flags padrao (VA-API): `--enable-features=VaapiVideoDecodeLinuxGL --disable-features=UseChromeOSDirectVideoDecoder`
+
+Para `--disable-gpu` (maquinas com problema de GPU), adicione no `local/local.sh`:
+```bash
+CB_BROWSER_FLAGS="--disable-gpu"
+```
+
 ## 📂 Estrutura do Projeto
 
 ```text
@@ -117,6 +156,10 @@ cbdotfiles/
 ├── bootstrap.sh                   # ⚡ One-liner para maquina nova
 ├── install.sh                     # 🎯 Shell minimo (garante Bun + chama TS)
 ├── .gitignore                     # 🚫 Ignora arquivos gerados
+├── bin/                           # 🔧 Scripts utilitarios
+│   ├── cbhelp.sh                  # 📋 Referencia de comandos e atalhos
+│   ├── pcinfo.sh                  # 🖥️ Diagnostico do sistema (hw, gpu, drivers)
+│   └── open-browser.sh            # 🌐 Abre browser padrao com flags VA-API
 ├── ts-installer/                  # 🟦 Instalador TypeScript (Bun Shell)
 │   ├── package.json               # 📦 Deps: @inquirer/prompts
 │   ├── tsconfig.json              # ⚙️ Config TypeScript
@@ -404,8 +447,8 @@ COSMIC_BROWSER=vivaldi
 |--------|------|
 | `Super+Enter` | Terminal |
 | `Super+F` | File manager |
-| `Super+B` | Browser |
-| `Super+Shift+B` | Browser (privado) |
+| `Super+B` | Browser padrao do sistema (via open-browser.sh) |
+| `Super+Shift+B` | Browser modo privado (detecta flag correta) |
 | `Super+N` | Editor |
 | `Super+/` | 1Password |
 | `Super+G` | GitHub (webapp) |
@@ -538,14 +581,27 @@ O instalador detecta automaticamente se `local/` tem overrides e cria os symlink
 
 ## 🎮 Drivers (deteccao automatica)
 
-O modulo `drivers` detecta o hardware e instala automaticamente:
+O modulo `drivers` detecta o hardware e instala/configura automaticamente:
 
-| Hardware | O que instala |
-|----------|---------------|
-| **GPU AMD** | Mesa, Vulkan, VA-API (aceleracao de video) |
+| Hardware | O que faz |
+|----------|-----------|
+| **GPU AMD (GCN 3.0+)** | Mesa, Vulkan (RADV), VA-API — driver `amdgpu` nativo |
+| **GPU AMD (GCN 1.0/1.1)** | Detecta driver `radeon`, oferece troca pra `amdgpu` (kernel params + blacklist + initramfs) |
 | **GPU Intel** | Mesa, Vulkan, Intel Media Driver |
 | **GPU NVIDIA** | Avisa para instalar manualmente |
-| **Bluetooth Apple/Broadcom** | Firmware BCM + otimizacao PipeWire |
+| **Bluetooth Apple/Broadcom** | Detecta e avisa sobre firmware necessario |
+
+### Diagnostico GPU
+
+```bash
+pcinfo gpu    # mostra driver ativo, vulkan, VA-API, kernel params, recomendacoes
+```
+
+Para GPUs AMD antigas (SI/CIK), o installer configura automaticamente:
+1. Parametros do kernel (`amdgpu.si_support=1` ou `amdgpu.cik_support=1`)
+2. Blacklist do modulo `radeon` (`/etc/modprobe.d/blacklist-radeon.conf`)
+3. Atualiza initramfs
+4. Pede reboot
 
 ## ➕ Adicionando Novos Layouts
 
