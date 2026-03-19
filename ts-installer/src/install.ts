@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
 import { $ } from "bun";
-import { checkbox, select } from "@inquirer/prompts";
+import { checkbox, input, select } from "@inquirer/prompts";
 import { ALL_MODULES, getModuleById, type IModule, type IRunContext } from "./modules/index";
 import { changeDefaultBrowser } from "./modules/browsers";
 import {
@@ -134,6 +134,33 @@ function releaseSudo() {
   }
 }
 
+async function setupGitIdentity() {
+  let currentName = "";
+  let currentEmail = "";
+  try {
+    currentName = (await $`git config --global user.name`.text()).trim();
+    currentEmail = (await $`git config --global user.email`.text()).trim();
+  } catch {}
+
+  if (currentName && currentEmail) {
+    log.ok(`Git: ${currentName} <${currentEmail}>`);
+    return;
+  }
+
+  const name = await input({
+    message: "Seu nome para commits Git:",
+    default: currentName || undefined,
+  });
+  const email = await input({
+    message: "Seu email para commits Git:",
+    default: currentEmail || undefined,
+  });
+
+  await $`git config --global user.name ${name}`;
+  await $`git config --global user.email ${email}`;
+  log.ok(`Git configurado: ${name} <${email}>`);
+}
+
 async function main() {
   showHeader(DOTFILES_DIR);
 
@@ -148,6 +175,9 @@ async function main() {
 
   // Pede sudo logo no inicio pra nao interromper no meio
   await acquireSudo();
+
+  // Configura Git nome/email se ainda nao tem
+  await setupGitIdentity();
 
   // Determina quais modulos instalar
   let selectedModules: IModule[];

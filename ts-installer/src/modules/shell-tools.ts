@@ -1,6 +1,5 @@
 import { $ } from "bun";
 import { existsSync } from "fs";
-import { input } from "@inquirer/prompts";
 import type { IModule } from "./index";
 import { DOTFILES_DIR, HOME, commandExists, getDesktop, getDistro, pkgInstall, symlink, versionGte } from "../helpers";
 import { log, tracker } from "../log";
@@ -153,32 +152,8 @@ async function setupNvm() {
 async function setupGit() {
   log.title("git", "Git");
 
-  // Verifica se ja tem nome/email configurados
-  let currentName = "";
-  let currentEmail = "";
-  try {
-    currentName = (await $`git config --global user.name`.text()).trim();
-    currentEmail = (await $`git config --global user.email`.text()).trim();
-  } catch {}
-
-  if (currentName && currentEmail) {
-    log.ok(`Git ja configurado: ${currentName} <${currentEmail}>`);
-  } else {
-    const name = await input({
-      message: "Seu nome para commits Git:",
-      default: currentName || undefined,
-    });
-    const email = await input({
-      message: "Seu email para commits Git:",
-      default: currentEmail || undefined,
-    });
-
-    await $`git config --global user.name ${name}`;
-    await $`git config --global user.email ${email}`;
-    log.ok(`Git configurado: ${name} <${email}>`);
-  }
-
-  // Symlink das configs extras (aliases, core, etc) sem sobrescrever user
+  // Nome/email ja configurados no install.ts (antes dos modulos)
+  // Aqui so faz o include.path das configs compartilhaveis
   const gitconfigExtra = `${DOTFILES_DIR}/git/.gitconfig`;
   if (existsSync(gitconfigExtra)) {
     await $`git config --global include.path ${gitconfigExtra}`;
