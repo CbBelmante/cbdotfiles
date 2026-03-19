@@ -124,24 +124,38 @@ async function setupNvm() {
   }
 
   // Instala Node LTS se nao tem node/npm
-  const nvmSh = existsSync(nvmDir) ? `${nvmDir}/nvm.sh` : `${nvmAlt}/nvm.sh`;
-  if (existsSync(nvmSh) && !(await commandExists("node"))) {
-    log.add("Instalando Node LTS via NVM...");
-    await $`bash -c 'source ${nvmSh} && nvm install --lts --default'`.nothrow();
-    // Verifica se instalou
-    const nodeBin = await $`bash -c 'source ${nvmSh} && which node'`.text().catch(() => "");
-    if (nodeBin.trim()) {
-      const version = (await $`bash -c 'source ${nvmSh} && node --version'`.text()).trim();
-      log.ok(`Node ${version} instalado (LTS)`);
-      tracker.installed("Node LTS");
-    } else {
-      log.warn("Falha ao instalar Node LTS");
-      tracker.warning("Node LTS");
+  try {
+    const nvmSh = existsSync(nvmDir) ? `${nvmDir}/nvm.sh` : `${nvmAlt}/nvm.sh`;
+
+    if (existsSync(nvmSh) && !(await commandExists("node"))) {
+      log.add("Instalando Node LTS via NVM...");
+      // Usa script temporario pra evitar problemas de parsing no Bun Shell
+      const script = `#!/bin/bash\nsource "${nvmSh}"\nnvm install --lts --default`;
+      await Bun.write("/tmp/nvm-node-install.sh", script);
+      await $`bash /tmp/nvm-node-install.sh`.nothrow();
+      await $`rm -f /tmp/nvm-node-install.sh`.nothrow();
+
+      // Verifica se instalou
+      const checkScript = `#!/bin/bash\nsource "${nvmSh}"\nnode --version`;
+      await Bun.write("/tmp/nvm-node-check.sh", checkScript);
+      const result = await $`bash /tmp/nvm-node-check.sh`.nothrow().text();
+      await $`rm -f /tmp/nvm-node-check.sh`.nothrow();
+
+      if (result.trim()) {
+        log.ok(`Node ${result.trim()} instalado (LTS)`);
+        tracker.installed("Node LTS");
+      } else {
+        log.warn("Falha ao instalar Node LTS — rode manualmente: source ~/.nvm/nvm.sh && nvm install --lts");
+        tracker.warning("Node LTS");
+      }
+    } else if (await commandExists("node")) {
+      const version = (await $`node --version`.nothrow().text()).trim();
+      log.ok(`Node ja instalado: ${version}`);
+      tracker.skipped("Node");
     }
-  } else if (await commandExists("node")) {
-    const version = (await $`node --version`.text()).trim();
-    log.ok(`Node ja instalado: ${version}`);
-    tracker.skipped("Node");
+  } catch {
+    log.warn("Falha ao configurar Node LTS — rode manualmente: source ~/.nvm/nvm.sh && nvm install --lts");
+    tracker.warning("Node LTS");
   }
 }
 
