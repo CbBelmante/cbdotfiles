@@ -61,6 +61,29 @@ async function fixAmdDriver(gen: "cik" | "si", distro: string) {
 
   const genName = gen === "cik" ? "GCN 1.1 (Sea Islands)" : "GCN 1.0 (Southern Islands)";
 
+  // Verifica se os params ja estao no kernel (adicionados mas sem reboot, ou nao funcionaram)
+  try {
+    const cmdline = await $`cat /proc/cmdline`.text();
+    if (cmdline.includes("amdgpu.cik_support=1") || cmdline.includes("amdgpu.si_support=1")) {
+      log.warn(`GPU AMD ${genName} — params do kernel ja configurados mas driver ainda e "radeon"`);
+      log.warn("O kernel pode nao suportar amdgpu pra essa GPU especifica");
+      log.warn("Tente atualizar o kernel: sudo apt update && sudo apt upgrade");
+      return;
+    }
+  } catch {}
+
+  // Verifica se os params ja foram adicionados ao kernelstub/grub (sem reboot ainda)
+  try {
+    if (await commandExists("kernelstub")) {
+      const ksOutput = await $`kernelstub -p`.nothrow().text();
+      if (ksOutput.includes("amdgpu.cik_support") || ksOutput.includes("amdgpu.si_support")) {
+        log.warn(`GPU AMD ${genName} — params ja adicionados ao kernelstub`);
+        log.warn("REBOOT NECESSARIO para ativar o driver amdgpu");
+        return;
+      }
+    }
+  } catch {}
+
   log.warn(`GPU AMD ${genName} usando driver "radeon" (sem Vulkan, VA-API antigo)`);
   log.warn(`Trocar para "amdgpu" habilita Vulkan, VA-API moderno e fix artefatos`);
 
