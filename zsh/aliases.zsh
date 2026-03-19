@@ -87,9 +87,57 @@ fi
 # ───────────────────────────────────────────────────────────────────────────────
 n() { if [ "$#" -eq 0 ]; then nvim .; else nvim "$@"; fi; }
 alias d='docker'
+alias dc='docker compose'
+alias p10kconfig='p10k configure'
 
 open() {
     xdg-open "$@" >/dev/null 2>&1 &
+}
+
+# ───────────────────────────────────────────────────────────────────────────────
+# Dicas rapidas (cbhelp)
+# ───────────────────────────────────────────────────────────────────────────────
+cbhelp() {
+    echo ""
+    echo "  ⚙️  CBDOTFILES - Comandos uteis"
+    echo "  ════════════════════════════════════════════════"
+    echo ""
+    echo "  📦 Dotfiles:"
+    echo "    cbdotInstall     Abre o menu de instalacao"
+    echo "    cbdotUpdate      Atualiza (git pull + reinstala)"
+    echo "    cbdotReinstall   Reinstala do zero (limpa selecao)"
+    echo ""
+    echo "  🐚 Terminal:"
+    echo "    p10kconfig       Configura visual do Powerlevel10k"
+    echo "    n                Abre Neovim (n arquivo.txt ou n pra abrir dir)"
+    echo "    ff               Busca fuzzy de arquivos com preview"
+    echo "    Ctrl+R           Historico de comandos com busca fuzzy"
+    echo ""
+    echo "  🖥️ Zellij / tmux:"
+    echo "    zj cbw1 projeto  Abre sessao Zellij com layout"
+    echo "    zj-tab cbw1 dir  Nova tab no Zellij"
+    echo "    zj-l / zj-a      Listar / reconectar sessoes"
+    echo "    ta / tl           tmux attach / list sessions"
+    echo ""
+    echo "  🔀 Git:"
+    echo "    gs / ga / gc / gp  status / add / commit -m / push"
+    echo "    gl                 log graph"
+    echo ""
+    echo "  📂 Navegacao:"
+    echo "    ws               cd ~/Workspaces"
+    echo "    .. / ... / ....  Subir 1/2/3 niveis"
+    echo "    cd <termo>       Zoxide (lembra diretorios visitados)"
+    echo ""
+    echo "  🌐 Browser:"
+    echo "    Super+B          Abre browser padrao"
+    echo "    Super+Shift+B    Browser modo privado"
+    echo "    Super+Shift+S    Screenshot"
+    echo ""
+    echo "  🔧 Sistema:"
+    echo "    open arquivo     Abre com app padrao"
+    echo "    d / dc           Docker / Docker Compose"
+    echo "    Super+K          Mostrar todos os atalhos de teclado"
+    echo ""
 }
 
 # ───────────────────────────────────────────────────────────────────────────────

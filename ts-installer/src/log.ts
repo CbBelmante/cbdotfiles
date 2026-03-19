@@ -210,6 +210,27 @@ export function showSummary(
   console.log();
   console.log(`  ${DIM}Rode:${NC} ${BOLD}source ~/.zshrc${NC}`);
   console.log();
+  showPostInstallTips();
+}
+
+// ---------------------------------------------------------------------------
+// Post-install tips
+// ---------------------------------------------------------------------------
+
+const POST_INSTALL_TIPS = [
+  { cmd: "p10kconfig", desc: "Configurar visual do terminal (Powerlevel10k)" },
+  { cmd: "cbhelp", desc: "Ver todos os comandos e atalhos disponiveis" },
+  { cmd: "Super+K", desc: "Ver atalhos de teclado" },
+  { cmd: "local/local.sh", desc: "Overrides por maquina (ex: CB_BROWSER_FLAGS, CB_SUSPEND)" },
+  { cmd: "local/zsh/aliases.zsh", desc: "Aliases pessoais (nao vao pro git)" },
+];
+
+function showPostInstallTips() {
+  console.log(`  ${DIM}Dicas:${NC}`);
+  for (const tip of POST_INSTALL_TIPS) {
+    console.log(`    ${CYAN}${tip.cmd.padEnd(24)}${NC} ${DIM}${tip.desc}${NC}`);
+  }
+  console.log();
 }
 
 // ---------------------------------------------------------------------------
