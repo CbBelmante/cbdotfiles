@@ -69,28 +69,62 @@ show_gpu() {
   local gpu=$(lspci 2>/dev/null | grep -i "VGA" | cut -d: -f3 | sed 's/^ //')
   info "GPU" "$gpu"
 
-  # Driver em uso
-  local driver=$(lspci -k 2>/dev/null | grep -A2 "VGA" | grep "Kernel driver" | awk '{print $NF}')
-  if [[ "$driver" == "amdgpu" ]]; then
-    info "Driver" "$driver (moderno)"
-  elif [[ "$driver" == "radeon" ]]; then
-    warn "Driver" "$driver (antigo — considere trocar pra amdgpu)"
-  else
-    info "Driver" "${driver:-desconhecido}"
+  # Geracao AMD
+  local gpu_lower=$(echo "$gpu" | tr '[:upper:]' '[:lower:]')
+  local amd_gen=""
+  if echo "$gpu_lower" | grep -qE "curacao|trinidad|tahiti|pitcairn|verde|cape verde|hd 78|hd 79|r[79] [23]70"; then
+    amd_gen="SI (Southern Islands / GCN 1.0)"
+  elif echo "$gpu_lower" | grep -qE "bonaire|hawaii|kaveri|kabini|mullins|hainan|oland|r[79] 260"; then
+    amd_gen="CIK (Sea Islands / GCN 1.1)"
+  elif echo "$gpu_lower" | grep -qE "tonga|fiji|polaris|ellesmere|baffin|rx 4[78]0|rx 5[678]0"; then
+    amd_gen="Polaris/Fiji (GCN 3.0/4.0)"
+  elif echo "$gpu_lower" | grep -qE "vega|navi|rdna|rx 5[67]00|rx 6[0-9]00|rx 7[0-9]00"; then
+    amd_gen="RDNA"
   fi
+  [[ -n "$amd_gen" ]] && info "Geracao" "$amd_gen"
+
+  # Driver em uso
+  local driver=$(lspci -k 2>/dev/null | grep -A3 "VGA" | grep "Kernel driver" | awk '{print $NF}')
+  local modules=$(lspci -k 2>/dev/null | grep -A3 "VGA" | grep "Kernel modules" | cut -d: -f2 | sed 's/^ //')
+
+  if [[ "$driver" == "amdgpu" ]]; then
+    info "Driver" "$driver (moderno) ✓"
+  elif [[ "$driver" == "radeon" ]]; then
+    warn "Driver" "$driver (antigo)"
+  elif [[ "$driver" == "i915" ]]; then
+    info "Driver" "$driver (Intel) ✓"
+  elif [[ "$driver" == "nvidia" || "$driver" == "nouveau" ]]; then
+    info "Driver" "$driver"
+  else
+    warn "Driver" "${driver:-nenhum driver ativo!}"
+  fi
+  [[ -n "$modules" ]] && info "Modulos disponiveis" "$modules"
+
+  # Modulos carregados
+  local amdgpu_loaded=$(lsmod 2>/dev/null | grep "^amdgpu" | awk '{print $3}')
+  local radeon_loaded=$(lsmod 2>/dev/null | grep "^radeon" | awk '{print $3}')
+  if [[ -n "$amdgpu_loaded" ]]; then
+    info "amdgpu (modulo)" "carregado ($amdgpu_loaded refs)"
+  fi
+  if [[ -n "$radeon_loaded" ]]; then
+    info "radeon (modulo)" "carregado ($radeon_loaded refs)"
+  fi
+
+  divider
 
   # Vulkan
   if command -v vulkaninfo &>/dev/null; then
     local vk_driver=$(vulkaninfo --summary 2>/dev/null | grep "driverName" | head -1 | awk '{print $NF}')
+    local vk_api=$(vulkaninfo --summary 2>/dev/null | grep "apiVersion" | head -1 | awk '{print $NF}')
     if [[ "$vk_driver" == "llvmpipe" ]]; then
       warn "Vulkan" "llvmpipe (SOFTWARE — sem aceleracao GPU!)"
     elif [[ -n "$vk_driver" ]]; then
-      info "Vulkan" "$vk_driver (hardware)"
+      info "Vulkan" "$vk_driver (hardware) — API $vk_api ✓"
     else
       warn "Vulkan" "nao detectado"
     fi
   else
-    warn "Vulkan" "vulkaninfo nao instalado"
+    warn "Vulkan" "vulkaninfo nao instalado (apt install vulkan-tools)"
   fi
 
   # VA-API
@@ -98,13 +132,21 @@ show_gpu() {
     local vaapi_driver=$(vainfo 2>&1 | grep "Driver version" | head -1)
     local profiles=$(vainfo 2>&1 | grep -c "VAProfile" || echo "0")
     if [[ -n "$vaapi_driver" ]]; then
-      info "VA-API" "$profiles perfis — $vaapi_driver"
+      info "VA-API" "$profiles perfis — $vaapi_driver ✓"
     else
       local vaapi_status=$(vainfo 2>&1 | head -5 | tail -1)
       info "VA-API" "$vaapi_status"
     fi
   else
-    warn "VA-API" "vainfo nao instalado"
+    warn "VA-API" "vainfo nao instalado (apt install vainfo)"
+  fi
+
+  # OpenGL
+  if command -v glxinfo &>/dev/null; then
+    local gl_renderer=$(glxinfo 2>/dev/null | grep "OpenGL renderer" | cut -d: -f2 | sed 's/^ //')
+    local gl_version=$(glxinfo 2>/dev/null | grep "OpenGL version" | cut -d: -f2 | sed 's/^ //')
+    [[ -n "$gl_renderer" ]] && info "OpenGL renderer" "$gl_renderer"
+    [[ -n "$gl_version" ]] && info "OpenGL version" "$gl_version"
   fi
 
   # Mesa
@@ -112,15 +154,64 @@ show_gpu() {
   [[ -z "$mesa" ]] && mesa=$(pacman -Q mesa 2>/dev/null | awk '{print $2}')
   [[ -n "$mesa" ]] && info "Mesa" "$mesa"
 
-  # Kernel params (amdgpu)
+  divider
+
+  # Kernel params
   local cmdline=$(cat /proc/cmdline 2>/dev/null)
-  if echo "$cmdline" | grep -q "amdgpu"; then
-    info "Kernel params" "$(echo "$cmdline" | grep -oE 'amdgpu\.[^ ]+' | tr '\n' ' ')"
+  local amdgpu_params=$(echo "$cmdline" | grep -oE '(amdgpu|radeon)\.[^ ]+' | tr '\n' ' ')
+  if [[ -n "$amdgpu_params" ]]; then
+    info "Kernel params" "$amdgpu_params"
+  else
+    info "Kernel params" "(nenhum override de GPU)"
   fi
 
   # Blacklist
   if [ -f /etc/modprobe.d/blacklist-radeon.conf ]; then
-    info "Blacklist" "radeon bloqueado"
+    info "Blacklist" "radeon bloqueado ✓"
+  fi
+
+  # Electron/Browser flags
+  if [ -f ~/.config/electron-flags.conf ]; then
+    info "Electron flags" "$(cat ~/.config/electron-flags.conf | tr '\n' ' ')"
+  fi
+  if [ -f ~/Workspaces/cbdotfiles/local/local.sh ]; then
+    local browser_flags=$(grep "CB_BROWSER_FLAGS" ~/Workspaces/cbdotfiles/local/local.sh 2>/dev/null | grep -v "^#" | cut -d= -f2 | tr -d '"'"'")
+    [[ -n "$browser_flags" ]] && info "Browser flags (local)" "$browser_flags"
+  fi
+
+  divider
+
+  # Recomendacoes
+  echo -e "  ${BOLD}Diagnostico:${NC}"
+
+  local issues=0
+
+  # Driver antigo
+  if [[ "$driver" == "radeon" ]]; then
+    warn "⚠ " "Driver radeon (antigo) — rode cbdotUpdate pra tentar amdgpu"
+    issues=$((issues + 1))
+  fi
+
+  # Sem driver
+  if [[ -z "$driver" ]]; then
+    warn "⚠ " "Nenhum driver ativo — GPU sem aceleracao"
+    issues=$((issues + 1))
+  fi
+
+  # Vulkan software
+  if [[ "$vk_driver" == "llvmpipe" ]]; then
+    warn "⚠ " "Vulkan em software (llvmpipe) — tudo renderiza pela CPU"
+    issues=$((issues + 1))
+  fi
+
+  # Electron flags faltando
+  if [ ! -f ~/.config/electron-flags.conf ] && [[ "$XDG_SESSION_TYPE" == "wayland" ]]; then
+    warn "⚠ " "Sem electron-flags.conf — rode cbdotUpdate (modulo browsers)"
+    issues=$((issues + 1))
+  fi
+
+  if [[ $issues -eq 0 ]]; then
+    info "✓" "Tudo ok — GPU com aceleracao de hardware"
   fi
 }
 
