@@ -100,12 +100,16 @@ open() {
 # ───────────────────────────────────────────────────────────────────────────────
 alias cbhelp='bash ~/Workspaces/cbdotfiles/bin/cbhelp.sh'
 alias cbbrowser='~/Workspaces/cbdotfiles/install.sh --chbrowser'
-cbalias() {
-    local f=~/Workspaces/cbdotfiles/local/zsh/aliases.zsh
+_cb_edit_local() {
+    local f=~/Workspaces/cbdotfiles/local/$1
+    local header="$2"
     mkdir -p "$(dirname "$f")"
-    [ ! -f "$f" ] && echo "# Aliases pessoais (nao vai pro git)" > "$f"
-    ${EDITOR:-nvim} "$f" && source ~/.zshrc
+    [ ! -f "$f" ] && echo "$header" > "$f"
+    ${EDITOR:-nvim} "$f"
 }
+cbalias()  { _cb_edit_local "zsh/aliases.zsh" "# Aliases pessoais (nao vai pro git)" && source ~/.zshrc; }
+cbkitty()  { _cb_edit_local "kitty/kitty.conf" "# Override local do Kitty (fonte, tamanho, etc)"; }
+cblocal()  { _cb_edit_local "local.sh" "# Variaveis locais (CB_SUSPEND, CB_BROWSER_FLAGS, etc)"; }
 
 # ───────────────────────────────────────────────────────────────────────────────
 # Zellij Layouts
