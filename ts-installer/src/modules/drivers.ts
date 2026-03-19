@@ -1,4 +1,5 @@
 import { $ } from "bun";
+import { existsSync } from "fs";
 import { confirm } from "@inquirer/prompts";
 import type { IModule } from "./index";
 import { detectGPU, getDistro, isApple, pkgInstall, commandExists } from "../helpers";
@@ -60,35 +61,51 @@ async function fixAmdDriver(gen: "cik" | "si", distro: string) {
     : "amdgpu.si_support=1 radeon.si_support=0";
 
   const genName = gen === "cik" ? "GCN 1.1 (Sea Islands)" : "GCN 1.0 (Southern Islands)";
+  const blacklistFile = "/etc/modprobe.d/blacklist-radeon.conf";
 
-  // Verifica se os params ja estao no kernel (adicionados mas sem reboot, ou nao funcionaram)
+  // Verifica se os params ja estao no kernel
+  let paramsInKernel = false;
   try {
     const cmdline = await $`cat /proc/cmdline`.text();
-    if (cmdline.includes("amdgpu.cik_support=1") || cmdline.includes("amdgpu.si_support=1")) {
-      log.warn(`GPU AMD ${genName} — params do kernel ja configurados mas driver ainda e "radeon"`);
-      log.warn("O kernel pode nao suportar amdgpu pra essa GPU especifica");
-      log.warn("Tente atualizar o kernel: sudo apt update && sudo apt upgrade");
-      return;
-    }
+    paramsInKernel = cmdline.includes("amdgpu.cik_support=1") || cmdline.includes("amdgpu.si_support=1");
   } catch {}
 
-  // Verifica se os params ja foram adicionados ao kernelstub/grub (sem reboot ainda)
-  try {
-    if (await commandExists("kernelstub")) {
-      const ksOutput = await $`kernelstub -p`.nothrow().text();
-      if (ksOutput.includes("amdgpu.cik_support") || ksOutput.includes("amdgpu.si_support")) {
-        log.warn(`GPU AMD ${genName} — params ja adicionados ao kernelstub`);
-        log.warn("REBOOT NECESSARIO para ativar o driver amdgpu");
-        return;
-      }
-    }
-  } catch {}
+  // Verifica se blacklist ja existe
+  const blacklistExists = existsSync(blacklistFile);
 
+  if (paramsInKernel && blacklistExists) {
+    // Tudo configurado mas driver ainda e radeon — precisa de reboot
+    log.warn(`GPU AMD ${genName} — amdgpu configurado, precisa de REBOOT`);
+    log.warn("Rode: sudo reboot");
+    return;
+  }
+
+  if (paramsInKernel && !blacklistExists) {
+    // Params no kernel mas radeon nao esta bloqueado — radeon carrega primeiro
+    log.warn(`GPU AMD ${genName} — params do kernel ok, mas "radeon" carrega antes do "amdgpu"`);
+    log.add("Bloqueando modulo radeon e atualizando initramfs...");
+
+    try {
+      await $`sudo bash -c 'echo "blacklist radeon" > ${blacklistFile}'`;
+      await $`sudo update-initramfs -u`.nothrow();
+      log.ok("radeon bloqueado via blacklist + initramfs atualizado");
+      log.warn("REBOOT NECESSARIO para ativar o driver amdgpu");
+      tracker.installed("blacklist radeon");
+    } catch {
+      log.warn(`Falha ao blacklistar. Rode manualmente:`);
+      log.warn(`  echo "blacklist radeon" | sudo tee ${blacklistFile}`);
+      log.warn("  sudo update-initramfs -u && sudo reboot");
+      tracker.warning("blacklist radeon");
+    }
+    return;
+  }
+
+  // Params nao estao no kernel — primeira vez
   log.warn(`GPU AMD ${genName} usando driver "radeon" (sem Vulkan, VA-API antigo)`);
   log.warn(`Trocar para "amdgpu" habilita Vulkan, VA-API moderno e fix artefatos`);
 
   const doFix = await confirm({
-    message: `Adicionar parametros do kernel para usar amdgpu? (requer reboot)`,
+    message: `Configurar kernel para usar amdgpu? (requer reboot)`,
     default: true,
   });
 
@@ -98,13 +115,12 @@ async function fixAmdDriver(gen: "cik" | "si", distro: string) {
   }
 
   try {
+    // 1. Adiciona params do kernel
     if (distro === "debian") {
-      // Pop!_OS usa kernelstub (systemd-boot)
       if (await commandExists("kernelstub")) {
         await $`sudo kernelstub -a ${params}`;
         log.ok(`kernelstub: adicionado "${params}"`);
       } else {
-        // Ubuntu/Debian padrao usa GRUB
         const grubFile = "/etc/default/grub";
         const grubContent = await $`cat ${grubFile}`.text();
         if (!grubContent.includes(params)) {
@@ -113,8 +129,6 @@ async function fixAmdDriver(gen: "cik" | "si", distro: string) {
           await $`sudo bash -c 'sed -i "s/GRUB_CMDLINE_LINUX_DEFAULT=\"[^\"]*\"/GRUB_CMDLINE_LINUX_DEFAULT=\"${updated}\"/" ${grubFile}'`;
           await $`sudo update-grub`;
           log.ok(`GRUB: adicionado "${params}"`);
-        } else {
-          log.ok("Parametros ja configurados no GRUB");
         }
       }
     } else if (distro === "arch") {
@@ -125,11 +139,24 @@ async function fixAmdDriver(gen: "cik" | "si", distro: string) {
       log.ok(`grubby: adicionado "${params}"`);
     }
 
+    // 2. Blacklist radeon pra garantir que amdgpu carrega primeiro
+    if (!blacklistExists) {
+      await $`sudo bash -c 'echo "blacklist radeon" > ${blacklistFile}'`;
+      log.ok("radeon bloqueado via blacklist");
+    }
+
+    // 3. Atualiza initramfs
+    await $`sudo update-initramfs -u`.nothrow();
+    log.ok("initramfs atualizado");
+
     log.ok("Driver amdgpu sera ativado apos reboot");
     log.warn("REBOOT NECESSARIO para aplicar a troca de driver");
-    tracker.installed("amdgpu kernel params");
+    tracker.installed("amdgpu + blacklist radeon");
   } catch {
-    log.warn(`Falha ao configurar. Adicione manualmente: ${params}`);
+    log.warn(`Falha ao configurar. Rode manualmente:`);
+    log.warn(`  sudo kernelstub -a "${params}"`);
+    log.warn(`  echo "blacklist radeon" | sudo tee ${blacklistFile}`);
+    log.warn("  sudo update-initramfs -u && sudo reboot");
     tracker.warning("amdgpu kernel params");
   }
 }
