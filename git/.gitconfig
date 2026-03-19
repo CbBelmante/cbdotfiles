@@ -3,6 +3,7 @@
 # ═══════════════════════════════════════════════════════════════════════════════
 # Nome/email sao configurados durante o install (git config --global)
 # Este arquivo e incluido via: git config --global include.path <path>
+# NAO symlinke este arquivo pra ~/.gitconfig — use include.path
 # ═══════════════════════════════════════════════════════════════════════════════
 
 [init]
@@ -26,6 +27,3 @@
 	lg = log --oneline --graph --decorate --all
 	last = log -1 HEAD
 	unstage = reset HEAD --
-[user]
-	name = CbBelmante
-	email = belmantgui@gmail.com

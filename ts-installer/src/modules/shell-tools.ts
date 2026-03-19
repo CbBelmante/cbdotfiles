@@ -161,12 +161,33 @@ async function setupNvm() {
 async function setupGit() {
   log.title("git", "Git");
 
+  // Remove symlink se existir (evita loop circular de include)
+  const globalGitconfig = `${HOME}/.gitconfig`;
+  try {
+    const stats = require("fs").lstatSync(globalGitconfig);
+    if (stats.isSymbolicLink()) {
+      await $`rm ${globalGitconfig}`.nothrow();
+      log.dim("Removido symlink ~/.gitconfig (usando include.path)");
+    }
+  } catch {}
+
   // Nome/email ja configurados no install.ts (antes dos modulos)
   // Aqui so faz o include.path das configs compartilhaveis
   const gitconfigExtra = `${DOTFILES_DIR}/git/.gitconfig`;
   if (existsSync(gitconfigExtra)) {
-    await $`git config --global include.path ${gitconfigExtra}`;
-    log.ok("git include.path -> cbdotfiles/.gitconfig");
+    // Verifica se ja esta incluido
+    try {
+      const current = (await $`git config --global include.path`.nothrow().text()).trim();
+      if (current === gitconfigExtra) {
+        log.ok("git include.path -> cbdotfiles/.gitconfig (ja configurado)");
+      } else {
+        await $`git config --global include.path ${gitconfigExtra}`;
+        log.ok("git include.path -> cbdotfiles/.gitconfig");
+      }
+    } catch {
+      await $`git config --global include.path ${gitconfigExtra}`;
+      log.ok("git include.path -> cbdotfiles/.gitconfig");
+    }
   }
 
   tracker.configured("git");
