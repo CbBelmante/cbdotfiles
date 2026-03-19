@@ -99,6 +99,7 @@ open() {
 # Help & Info (scripts em bin/)
 # ───────────────────────────────────────────────────────────────────────────────
 alias cbhelp='bash ~/Workspaces/cbdotfiles/bin/cbhelp.sh'
+alias cbbrowser='~/Workspaces/cbdotfiles/install.sh --chbrowser'
 
 # ───────────────────────────────────────────────────────────────────────────────
 # Zellij Layouts

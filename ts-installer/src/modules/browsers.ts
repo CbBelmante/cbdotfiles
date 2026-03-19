@@ -401,10 +401,19 @@ export const browsers: IModule = {
     // Browser padrao
     if (installed.length > 0) {
       if (ctx.isAll) {
-        // --all: browser padrao definido em defaults.ts
-        const defaultBrowser = BROWSERS.find((b) => b.id === BROWSER.default)!;
-        if (await isInstalled(defaultBrowser)) {
-          await setDefaultBrowser(defaultBrowser);
+        // --all/--update: so define se nenhum browser padrao esta configurado
+        let currentDefault = "";
+        try {
+          currentDefault = (await $`xdg-settings get default-web-browser`.nothrow().text()).trim();
+        } catch {}
+
+        if (currentDefault) {
+          log.ok(`Browser padrao: ${currentDefault} (mantido)`);
+        } else {
+          const defaultBrowser = BROWSERS.find((b) => b.id === BROWSER.default)!;
+          if (await isInstalled(defaultBrowser)) {
+            await setDefaultBrowser(defaultBrowser);
+          }
         }
       } else {
         const choices = installed.map((b) => ({
