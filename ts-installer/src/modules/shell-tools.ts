@@ -123,69 +123,34 @@ async function setupNvm() {
     tracker.skipped("NVM");
   }
 
-  // Procura node dentro do NVM (nao esta no PATH do Bun Shell)
-  const activeNvmDir = existsSync(nvmDir) ? nvmDir : nvmAlt;
-  const nvmSh = `${activeNvmDir}/nvm.sh`;
+  // Instala Node LTS via NVM
+  const nvmSh = existsSync(nvmDir) ? `${nvmDir}/nvm.sh` : `${nvmAlt}/nvm.sh`;
 
-  function findNvmNodeBin(): string | null {
-    const versionsDir = `${activeNvmDir}/versions/node`;
-    if (!existsSync(versionsDir)) return null;
+  if (existsSync(nvmSh)) {
     try {
-      const dirs = require("fs").readdirSync(versionsDir) as string[];
-      // Ordena pra pegar a versao mais recente
-      const sorted = dirs.filter((d: string) => d.startsWith("v")).sort().reverse();
-      for (const dir of sorted) {
-        const binDir = `${versionsDir}/${dir}/bin`;
-        if (existsSync(`${binDir}/node`)) return binDir;
-      }
-    } catch {}
-    return null;
-  }
+      const script = [
+        "#!/bin/bash",
+        `source "${nvmSh}"`,
+        "nvm install --lts --default",
+        "node --version",
+      ].join("\n");
 
-  // Adiciona node do NVM ao PATH se existir
-  function addNvmToPath(binDir: string) {
-    if (!process.env.PATH?.includes(binDir)) {
-      process.env.PATH = `${binDir}:${process.env.PATH}`;
-    }
-  }
+      await Bun.write("/tmp/nvm-setup.sh", script);
+      const result = await $`bash /tmp/nvm-setup.sh`.nothrow().text();
+      await $`rm -f /tmp/nvm-setup.sh`.nothrow();
 
-  try {
-    let nvmNodeBin = findNvmNodeBin();
-    const nodeInPath = await commandExists("node");
-
-    if (!nodeInPath && !nvmNodeBin && existsSync(nvmSh)) {
-      // Node nao instalado — instala via NVM
-      log.add("Instalando Node LTS via NVM...");
-      const script = `#!/bin/bash\nsource "${nvmSh}"\nnvm install --lts --default`;
-      await Bun.write("/tmp/nvm-node-install.sh", script);
-      await $`bash /tmp/nvm-node-install.sh`.nothrow();
-      await $`rm -f /tmp/nvm-node-install.sh`.nothrow();
-
-      // Procura de novo apos instalar
-      nvmNodeBin = findNvmNodeBin();
-      if (nvmNodeBin) {
-        addNvmToPath(nvmNodeBin);
-        const version = (await $`${nvmNodeBin}/node --version`.nothrow().text()).trim();
-        log.ok(`Node ${version} instalado (LTS) + npm + npx`);
-        tracker.installed("Node LTS");
+      const version = result.trim().split("\n").pop()?.trim();
+      if (version?.startsWith("v")) {
+        log.ok(`Node ${version} (LTS) + npm`);
+        tracker.skipped("Node");
       } else {
-        log.warn("Falha ao instalar Node LTS — rode: source ~/.nvm/nvm.sh && nvm install --lts");
+        log.warn("Rode: source ~/.nvm/nvm.sh && nvm install --lts");
         tracker.warning("Node LTS");
       }
-    } else if (nvmNodeBin && !nodeInPath) {
-      // Node existe no NVM mas nao esta no PATH do Bun Shell
-      addNvmToPath(nvmNodeBin);
-      const version = (await $`${nvmNodeBin}/node --version`.nothrow().text()).trim();
-      log.ok(`Node ja instalado via NVM: ${version} (adicionado ao PATH)`);
-      tracker.skipped("Node");
-    } else if (nodeInPath) {
-      const version = (await $`node --version`.nothrow().text()).trim();
-      log.ok(`Node ja instalado: ${version}`);
-      tracker.skipped("Node");
+    } catch {
+      log.warn("Rode: source ~/.nvm/nvm.sh && nvm install --lts");
+      tracker.warning("Node LTS");
     }
-  } catch {
-    log.warn("Falha ao configurar Node — rode: source ~/.nvm/nvm.sh && nvm install --lts");
-    tracker.warning("Node LTS");
   }
 }
 
