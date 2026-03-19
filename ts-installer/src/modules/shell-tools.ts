@@ -173,6 +173,68 @@ async function setupGit() {
 }
 
 // ---------------------------------------------------------------------------
+// SSH key (GitHub/GitLab)
+// ---------------------------------------------------------------------------
+
+async function setupSSH() {
+  log.title("ssh", "SSH Key");
+
+  const sshDir = `${HOME}/.ssh`;
+  const keyFile = `${sshDir}/id_ed25519`;
+  const pubFile = `${keyFile}.pub`;
+
+  if (existsSync(pubFile)) {
+    const pubKey = (await Bun.file(pubFile).text()).trim();
+    log.ok("Chave SSH ja existe");
+    log.dim(`  ${pubKey.substring(0, 80)}...`);
+    tracker.skipped("SSH key");
+    return;
+  }
+
+  // Pega email do git config pra usar na chave
+  let email = "";
+  try {
+    email = (await $`git config --global user.email`.text()).trim();
+  } catch {}
+
+  if (!email) {
+    log.warn("Configure o email do Git primeiro (aparece antes no install)");
+    tracker.warning("SSH key");
+    return;
+  }
+
+  log.add(`Gerando chave SSH (ed25519) para ${email}...`);
+
+  try {
+    await $`mkdir -p ${sshDir}`;
+    await $`chmod 700 ${sshDir}`;
+    await $`ssh-keygen -t ed25519 -C ${email} -f ${keyFile} -N ""`;
+    log.ok("Chave SSH gerada");
+
+    // Inicia ssh-agent e adiciona a chave
+    await $`bash -c 'eval "$(ssh-agent -s)" && ssh-add ${keyFile}'`.nothrow();
+    log.ok("Chave adicionada ao ssh-agent");
+
+    // Mostra a chave publica
+    const pubKey = (await Bun.file(pubFile).text()).trim();
+    console.log();
+    console.log("  ┌─────────────────────────────────────────────────────┐");
+    console.log("  │  Copie a chave abaixo e adicione no GitHub/GitLab:  │");
+    console.log("  │  GitHub: https://github.com/settings/ssh/new       │");
+    console.log("  └─────────────────────────────────────────────────────┘");
+    console.log();
+    console.log(`  ${pubKey}`);
+    console.log();
+
+    tracker.installed("SSH key");
+  } catch {
+    log.warn("Falha ao gerar chave SSH — rode manualmente:");
+    log.warn(`  ssh-keygen -t ed25519 -C "${email}"`);
+    tracker.warning("SSH key");
+  }
+}
+
+// ---------------------------------------------------------------------------
 // CLI tools (zoxide, fzf, ripgrep, bat, eza)
 // ---------------------------------------------------------------------------
 
@@ -409,6 +471,7 @@ export const shellTools: IModule = {
     await setupZsh();
     await setupNvm();
     await setupGit();
+    await setupSSH();
     await setupKitty();
     await setupCliTools();
   },
