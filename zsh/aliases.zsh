@@ -89,6 +89,7 @@ n() { if [ "$#" -eq 0 ]; then nvim .; else nvim "$@"; fi; }
 alias d='docker'
 alias dc='docker compose'
 alias p10kconfig='p10k configure'
+alias pcinfo='bash ~/Workspaces/cbdotfiles/bin/pcinfo.sh'
 
 open() {
     xdg-open "$@" >/dev/null 2>&1 &
@@ -117,6 +118,8 @@ cbhelp() {
     echo "    rg texto           Busca em conteudo de arquivos (ripgrep)"
     echo "  ──────────────────────────────────────────────────────────"
     echo "  📊 Monitoramento:"
+    echo "    pcinfo             Info completa do PC (hw, gpu, drivers, rede, sw)"
+    echo "    pcinfo gpu         Apenas GPU e drivers"
     echo "    btop               Monitor de sistema (CPU, RAM, disco, rede)"
     echo "    fastfetch          Info do sistema (hardware, OS, tema)"
     echo "    htop               Monitor de processos (classico)"
