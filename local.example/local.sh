@@ -9,3 +9,6 @@
 
 # Nome da maquina (usado em logs)
 # CB_MACHINE_NAME="meu-desktop"
+
+# Flags extras pro browser (ex: desabilitar GPU se trava em AMD+Wayland)
+# CB_BROWSER_FLAGS="--disable-gpu"
