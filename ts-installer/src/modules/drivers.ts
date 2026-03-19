@@ -20,12 +20,14 @@ const GPU_PACKAGES: Record<string, Record<string, string[]>> = {
 
 // GPUs AMD GCN 1.0 (Southern Islands / SI) e GCN 1.1 (Sea Islands / CIK)
 // O kernel usa o driver "radeon" por padrao, mas "amdgpu" e melhor (Vulkan, VA-API moderno)
+// Nota: Curacao/Trinidad sao SI segundo o kernel (nao CIK como a AMD classifica)
 const AMD_CIK_CHIPS = [
   "bonaire", "hawaii", "kaveri", "kabini", "mullins",
-  "curacao", "trinidad", "hainan", "oland",
+  "hainan", "oland",
 ];
 const AMD_SI_CHIPS = [
   "tahiti", "pitcairn", "verde", "cape verde",
+  "curacao", "trinidad",
 ];
 
 async function detectAmdDriverIssue(): Promise<"cik" | "si" | null> {
@@ -48,8 +50,9 @@ async function detectAmdDriverIssue(): Promise<"cik" | "si" | null> {
     }
 
     // Detecta pela familia generica
-    if (/r[79]\s*(2[67]0|3[67]0)/i.test(lspciVga)) return "cik";
+    if (/r[79]\s*(2[67]0|370)/i.test(lspciVga)) return "si";
     if (/hd\s*7[89]\d\d/i.test(lspciVga)) return "si";
+    if (/r[79]\s*(260|360)/i.test(lspciVga)) return "cik";
   } catch {}
 
   return null;
