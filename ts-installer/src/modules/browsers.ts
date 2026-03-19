@@ -1,7 +1,8 @@
 import { $ } from "bun";
+import { existsSync } from "fs";
 import { select } from "@inquirer/prompts";
 import type { IModule, IRunContext } from "./index";
-import { checkboxWithAll, commandExists, getDistro, pkgInstall } from "../helpers";
+import { checkboxWithAll, commandExists, getDistro, HOME, pkgInstall } from "../helpers";
 import { log, tracker } from "../log";
 import { BROWSER, BROWSERS_ENABLED } from "../defaults";
 
@@ -229,6 +230,87 @@ export async function changeDefaultBrowser() {
 // Module
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// Flags VA-API globais nos .desktop (protege em qualquer contexto)
+// ---------------------------------------------------------------------------
+
+const WAYLAND_FLAGS = "--enable-features=VaapiVideoDecodeLinuxGL --disable-features=UseChromeOSDirectVideoDecoder";
+
+// Browsers Chromium-based e seus .desktop files no sistema
+const CHROMIUM_DESKTOP_FILES: Record<string, string[]> = {
+  vivaldi: ["vivaldi-stable.desktop"],
+  chrome: ["google-chrome.desktop", "google-chrome-stable.desktop"],
+  chromium: ["chromium.desktop", "chromium-browser.desktop"],
+  opera: ["opera.desktop", "opera-stable.desktop"],
+};
+
+async function applyWaylandFlags(installed: IBrowser[]) {
+  // So aplica se estiver em Wayland
+  if (process.env.XDG_SESSION_TYPE !== "wayland") return;
+
+  const localApps = `${HOME}/.local/share/applications`;
+  await $`mkdir -p ${localApps}`.nothrow();
+
+  // Carrega flags extras do local override
+  let extraFlags = "";
+  try {
+    const localConf = `${HOME}/Workspaces/cbdotfiles/local/local.sh`;
+    if (existsSync(localConf)) {
+      const content = await Bun.file(localConf).text();
+      const match = content.match(/^CB_BROWSER_FLAGS=["']?(.+?)["']?\s*$/m);
+      if (match) extraFlags = match[1];
+    }
+  } catch {}
+
+  const allFlags = `${WAYLAND_FLAGS} ${extraFlags}`.trim();
+  let count = 0;
+
+  for (const browser of installed) {
+    // Firefox nao precisa de flags
+    if (browser.id === "firefox") continue;
+
+    const desktopFiles = CHROMIUM_DESKTOP_FILES[browser.id];
+    if (!desktopFiles) continue;
+
+    for (const desktopFile of desktopFiles) {
+      // Procura o .desktop original no sistema
+      const systemFile = `/usr/share/applications/${desktopFile}`;
+      if (!existsSync(systemFile)) continue;
+
+      try {
+        const content = await Bun.file(systemFile).text();
+        const localFile = `${localApps}/${desktopFile}`;
+
+        // Verifica se as flags ja estao aplicadas
+        if (existsSync(localFile)) {
+          const existing = await Bun.file(localFile).text();
+          if (existing.includes(WAYLAND_FLAGS)) continue;
+        }
+
+        // Adiciona flags nas linhas Exec= (sem duplicar)
+        const patched = content.replace(
+          /^(Exec=\S+)(.*?)$/gm,
+          (match, exec, args) => {
+            // Nao adiciona se ja tem as flags
+            if (args.includes("VaapiVideoDecodeLinuxGL")) return match;
+            return `${exec} ${allFlags}${args}`;
+          }
+        );
+
+        await Bun.write(localFile, patched);
+        count++;
+      } catch {}
+    }
+  }
+
+  if (count > 0) {
+    // Atualiza cache de desktop files
+    await $`update-desktop-database ${localApps}`.nothrow();
+    log.ok(`Flags VA-API aplicadas em ${count} .desktop file(s) (Wayland)`);
+    tracker.configured("wayland browser flags");
+  }
+}
+
 export const browsers: IModule = {
   id: "browsers",
   name: "Browsers",
@@ -318,5 +400,8 @@ export const browsers: IModule = {
         }
       }
     }
+
+    // Aplica flags VA-API globalmente nos .desktop de browsers Chromium instalados
+    await applyWaylandFlags(installed);
   },
 };
