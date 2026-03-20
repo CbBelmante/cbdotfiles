@@ -107,7 +107,16 @@ _cb_edit_local() {
     [ ! -f "$f" ] && echo -e "$header" > "$f"
     ${EDITOR:-nvim} "$f"
 }
-cbalias()  { _cb_edit_local "zsh/aliases.zsh" "# Aliases pessoais (nao vai pro git)\n# Para trocar o editor: export EDITOR=nano\n" && source ~/.zshrc; }
+_cb_ensure_local_symlink() {
+    local src=~/Workspaces/cbdotfiles/local/zsh/aliases.zsh
+    local dst=~/.config/cb/local.zsh
+    if [ -f "$src" ] && [ ! -L "$dst" ]; then
+        mkdir -p ~/.config/cb
+        ln -sf "$src" "$dst"
+    fi
+}
+cbalias()  { _cb_edit_local "zsh/aliases.zsh" "# Aliases pessoais (nao vai pro git)\n# Para trocar o editor: export EDITOR=nano\n"; _cb_ensure_local_symlink; source ~/.zshrc; }
+alias aliases='cbalias'
 cbkitty()  { _cb_edit_local "kitty/kitty.conf" "# Override local do Kitty (fonte, tamanho, etc)"; }
 cblocal()  { _cb_edit_local "local.sh" "# Variaveis locais (CB_SUSPEND, CB_BROWSER_FLAGS, etc)"; }
 
