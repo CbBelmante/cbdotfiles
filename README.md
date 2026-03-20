@@ -112,16 +112,21 @@ Faz automaticamente: `git pull` → `install.sh --update` → `source ~/.zshrc`
 
 ## 🔧 Comandos uteis
 
-| Comando | Descricao |
-|---------|-----------|
-| `cbdotInstall` | Abre o menu de instalacao |
-| `cbdotUpdate` | Atualiza (git pull + reinstala modulos salvos) |
-| `cbdotReinstall` | Reinstala do zero (limpa selecao) |
-| `cbdotResymlink` | Refaz todos os symlinks |
-| `cbbrowser` | Trocar browser padrao |
-| `pcinfo` | Info completa do PC (hw, gpu, drivers, rede, software) |
-| `pcinfo gpu` | Diagnostico GPU (driver, vulkan, VA-API, kernel params) |
-| `cbhelp` | Referencia completa de comandos e atalhos |
+| Comando | Alias curto | Descricao |
+|---------|-------------|-----------|
+| `cbdotInstall` | `cbinstall` | Abre o menu de instalacao |
+| `cbdotUpdate` | `cbupdate` | Atualiza (git pull + reinstala modulos salvos) |
+| `cbdotReinstall` | `cbreinstall` | Reinstala do zero (limpa selecao) |
+| `cbdotResymlink` | `cbresymlink` | Refaz todos os symlinks |
+| `cbbrowser` | | Trocar browser padrao |
+| `cbalias` | `aliases` | Editar aliases pessoais (cria symlink automatico) |
+| `cbkitty` | | Editar override local do Kitty |
+| `cblocal` | | Editar variaveis locais (suspend, browser flags) |
+| `pcinfo` | | Info completa do PC (hw, gpu, drivers, rede, software) |
+| `pcinfo gpu` | | Diagnostico GPU (driver, vulkan, VA-API, kernel params) |
+| `cbhelp` | | Referencia completa de comandos e atalhos |
+
+> Todos os comandos `cb*` funcionam em camelCase e lowercase (ex: `cbdotUpdate` = `cbdotupdate` = `cbupdate`)
 
 ## 🔑 SSH
 
