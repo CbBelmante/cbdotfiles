@@ -263,6 +263,8 @@ cbdotInstall() {
     local dotdir="$HOME/Workspaces/cbdotfiles"
     "$dotdir/install.sh" && source ~/.zshrc
 }
+alias cbdotinstall='cbdotInstall'
+alias cbinstall='cbdotInstall'
 
 # Atualizar dotfiles: puxa do git e reinstala modulos salvos
 cbdotUpdate() {
@@ -271,6 +273,8 @@ cbdotUpdate() {
     git -C "$dotdir" pull && "$dotdir/install.sh" --update && source ~/.zshrc
     echo "=== cbdotfiles atualizado! ==="
 }
+alias cbdotupdate='cbdotUpdate'
+alias cbupdate='cbdotUpdate'
 
 # Reinstalar dotfiles: limpa selecao salva e reabre menu do zero
 cbdotReinstall() {
@@ -278,6 +282,8 @@ cbdotReinstall() {
     rm -f "$dotdir/local/.modules"
     "$dotdir/install.sh" && source ~/.zshrc
 }
+alias cbdotreinstall='cbdotReinstall'
+alias cbreinstall='cbdotReinstall'
 
 # Recriar symlinks: refaz todos os links sem reinstalar nada
 cbdotResymlink() {
@@ -285,3 +291,5 @@ cbdotResymlink() {
     local bun="${BUN_INSTALL:-$HOME/.bun}/bin/bun"
     cd "$dotdir/ts-installer" && "$bun" run src/resymlink.ts && source ~/.zshrc
 }
+alias cbdotresymlink='cbdotResymlink'
+alias cbresymlink='cbdotResymlink'
