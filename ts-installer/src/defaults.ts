@@ -133,61 +133,62 @@ export const MULTIPLEXERS = {
 // ---------------------------------------------------------------------------
 // Listas de tools por modulo
 // ---------------------------------------------------------------------------
-// active: true  = incluso no modo "Padrao" (instalar tudo)
-// active: false = disponivel apenas no modo "Custom" (selecao manual)
+// defaultInstall: true  = incluso no modo "Padrao" (instalar tudo)
+// defaultInstall: false = disponivel apenas no modo "Custom" (selecao manual)
 // ---------------------------------------------------------------------------
 
 interface IToolToggle {
   id: string;
-  active: boolean;
+  defaultInstall: boolean;
 }
 
 export const DEV_TOOLS_ENABLED: IToolToggle[] = [
-  { id: "nvim", active: true },
-  { id: "tmux", active: true },
-  { id: "zellij", active: true },
-  { id: "vscode", active: true },
-  { id: "gitkraken", active: true },
-  { id: "lazygit", active: true },
-  { id: "gh", active: true },
-  { id: "lazydocker", active: true },
-  { id: "tauri", active: false },
-  { id: "docker", active: true },
-  { id: "firebase", active: true },
-  { id: "supabase", active: true },
-  { id: "postman", active: true },
-  { id: "insomnia", active: false },
+  { id: "nvim", defaultInstall: true },
+  { id: "tmux", defaultInstall: true },
+  { id: "zellij", defaultInstall: true },
+  { id: "vscode", defaultInstall: true },
+  { id: "gitkraken", defaultInstall: true },
+  { id: "lazygit", defaultInstall: true },
+  { id: "gh", defaultInstall: true },
+  { id: "lazydocker", defaultInstall: true },
+  { id: "tauri", defaultInstall: false },
+  { id: "sqlite", defaultInstall: true },
+  { id: "docker", defaultInstall: true },
+  { id: "firebase", defaultInstall: true },
+  { id: "supabase", defaultInstall: true },
+  { id: "postman", defaultInstall: true },
+  { id: "insomnia", defaultInstall: false },
 ];
 
 export const APPS_ENABLED: IToolToggle[] = [
-  { id: "libreoffice", active: true },
-  { id: "sublime", active: true },
-  { id: "pavucontrol", active: true },
-  { id: "vlc", active: true },
-  { id: "obsidian", active: true },
-  { id: "kdenlive", active: false },
-  { id: "peazip", active: true },
-  { id: "qbittorrent", active: true },
+  { id: "libreoffice", defaultInstall: true },
+  { id: "sublime", defaultInstall: true },
+  { id: "pavucontrol", defaultInstall: true },
+  { id: "vlc", defaultInstall: true },
+  { id: "obsidian", defaultInstall: true },
+  { id: "kdenlive", defaultInstall: false },
+  { id: "peazip", defaultInstall: true },
+  { id: "qbittorrent", defaultInstall: true },
 ];
 
 export const GAMING_ENABLED: IToolToggle[] = [
-  { id: "steam", active: true },
-  { id: "lutris", active: true },
-  { id: "protonup-qt", active: true },
-  { id: "mangohud", active: true },
-  { id: "gamemode", active: true },
-  { id: "wine", active: true },
-  { id: "discord", active: true },
+  { id: "steam", defaultInstall: true },
+  { id: "lutris", defaultInstall: true },
+  { id: "protonup-qt", defaultInstall: true },
+  { id: "mangohud", defaultInstall: true },
+  { id: "gamemode", defaultInstall: true },
+  { id: "wine", defaultInstall: true },
+  { id: "discord", defaultInstall: true },
 ];
 
 export const BROWSERS_ENABLED: IToolToggle[] = [
-  { id: "vivaldi", active: true },
-  { id: "opera", active: false },
-  { id: "firefox", active: true },
-  { id: "chrome", active: true },
-  { id: "chromium", active: false },
+  { id: "vivaldi", defaultInstall: true },
+  { id: "opera", defaultInstall: false },
+  { id: "firefox", defaultInstall: true },
+  { id: "chrome", defaultInstall: true },
+  { id: "chromium", defaultInstall: false },
 ];
 
 export const VIRTUALIZATION_ENABLED: IToolToggle[] = [
-  { id: "virtualbox", active: false },
+  { id: "virtualbox", defaultInstall: false },
 ];

@@ -68,7 +68,7 @@ export const virtualization: IModule = {
     const available: IVirtTool[] = [];
 
     const enabledIds = VIRTUALIZATION_ENABLED.map((t) => t.id);
-    const activeIds = VIRTUALIZATION_ENABLED.filter((t) => t.active).map((t) => t.id);
+    const defaultIds = VIRTUALIZATION_ENABLED.filter((t) => t.defaultInstall).map((t) => t.id);
     const enabledTools = VIRT_TOOLS.filter((t) => enabledIds.includes(t.id));
 
     for (const tool of enabledTools) {
@@ -86,7 +86,7 @@ export const virtualization: IModule = {
     let toInstall: IVirtTool[] = [];
 
     if (ctx.isAll) {
-      toInstall = available.filter((t) => activeIds.includes(t.id));
+      toInstall = available.filter((t) => defaultIds.includes(t.id));
     } else {
       const selected = await checkboxWithAll("Quais virtualization tools deseja instalar?", enabledTools, installedIds);
       toInstall = selected.filter((t) => !installedIds.has(t.id));

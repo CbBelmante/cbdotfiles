@@ -350,7 +350,7 @@ export const browsers: IModule = {
     const available: IBrowser[] = [];
 
     const enabledIds = BROWSERS_ENABLED.map((b) => b.id);
-    const activeIds = BROWSERS_ENABLED.filter((b) => b.active).map((b) => b.id);
+    const defaultIds = BROWSERS_ENABLED.filter((b) => b.defaultInstall).map((b) => b.id);
     const enabledBrowsers = BROWSERS.filter((b) => enabledIds.includes(b.id));
 
     for (const b of enabledBrowsers) {
@@ -368,7 +368,7 @@ export const browsers: IModule = {
     let toInstall: IBrowser[] = [];
 
     if (ctx.isAll) {
-      toInstall = available.filter((b) => activeIds.includes(b.id));
+      toInstall = available.filter((b) => defaultIds.includes(b.id));
     } else {
       const selected = await checkboxWithAll("Quais browsers deseja instalar?", enabledBrowsers, installedIds);
       toInstall = selected.filter((b) => !installedIds.has(b.id));

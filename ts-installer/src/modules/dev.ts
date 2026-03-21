@@ -530,6 +530,38 @@ const DEV_TOOLS: IDevTool[] = [
     },
   },
   {
+    id: "sqlite",
+    name: "SQLite",
+    emoji: "🗄️",
+    async isInstalled() {
+      return commandExists("sqlite3");
+    },
+    async install(distro) {
+      if (await commandExists("sqlite3")) {
+        const version = (await $`sqlite3 --version`.text()).trim().split(" ")[0];
+        log.ok(`SQLite ja instalado: v${version}`);
+        return;
+      }
+
+      log.add("Instalando SQLite...");
+      switch (distro) {
+        case "arch":
+          await pkgInstall("sqlite");
+          break;
+        case "debian":
+          await pkgInstall("sqlite3", "libsqlite3-dev");
+          break;
+        case "fedora":
+          await pkgInstall("sqlite", "sqlite-devel");
+          break;
+      }
+      if (await commandExists("sqlite3")) {
+        const version = (await $`sqlite3 --version`.text()).trim().split(" ")[0];
+        log.ok(`SQLite instalado: v${version}`);
+      }
+    },
+  },
+  {
     id: "docker",
     name: "Docker",
     emoji: "🐋",
@@ -760,7 +792,7 @@ export const dev: IModule = {
     const available: IDevTool[] = [];
 
     const enabledIds = DEV_TOOLS_ENABLED.map((t) => t.id);
-    const activeIds = DEV_TOOLS_ENABLED.filter((t) => t.active).map((t) => t.id);
+    const defaultIds = DEV_TOOLS_ENABLED.filter((t) => t.defaultInstall).map((t) => t.id);
     const enabledTools = DEV_TOOLS.filter((t) => enabledIds.includes(t.id));
 
     for (const tool of enabledTools) {
@@ -778,7 +810,7 @@ export const dev: IModule = {
     let selected: IDevTool[] = [];
 
     if (ctx.isAll) {
-      selected = enabledTools.filter((t) => activeIds.includes(t.id));
+      selected = enabledTools.filter((t) => defaultIds.includes(t.id));
     } else {
       selected = await checkboxWithAll("Quais dev tools deseja instalar?", enabledTools, installedIds);
     }

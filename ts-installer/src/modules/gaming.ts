@@ -225,7 +225,7 @@ export const gaming: IModule = {
     const available: IGamingTool[] = [];
 
     const enabledIds = GAMING_ENABLED.map((t) => t.id);
-    const activeIds = GAMING_ENABLED.filter((t) => t.active).map((t) => t.id);
+    const defaultIds = GAMING_ENABLED.filter((t) => t.defaultInstall).map((t) => t.id);
     const enabledTools = GAMING_TOOLS.filter((t) => enabledIds.includes(t.id));
 
     for (const tool of enabledTools) {
@@ -243,7 +243,7 @@ export const gaming: IModule = {
     let toInstall: IGamingTool[] = [];
 
     if (ctx.isAll) {
-      toInstall = available.filter((t) => activeIds.includes(t.id));
+      toInstall = available.filter((t) => defaultIds.includes(t.id));
     } else {
       const selected = await checkboxWithAll("Quais gaming tools deseja instalar?", enabledTools, installedIds);
       toInstall = selected.filter((t) => !installedIds.has(t.id));

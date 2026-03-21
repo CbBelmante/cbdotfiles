@@ -256,7 +256,7 @@ export const apps: IModule = {
     const available: IApp[] = [];
 
     const enabledIds = APPS_ENABLED.map((a) => a.id);
-    const activeIds = APPS_ENABLED.filter((a) => a.active).map((a) => a.id);
+    const defaultIds = APPS_ENABLED.filter((a) => a.defaultInstall).map((a) => a.id);
     const enabledApps = APPS.filter((a) => enabledIds.includes(a.id));
 
     for (const app of enabledApps) {
@@ -274,7 +274,7 @@ export const apps: IModule = {
     let toInstall: IApp[] = [];
 
     if (ctx.isAll) {
-      toInstall = available.filter((a) => activeIds.includes(a.id));
+      toInstall = available.filter((a) => defaultIds.includes(a.id));
     } else {
       const selected = await checkboxWithAll("Quais apps deseja instalar?", enabledApps, installedIds);
       toInstall = selected.filter((a) => !installedIds.has(a.id));
