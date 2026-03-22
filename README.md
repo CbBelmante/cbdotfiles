@@ -89,7 +89,7 @@ Ao selecionar o modulo `browsers`, o instalador mostra checkbox dos navegadores 
 | 🎮 `drivers` | Drivers GPU (AMD/Intel/NVIDIA) + diagnostico amdgpu/radeon + Bluetooth Mac | ✅ Mesa, VA-API, kernel params |
 | 🌐 `browsers` | Navegadores + flags Wayland (browsers + Electron apps) | ✅ Browsers + electron-flags |
 | 🖥️ `desktop-tools` | Ferramentas de desktop (wofi, clipboard, screenshots, notificacoes) | ✅ Apenas em tiling WMs |
-| 🛠️ `dev` | Neovim + Zellij + tmux + VS Code + GitKraken + GitHub CLI + LazyGit + LazyDocker + Docker + Firebase + Supabase + Postman + Insomnia | ✅ Dev tools selecionados |
+| 🛠️ `dev` | Neovim + Zellij + tmux + VS Code + GitKraken + GitHub CLI + LazyGit + LazyDocker + Docker + SQLite + Tauri Dev + Firebase + Supabase + Postman + Insomnia | ✅ Dev tools selecionados |
 | 🖥️ `fastfetch` | Config Fastfetch (system info) | ❌ Apenas symlink |
 | 📊 `btop` | Config Btop (monitor de sistema) | ❌ Apenas symlink |
 | 📦 `apps` | LibreOffice + Sublime + VLC + Obsidian + Kdenlive + PeaZip + qBittorrent | ✅ Apps selecionados |
@@ -180,7 +180,7 @@ cbdotfiles/
 │           ├── drivers.ts         # 🎮 GPU + Bluetooth (detecta hardware)
 │           ├── browsers.ts        # 🌐 Vivaldi, Opera, Firefox, Chrome, Chromium
 │           ├── desktop-tools.ts   # 🖥️ Wofi, clipboard, screenshots (tiling WMs)
-│           ├── dev.ts             # 🛠️ Neovim, Zellij, VS Code, GitKraken, GitHub CLI, LazyGit, LazyDocker, Docker, Firebase, Supabase, Postman, Insomnia
+│           ├── dev.ts             # 🛠️ Neovim, Zellij, VS Code, GitKraken, GitHub CLI, LazyGit, LazyDocker, Docker, SQLite, Tauri Dev, Firebase, Supabase, Postman, Insomnia
 │           ├── fastfetch.ts       # 🖥️ System info
 │           ├── btop.ts            # 📊 Monitor de sistema
 │           ├── apps.ts            # 📦 LibreOffice, Sublime, VLC, Obsidian...
@@ -512,18 +512,18 @@ Todos os defaults do projeto ficam em **dois arquivos**:
 
 Cada modulo tem uma lista de tools com `active: true/false` no `defaults.ts`:
 
-- **`active: true`** = incluso no modo **Padrao** (instalar tudo)
-- **`active: false`** = disponivel apenas no modo **Custom** (selecao manual)
+- **`defaultInstall: true`** = incluso no modo **Padrao** (instalar tudo)
+- **`defaultInstall: false`** = disponivel apenas no modo **Custom** (selecao manual)
 
 | Lista | Tools `false` (apenas Custom) |
 |-------|-------------------------------|
 | `DEV_TOOLS_ENABLED` | Tauri, Insomnia |
 | `BROWSERS_ENABLED` | Opera, Chromium |
 | `APPS_ENABLED` | Kdenlive |
-| `GAMING_ENABLED` | (todos active) |
+| `GAMING_ENABLED` | (todos defaultInstall) |
 | `VIRTUALIZATION_ENABLED` | VirtualBox |
 
-> Quer que o Docker nao instale por padrao? Mude `{ id: "docker", active: false }` no `defaults.ts`. No modo Custom ele ainda aparece pra selecionar.
+> Quer que o Docker nao instale por padrao? Mude `{ id: "docker", defaultInstall: false }` no `defaults.ts`. No modo Custom ele ainda aparece pra selecionar.
 
 ### `vars.conf` (keybinds por desktop)
 
@@ -675,6 +675,7 @@ Alem do LazyVim base, os seguintes plugins sao adicionados:
 | `todo-comments.nvim` | Destaca e lista TODO/FIXME/HACK no codigo |
 | `noice.nvim` | Cmdline popup e notificacoes com visual polido |
 | `markdownlint-cli2` | Linter de markdown (MD012/13/58/60 desabilitados) |
+| `vim-dadbod` + `vim-dadbod-ui` | Database UI no Neovim com autocomplete SQL via blink.cmp (`<leader>db`) |
 
 ### 🎨 Tema do Neovim
 

@@ -19,20 +19,18 @@ return {
     end,
   },
   {
-    "kristijanhusak/vim-dadbod-completion",
-    ft = { "sql", "mysql", "plsql" },
-    init = function()
-      vim.api.nvim_create_autocmd("FileType", {
-        pattern = { "sql", "mysql", "plsql" },
-        callback = function()
-          require("cmp").setup.buffer({
-            sources = {
-              { name = "vim-dadbod-completion" },
-              { name = "buffer" },
-            },
-          })
-        end,
-      })
-    end,
+    "saghen/blink.cmp",
+    optional = true,
+    opts = {
+      sources = {
+        default = { "dadbod" },
+        providers = {
+          dadbod = {
+            name = "Dadbod",
+            module = "vim_dadbod_completion.blink",
+          },
+        },
+      },
+    },
   },
 }
