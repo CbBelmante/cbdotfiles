@@ -92,10 +92,15 @@ async function setupZsh() {
   await symlink(`${DOTFILES_DIR}/zsh/aliases.zsh`, `${HOME}/.config/cb/aliases.zsh`);
   log.ok("~/.config/cb/aliases.zsh -> cbdotfiles");
 
-  // Local override
-  const localAliases = `${DOTFILES_DIR}/local/zsh/aliases.zsh`;
-  if (existsSync(localAliases)) {
-    await symlink(localAliases, `${HOME}/.config/cb/local.zsh`);
+  // Local override — migra aliases.zsh -> local.zsh se necessario
+  const oldLocal = `${DOTFILES_DIR}/local/zsh/aliases.zsh`;
+  const newLocal = `${DOTFILES_DIR}/local/zsh/local.zsh`;
+  if (existsSync(oldLocal) && !existsSync(newLocal)) {
+    await $`mv ${oldLocal} ${newLocal}`.nothrow();
+    log.dim("Migrado local/zsh/aliases.zsh -> local/zsh/local.zsh");
+  }
+  if (existsSync(newLocal)) {
+    await symlink(newLocal, `${HOME}/.config/cb/local.zsh`);
     log.ok("~/.config/cb/local.zsh -> local override");
   }
 

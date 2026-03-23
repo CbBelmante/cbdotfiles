@@ -119,7 +119,7 @@ Faz automaticamente: `git pull` → `install.sh --update` → `source ~/.zshrc`
 | `cbdotReinstall` | `cbreinstall` | Reinstala do zero (limpa selecao) |
 | `cbdotResymlink` | `cbresymlink` | Refaz todos os symlinks |
 | `cbbrowser` | | Trocar browser padrao |
-| `aliases` | | Editar aliases pessoais (local, cria symlink automatico) |
+| `aliases` | | Editar config local do shell (aliases, exports, variaveis) |
 | `cbzshrc` | | Editar .zshrc do repositorio (global) |
 | `cbkitty` | | Editar override local do Kitty |
 | `cblocal` | | Editar variaveis locais (suspend, browser flags) |
@@ -235,7 +235,7 @@ cbdotfiles/
 ```
 ~/.zshrc                              → cbdotfiles/zsh/.zshrc
 ~/.config/cb/aliases.zsh              → cbdotfiles/zsh/aliases.zsh
-~/.config/cb/local.zsh                → cbdotfiles/local/zsh/aliases.zsh (se existir)
+~/.config/cb/local.zsh                → cbdotfiles/local/zsh/local.zsh (se existir)
 ~/.config/zellij/config.kdl           → cbdotfiles/zellij/config.kdl
 ~/.config/zellij/layouts/*.kdl        → cbdotfiles/zellij/*.kdl
 ~/.config/nvim/                       → cbdotfiles/nvim/

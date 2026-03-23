@@ -1,8 +1,12 @@
 # ═══════════════════════════════════════════════════════════════════════════════
-# ALIASES LOCAIS - Aliases dessa maquina (nao vai pro git)
-# Copie este arquivo para: local/zsh/aliases.zsh
+# CONFIG LOCAL DO SHELL (nao vai pro git)
+# Aliases, exports, variaveis pessoais dessa maquina
+# Para editar: aliases (ou nano aliases, nano .zshrc)
 # ═══════════════════════════════════════════════════════════════════════════════
 
-# alias projeto-x='cd ~/Workspaces/projeto-secreto'
+# Para trocar o editor padrao:
+# export EDITOR=nano
+
+# Aliases de projetos:
+# alias meu-projeto='cd ~/Workspaces/meu-projeto'
 # alias deploy='ssh deploy@meu-server'
-# alias vpn='sudo openvpn ~/configs/trabalho.ovpn'
