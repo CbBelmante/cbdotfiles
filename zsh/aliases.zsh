@@ -121,6 +121,22 @@ cbkitty()  { _cb_edit_local "kitty/kitty.conf" "# Override local do Kitty (fonte
 cblocal()  { _cb_edit_local "local.sh" "# Variaveis locais (CB_SUSPEND, CB_BROWSER_FLAGS, etc)"; }
 
 # ───────────────────────────────────────────────────────────────────────────────
+# Editor wrappers — intercepta atalhos conhecidos (aliases, .zshrc, kitty, etc)
+# ───────────────────────────────────────────────────────────────────────────────
+_cb_editor_intercept() {
+    case "$1" in
+        aliases|alias)    aliases; return 0 ;;
+        .zshrc|zshrc)     aliases; return 0 ;;
+        kitty|kitty.conf) cbkitty; return 0 ;;
+        local.sh)         cblocal; return 0 ;;
+    esac
+    return 1
+}
+nano()  { _cb_editor_intercept "$1" || command nano "$@"; }
+nvim()  { if [ "$#" -eq 0 ]; then command nvim .; elif _cb_editor_intercept "$1"; then :; else command nvim "$@"; fi; }
+vim()   { _cb_editor_intercept "$1" || command vim "$@"; }
+
+# ───────────────────────────────────────────────────────────────────────────────
 # Zellij Layouts
 # ───────────────────────────────────────────────────────────────────────────────
 # Resolve alias de navegacao (cd ...) ou nome de pasta em ~/Workspaces
