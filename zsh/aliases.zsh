@@ -85,7 +85,7 @@ fi
 # ───────────────────────────────────────────────────────────────────────────────
 # Ferramentas
 # ───────────────────────────────────────────────────────────────────────────────
-n() { if [ "$#" -eq 0 ]; then nvim .; else nvim "$@"; fi; }
+n() { if [ "$#" -eq 0 ]; then nvim; else nvim "$@"; fi; }
 alias d='docker'
 alias dc='docker compose'
 alias p10kconfig='p10k configure'
@@ -132,7 +132,7 @@ _cb_editor_intercept() {
     return 1
 }
 nano()  { _cb_editor_intercept "$1" || command nano "$@"; }
-nvim()  { if [ "$#" -eq 0 ]; then command nvim .; elif _cb_editor_intercept "$1"; then :; else command nvim "$@"; fi; }
+nvim()  { if _cb_editor_intercept "$1"; then :; else command nvim "$@"; fi; }
 vim()   { _cb_editor_intercept "$1" || command vim "$@"; }
 
 # ───────────────────────────────────────────────────────────────────────────────
