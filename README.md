@@ -89,7 +89,7 @@ Ao selecionar o modulo `browsers`, o instalador mostra checkbox dos navegadores 
 | 🎮 `drivers` | Drivers GPU (AMD/Intel/NVIDIA) + diagnostico amdgpu/radeon + Bluetooth Mac | ✅ Mesa, VA-API, kernel params |
 | 🌐 `browsers` | Navegadores + flags Wayland (browsers + Electron apps) | ✅ Browsers + electron-flags |
 | 🖥️ `desktop-tools` | Ferramentas de desktop (wofi, clipboard, screenshots, notificacoes) | ✅ Apenas em tiling WMs |
-| 🛠️ `dev` | Neovim + Zellij + tmux + VS Code + GitKraken + GitHub CLI + LazyGit + LazyDocker + Docker + SQLite + Tauri Dev + Firebase + Supabase + Postman + Insomnia | ✅ Dev tools selecionados |
+| 🛠️ `dev` | Neovim + Zellij + tmux + VS Code + GitKraken + GitHub CLI + LazyGit + Delta + LazyDocker + Docker + SQLite + Tauri Dev + Firebase + Supabase + Postman + Insomnia | ✅ Dev tools selecionados |
 | 🖥️ `fastfetch` | Config Fastfetch (system info) | ❌ Apenas symlink |
 | 📊 `btop` | Config Btop (monitor de sistema) | ❌ Apenas symlink |
 | 📦 `apps` | LibreOffice + Sublime + VLC + Obsidian + Kdenlive + PeaZip + qBittorrent | ✅ Apps selecionados |
@@ -748,6 +748,7 @@ Overrides pra evitar conflito com Zellij e melhorar produtividade:
 - **💻 VS Code** - Editor GUI
 - **🐙 GitKraken** - Git GUI
 - **🦥 LazyGit** - Git TUI
+- **🔀 Delta** - Git pager (side-by-side, syntax highlight, line numbers)
 - **📊 Btop** - Monitor de sistema
 - **🖥️ Fastfetch** - System info
 - **📦 NVM** - Node Version Manager

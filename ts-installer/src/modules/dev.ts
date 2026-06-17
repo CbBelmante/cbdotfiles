@@ -390,6 +390,47 @@ const DEV_TOOLS: IDevTool[] = [
     },
   },
   {
+    id: "delta",
+    name: "Delta",
+    emoji: "🔀",
+    async isInstalled() {
+      return commandExists("delta");
+    },
+    async install(distro) {
+      if (await commandExists("delta")) {
+        const version = (await $`delta --version`.text()).trim();
+        log.ok(`Delta ja instalado: ${version}`);
+        return;
+      }
+
+      log.add("Instalando Delta (git pager)...");
+      if (distro === "arch") {
+        await pkgInstall("git-delta");
+      } else if (await commandExists("cargo")) {
+        await $`cargo install git-delta`;
+      } else {
+        try {
+          const release = await fetch(
+            "https://api.github.com/repos/dandavison/delta/releases/latest"
+          ).then((r) => r.json());
+
+          const version = (release as { tag_name: string }).tag_name;
+          const deb = `/tmp/git-delta.deb`;
+          await $`curl -Lo ${deb} https://github.com/dandavison/delta/releases/download/${version}/git-delta_${version}_amd64.deb`;
+          await $`sudo dpkg -i ${deb}`;
+          await $`rm -f ${deb}`;
+        } catch {
+          log.warn("Falha ao instalar Delta — instale manualmente: cargo install git-delta");
+          return;
+        }
+      }
+      if (await commandExists("delta")) {
+        const version = (await $`delta --version`.text()).trim();
+        log.ok(`Delta instalado: ${version}`);
+      }
+    },
+  },
+  {
     id: "gh",
     name: "GitHub CLI",
     emoji: "🐙",
@@ -781,7 +822,7 @@ export const dev: IModule = {
   id: "dev",
   name: "Dev Tools",
   emoji: "🛠️",
-  description: "Neovim + Zellij + VS Code + GitKraken + GitHub CLI + LazyGit + Tauri Dev + LazyDocker + Docker",
+  description: "Neovim + Zellij + VS Code + GitKraken + GitHub CLI + LazyGit + Delta + Tauri Dev + LazyDocker + Docker",
   installsSoftware: true,
 
   async run(ctx: IRunContext) {

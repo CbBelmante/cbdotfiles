@@ -149,6 +149,7 @@ export const DEV_TOOLS_ENABLED: IToolToggle[] = [
   { id: "vscode", defaultInstall: true },
   { id: "gitkraken", defaultInstall: true },
   { id: "lazygit", defaultInstall: true },
+  { id: "delta", defaultInstall: true },
   { id: "gh", defaultInstall: true },
   { id: "lazydocker", defaultInstall: true },
   { id: "tauri", defaultInstall: false },
