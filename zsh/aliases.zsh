@@ -104,6 +104,7 @@ fi
 # Ferramentas
 # ───────────────────────────────────────────────────────────────────────────────
 n() { if [ "$#" -eq 0 ]; then nvim; else nvim "$@"; fi; }
+alias killvlc='pkill -9 vlc'
 alias d='docker'
 alias dc='docker compose'
 alias p10kconfig='p10k configure'
