@@ -148,3 +148,28 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 
 # opencode
 export PATH="$HOME/.opencode/bin:$PATH"
+
+# FlowForge: força o encerramento de cockpit, daemon e tmux pra liberar o `flowforge update`
+# Atenção: derruba workers Claude que estejam rodando dentro dos tmux do FlowForge.
+ffkill() {
+  # 1) Derruba os processos do FlowForge (cockpit, daemon e os MCP servers)
+  pkill -f 'flowforge tui'          2>/dev/null
+  pkill -f 'flowforge daemon serve' 2>/dev/null
+  pkill -f 'flowforge mcp serve'    2>/dev/null
+
+  # 2) Mata os tmux do FlowForge (derruba workers Claude que estejam rodando dentro)
+  for sock in /tmp/tmux-$(id -u)/flowforge-*(N); do
+    tmux -S "$sock" kill-server 2>/dev/null
+  done
+
+  # 3) Limpa os locks de sessão órfãos — causa do "already running elsewhere"
+  rm -f ~/.flowforge/run/tui-*.lock(N) \
+        ~/.flowforge/run/tui-*.lock.flock(N) \
+        ~/.flowforge/run/cockpit-*.pid(N) \
+        ~/.flowforge/run/flowforge.sock.bindlock(N) \
+        ~/.flowforge/run/flowforge.sock.spawnlock(N)
+
+  echo "FlowForge encerrado (tui + daemon + mcp), tmux mortos e locks limpos."
+  echo "Agora rode: sudo flowforge update"
+}
+export NPM_GITHUB_TOKEN="$GITHUB_TOKEN"
