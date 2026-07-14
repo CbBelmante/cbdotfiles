@@ -149,42 +149,6 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 # opencode
 export PATH="$HOME/.opencode/bin:$PATH"
 
-# FlowForge: força o encerramento de cockpit, daemon e tmux pra liberar o `flowforge update`
-# Atenção: derruba workers Claude que estejam rodando dentro dos tmux do FlowForge.
-ffkill() {
-  # Casa cockpit/tui, daemon e mcp num padrao so (regex ERE do pgrep/pkill).
-  local ff_pat='flowforge (tui|daemon serve|mcp serve)'
-
-  # 1) TERM educado primeiro
-  pkill -f "$ff_pat" 2>/dev/null
-
-  # 2) Da um tico pro encerramento gracioso e mata a -9 quem for teimoso.
-  #    (o mcp serve as vezes ignora o TERM e so morre no -9)
-  sleep 1
-  local pid
-  for pid in ${(f)"$(pgrep -f "$ff_pat" 2>/dev/null)"}; do
-    kill -9 "$pid" 2>/dev/null
-  done
-
-  # 3) Mata os tmux do FlowForge (derruba workers Claude que rodam dentro)
-  for sock in /tmp/tmux-$(id -u)/flowforge-*(N); do
-    tmux -S "$sock" kill-server 2>/dev/null
-  done
-
-  # 4) Limpa os locks de sessao orfaos — causa do "already running elsewhere"
-  rm -f ~/.flowforge/run/tui-*.lock(N) \
-        ~/.flowforge/run/tui-*.lock.flock(N) \
-        ~/.flowforge/run/cockpit-*.pid(N) \
-        ~/.flowforge/run/flowforge.sock.bindlock(N) \
-        ~/.flowforge/run/flowforge.sock.spawnlock(N)
-
-  # 5) Confirma que zerou de verdade (nao confia no pkill)
-  if pgrep -f "$ff_pat" >/dev/null 2>&1; then
-    echo "ATENCAO: ainda ha processo FlowForge vivo:"
-    pgrep -af "$ff_pat"
-  else
-    echo "FlowForge 100% encerrado (tui + daemon + mcp), tmux mortos e locks limpos."
-    echo "Agora rode: sudo flowforge update"
-  fi
-}
+# FlowForge: o `ffkill` agora e um script versionado em bin/ffkill
+# (symlink em ~/.local/bin/ffkill, ja no PATH). Editar la, nao aqui.
 export NPM_GITHUB_TOKEN="$GITHUB_TOKEN"

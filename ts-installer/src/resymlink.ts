@@ -20,6 +20,9 @@ function entries(): ISymlinkEntry[] {
     // Shell
     { source: `${DOTFILES_DIR}/zsh/.zshrc`, target: `${HOME}/.zshrc` },
     { source: `${DOTFILES_DIR}/zsh/aliases.zsh`, target: `${HOME}/.config/cb/aliases.zsh` },
+
+    // Scripts (bin -> ~/.local/bin, ja no PATH)
+    { source: `${DOTFILES_DIR}/bin/ffkill`, target: `${HOME}/.local/bin/ffkill` },
     {
       source: `${DOTFILES_DIR}/local/zsh/aliases.zsh`,
       target: `${HOME}/.config/cb/local.zsh`,

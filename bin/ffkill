@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+# ffkill — encerra o FlowForge por completo e libera a sessao.
+#
+# O que faz:
+#   1. Mata os processos do FlowForge: cockpit/tui, daemon e os mcp servers.
+#   2. Forca -9 nos teimosos (o 'mcp serve' as vezes ignora o TERM).
+#   3. Mata os tmux do FlowForge (derruba workers Claude que rodam dentro).
+#   4. Limpa os locks de sessao orfaos (causa do "already running elsewhere").
+#   5. Confirma que zerou de verdade — nao confia no pkill.
+#
+# Uso recomendado: rode DEPOIS do `sudo flowforge update`, porque o update
+# respawna o daemon (que re-agarra o lease de sessao no servidor). Se mesmo
+# assim aparecer "already running", o lease do servidor expira sozinho em
+# ~2 min sem o daemon pra renovar — ou use `flowforge tui --take-over`.
+#
+# Atencao: isso derruba workers Claude que estejam ativos nos tmux do FF.
+
+set -u
+
+FF_PAT='flowforge (tui|daemon serve|mcp serve)'
+RUN_DIR="$HOME/.flowforge/run"
+
+# 1) TERM educado primeiro.
+pkill -f "$FF_PAT" 2>/dev/null || true
+
+# 2) Da um tico pro encerramento gracioso e mata a -9 quem sobrou.
+sleep 1
+while read -r pid; do
+  [ -n "$pid" ] && kill -9 "$pid" 2>/dev/null || true
+done < <(pgrep -f "$FF_PAT" 2>/dev/null)
+
+# 3) Mata os tmux do FlowForge.
+tmux_dir="/tmp/tmux-$(id -u)"
+if [ -d "$tmux_dir" ]; then
+  for sock in "$tmux_dir"/flowforge-*; do
+    [ -S "$sock" ] && tmux -S "$sock" kill-server 2>/dev/null || true
+  done
+fi
+
+# 4) Limpa os locks de sessao orfaos.
+rm -f "$RUN_DIR"/tui-*.lock \
+      "$RUN_DIR"/tui-*.lock.flock \
+      "$RUN_DIR"/cockpit-*.pid \
+      "$RUN_DIR"/flowforge.sock.bindlock \
+      "$RUN_DIR"/flowforge.sock.spawnlock 2>/dev/null || true
+
+# 5) Confirma que zerou de verdade.
+if pgrep -f "$FF_PAT" >/dev/null 2>&1; then
+  echo "ATENCAO: ainda ha processo FlowForge vivo:"
+  pgrep -af "$FF_PAT"
+  exit 1
+fi
+
+echo "FlowForge 100% encerrado (tui + daemon + mcp), tmux mortos e locks limpos."
+echo "Se ainda aparecer 'already running': espere ~2 min (lease expira) ou rode:"
+echo "  flowforge tui --take-over"
