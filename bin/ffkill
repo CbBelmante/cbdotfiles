@@ -2,55 +2,110 @@
 # ffkill — encerra o FlowForge por completo e libera a sessao.
 #
 # O que faz:
-#   1. Mata os processos do FlowForge: cockpit/tui, daemon e os mcp servers.
+#   1. Mata os processos do FlowForge: cockpit/tui, daemon, mcp, preview, docs.
 #   2. Forca -9 nos teimosos (o 'mcp serve' as vezes ignora o TERM).
-#   3. Mata os tmux do FlowForge (derruba workers Claude que rodam dentro).
-#   4. Limpa os locks de sessao orfaos (causa do "already running elsewhere").
-#   5. Confirma que zerou de verdade — nao confia no pkill.
+#   3. Mata os tmux do FlowForge (derruba workers Claude que rodam dentro),
+#      tanto pelo socket em disco quanto pelo processo do tmux server.
+#   4. Limpa locks de sessao orfaos + o unix socket do daemon.
+#   5. Confirma que zerou de verdade — nao confia no pkill (retry com timeout).
+#   6. Opcional: --wait espera o lease de sessao do servidor expirar.
+#
+# Uso:
+#   ffkill              encerra tudo e volta na hora
+#   ffkill --wait       encerra e espera o lease do servidor expirar (~2 min)
+#   ffkill --take-over  encerra, espera e ja relanca a TUI com --take-over
 #
 # Uso recomendado: rode DEPOIS do `sudo flowforge update`, porque o update
-# respawna o daemon (que re-agarra o lease de sessao no servidor). Se mesmo
-# assim aparecer "already running", o lease do servidor expira sozinho em
-# ~2 min sem o daemon pra renovar — ou use `flowforge tui --take-over`.
+# respawna o daemon (que re-agarra o lease de sessao no servidor).
 #
 # Atencao: isso derruba workers Claude que estejam ativos nos tmux do FF.
 
 set -u
 
-FF_PAT='flowforge (tui|daemon serve|mcp serve)'
+# Verbos do FF que sobem processo de longa duracao. Deliberadamente especifico:
+# um padrao solto tipo 'flowforge' mataria qualquer `claude` que tenha a palavra
+# na linha de comando.
+FF_PAT='flowforge (tui|daemon|mcp|preview|docs)( |$)'
+# O tmux server do FF: identificado pelo socket -L flowforge-*.
+TMUX_PAT='tmux .*-L flowforge-'
 RUN_DIR="$HOME/.flowforge/run"
 
-# 1) TERM educado primeiro.
-pkill -f "$FF_PAT" 2>/dev/null || true
+WAIT=0
+TAKEOVER=0
+for arg in "$@"; do
+  case "$arg" in
+    --wait)      WAIT=1 ;;
+    --take-over|--takeover) TAKEOVER=1; WAIT=1 ;;
+    -h|--help)   sed -n '2,20p' "$0"; exit 0 ;;
+    *) echo "ffkill: argumento desconhecido: $arg" >&2; exit 2 ;;
+  esac
+done
 
-# 2) Da um tico pro encerramento gracioso e mata a -9 quem sobrou.
-sleep 1
-while read -r pid; do
-  [ -n "$pid" ] && kill -9 "$pid" 2>/dev/null || true
-done < <(pgrep -f "$FF_PAT" 2>/dev/null)
+ff_pids()   { pgrep -f "$FF_PAT" 2>/dev/null; }
+tmux_pids() { pgrep -f "$TMUX_PAT" 2>/dev/null; }
 
-# 3) Mata os tmux do FlowForge.
-tmux_dir="/tmp/tmux-$(id -u)"
+# 1) TERM educado primeiro, nos dois grupos.
+pkill -f "$FF_PAT"   2>/dev/null || true
+pkill -f "$TMUX_PAT" 2>/dev/null || true
+
+# 2) Mata os tmux do FlowForge pelo socket (derruba o que roda dentro).
+#    Respeita TMUX_TMPDIR — o default /tmp nao vale em toda maquina.
+tmux_dir="${TMUX_TMPDIR:-/tmp}/tmux-$(id -u)"
 if [ -d "$tmux_dir" ]; then
   for sock in "$tmux_dir"/flowforge-*; do
-    [ -S "$sock" ] && tmux -S "$sock" kill-server 2>/dev/null || true
+    [ -S "$sock" ] || continue
+    tmux -S "$sock" kill-server 2>/dev/null || true
+    rm -f "$sock" 2>/dev/null || true
   done
 fi
 
-# 4) Limpa os locks de sessao orfaos.
+# 3) Da um tico pro encerramento gracioso e mata a -9 quem sobrou.
+#    Retry com timeout em vez de um sleep unico no escuro.
+for _ in 1 2 3 4 5 6; do
+  { ff_pids; tmux_pids; } | grep -q . || break
+  sleep 0.5
+done
+for pid in $(ff_pids) $(tmux_pids); do
+  kill -9 "$pid" 2>/dev/null || true
+done
+sleep 0.5
+
+# 4) Limpa locks de sessao orfaos + o socket do daemon.
+#    O flowforge.sock ficava para tras: daemon novo as vezes reusa um socket
+#    morto e o cockpit acha que ha alguem vivo.
 rm -f "$RUN_DIR"/tui-*.lock \
       "$RUN_DIR"/tui-*.lock.flock \
       "$RUN_DIR"/cockpit-*.pid \
+      "$RUN_DIR"/flowforge.sock \
       "$RUN_DIR"/flowforge.sock.bindlock \
-      "$RUN_DIR"/flowforge.sock.spawnlock 2>/dev/null || true
+      "$RUN_DIR"/flowforge.sock.spawnlock \
+      "$RUN_DIR"/docs-loopback.json 2>/dev/null || true
 
 # 5) Confirma que zerou de verdade.
-if pgrep -f "$FF_PAT" >/dev/null 2>&1; then
+leftover="$( { ff_pids; tmux_pids; } | sort -u )"
+if [ -n "$leftover" ]; then
   echo "ATENCAO: ainda ha processo FlowForge vivo:"
-  pgrep -af "$FF_PAT"
+  pgrep -af "$FF_PAT"   || true
+  pgrep -af "$TMUX_PAT" || true
   exit 1
 fi
 
-echo "FlowForge 100% encerrado (tui + daemon + mcp), tmux mortos e locks limpos."
-echo "Se ainda aparecer 'already running': espere ~2 min (lease expira) ou rode:"
-echo "  flowforge tui --take-over"
+echo "FlowForge 100% encerrado (tui + daemon + mcp + tmux), locks e socket limpos."
+
+# 6) O lease de sessao vive NO SERVIDOR, nao aqui. Sem daemon pra renovar ele
+#    expira sozinho; matar processo local nao adianta apressar.
+if [ "$WAIT" -eq 1 ]; then
+  echo "Esperando o lease de sessao expirar no servidor (~2 min)..."
+  for i in $(seq 1 24); do
+    sleep 5
+    printf '\r  %ds decorridos' "$((i * 5))"
+  done
+  echo ""
+  if [ "$TAKEOVER" -eq 1 ]; then
+    echo "Relancando a TUI com --take-over..."
+    exec flowforge tui --take-over
+  fi
+else
+  echo "Se ainda aparecer 'already running': o lease e do SERVIDOR, nao daqui."
+  echo "  espere ~2 min  |  ffkill --wait  |  ffkill --take-over"
+fi
