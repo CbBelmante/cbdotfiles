@@ -171,9 +171,10 @@ function openInNeovim(dbPath: string): void {
   }
 
   console.log(`\n💡 No Neovim:`);
-  console.log(`   1. Pressiona: Shift+A  (Add connection)`);
-  console.log(`   2. Cola: Ctrl+Shift+V  (connection string)`);
-  console.log(`   3. Enter pra confirmar\n`);
+  console.log(`   1. Shift+A           (Add connection)`);
+  console.log(`   2. Ctrl+Shift+V      (cola connection string)`);
+  console.log(`   3. Enter             (confirma conexão)`);
+  console.log(`   4. R                 (refresh - tabelas aparecem!)\n`);
   console.log(`🚀 Abrindo Neovim...\n`);
 
   // Abre Neovim no diretório do banco com dadbod UI já aberto
