@@ -1,16 +1,30 @@
 # 🗄️ SQL Practice
 
-Ferramenta interativa para criar e gerenciar bancos SQLite de prática. Crie bancos limpos com dados de exemplo e abra direto no Neovim com dadbod UI.
+Ferramenta interativa para treinar SQL com SQLite. **Workflow automatizado:** cria banco → copia connection string pro clipboard → abre Neovim com dadbod UI → 3 teclas e tá conectado!
 
 ## 🚀 Como usar
 
 ```bash
-sqlp              # atalho curto
-sqlpractice       # nome completo
-sqlpHelp          # guia passo a passo (como conectar no Neovim)
+sqlp              # menu interativo
+sqlpHelp          # guia passo a passo
 ```
 
-> 💡 **Primeira vez?** Rode `sqlpHelp` para ver o passo a passo completo de como conectar o banco no Neovim dadbod!
+> 💡 **Primeira vez?** Rode `sqlpHelp` - mostra o workflow completo com auto-copia da connection string!
+
+## ⚡ Workflow rápido
+
+```
+1. sqlp → Criar banco → Automático → Completo
+   ↓
+   📋 Connection string copiada automaticamente!
+   🚀 Neovim abre com dadbod UI já ativo
+
+2. Shift+A (add connection)
+3. Ctrl+Shift+V (cola)
+4. Enter
+   ↓
+   ✅ Conectado! 3 teclas apenas!
+```
 
 ## 📋 Menu
 

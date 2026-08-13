@@ -289,16 +289,23 @@ Ctrl+R                # historico de comandos com busca fuzzy
 
 ## 🗄️ SQL Practice
 
-Ferramenta interativa para criar e gerenciar bancos SQLite de pratica. Menu com 3 presets (completo/estrutura/vazio) e abre direto no Neovim com dadbod UI.
+Ferramenta interativa para treinar SQL com SQLite. Cria bancos automaticamente, copia connection string pro clipboard, e abre no Neovim com dadbod UI já configurado.
 
 ```bash
-sqlp              # atalho curto
-sqlpractice       # nome completo
+sqlp              # menu interativo
+sqlpHelp          # guia passo a passo
 ```
 
-**Path padrao:** `~/Workspaces/sql-practice/`
+**Features:**
+- ⚡ Nome automático brasileiro (practice-13-08-2026-11h51)
+- 🏢 3 presets: Completo (com dados) / Estrutura / Vazio
+- 📋 Auto-copia connection string pro clipboard
+- 🚀 Abre Neovim com dadbod UI já ativo
+- 🗑️ Limpar bancos antigos (multi-select)
 
-> 📖 Documentacao completa: [`sql-practice/README.md`](sql-practice/README.md)
+**Path padrão:** `~/Workspaces/sql-practice/`
+
+> 📖 Documentação completa: [`sql-practice/README.md`](sql-practice/README.md)
 
 ## 🖥️ Layouts do Zellij
 
