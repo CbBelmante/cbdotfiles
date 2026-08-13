@@ -1,0 +1,160 @@
+{
+  "title": "SQL Practice & vim-dadbod",
+  "version": "1.0",
+  "source": "sqlpHelp",
+  "items": [
+    {
+      "name": "Space+db",
+      "command": "<Space>db",
+      "description": "Abrir/fechar sidebar do dadbod UI",
+      "category": "Dadbod",
+      "tags": ["dadbod", "sidebar", "abrir", "ui", "frequente"],
+      "details": "Abre ou fecha a sidebar do vim-dadbod à esquerda.\n\nWorkflow inicial:\n  1. Space+db → abre sidebar\n  2. Shift+A → adiciona conexão\n  3. Cola connection string\n  4. R → refresh (tabelas aparecem)\n\n💡 Se já conectou antes, as conexões ficam salvas!",
+      "related": ["Shift+A", "R", "Space+S"]
+    },
+    {
+      "name": "Shift+A",
+      "command": "A",
+      "description": "Adicionar conexão no dadbod (primeira vez)",
+      "category": "Dadbod",
+      "tags": ["dadbod", "conexão", "conectar", "add", "frequente"],
+      "details": "Adiciona uma nova conexão de banco de dados.\n\nPasso a passo:\n  1. Space+db (abre sidebar)\n  2. Shift+A (add connection)\n  3. Cola connection string:\n     sqlite:///caminho/completo/banco.db\n  4. Enter (confirma)\n  5. R (refresh - tabelas aparecem)\n\n💡 IMPORTANTE: 3 barras /// no sqlite!\n\nExemplos:\n  sqlite:///home/user/practice.db\n  postgresql://user:pass@localhost/db\n  mysql://user:pass@localhost/db",
+      "related": ["Space+db", "R", "sqlite://"]
+    },
+    {
+      "name": "R",
+      "command": "R",
+      "description": "Refresh - atualizar schema/tabelas",
+      "category": "Dadbod",
+      "tags": ["dadbod", "refresh", "atualizar", "tabelas", "frequente"],
+      "details": "Atualiza o schema e mostra as tabelas no sidebar.\n\nQuando usar:\n  - Logo após conectar (tabelas aparecem)\n  - Depois de criar tabela nova\n  - Depois de alterar schema\n\n💡 Aperte R no sidebar pra ver as tabelas!\n\nSe não aparecer:\n  - Verifica connection string (3 barras)\n  - Verifica se banco existe\n  - Verifica path completo",
+      "related": ["Shift+A", "Space+db"]
+    },
+    {
+      "name": "Space+S",
+      "command": "<Space>S",
+      "description": "Executar query SQL sob o cursor",
+      "category": "Dadbod",
+      "tags": ["sql", "executar", "query", "dadbod", "frequente"],
+      "details": "Executa a query SQL sob o cursor.\n\nWorkflow:\n  1. Escreve query:\n     SELECT * FROM users;\n  2. Esc (sai do INSERT)\n  3. Cursor na linha da query\n  4. Space+Shift+S\n  5. Resultado aparece embaixo!\n\n💡 Query deve terminar com ;\n💡 Pode executar queries de múltiplas linhas\n\nAtalho:\n  Ctrl+w c - fecha janela de resultado",
+      "related": ["Space+W", "Ctrl+w c"]
+    },
+    {
+      "name": "Space+W",
+      "command": "<Space>W",
+      "description": "Executar query selecionada (visual mode)",
+      "category": "Dadbod",
+      "tags": ["sql", "executar", "visual", "dadbod"],
+      "details": "Executa a query que você selecionou (visual mode).\n\nQuando usar:\n  - Arquivo com várias queries\n  - Quer executar só parte da query\n\nWorkflow:\n  1. V (visual line)\n  2. Seleciona linhas da query\n  3. Space+Shift+W\n  4. Resultado aparece!\n\n💡 Útil pra testar partes de queries grandes",
+      "related": ["Space+S", "V"]
+    },
+    {
+      "name": "SELECT",
+      "command": "SELECT * FROM",
+      "description": "Buscar/listar dados de uma tabela",
+      "category": "SQL Básico",
+      "tags": ["sql", "select", "buscar", "listar", "frequente"],
+      "details": "Busca dados de uma ou mais tabelas.\n\nSintaxe básica:\n  SELECT colunas FROM tabela;\n\nExemplos:\n  SELECT * FROM users;\n  SELECT name, email FROM users;\n  SELECT * FROM users WHERE id = 1;\n  SELECT * FROM users LIMIT 10;\n\n💡 * = todas as colunas\n💡 Sempre termina com ;",
+      "related": ["WHERE", "LIMIT", "ORDER BY"]
+    },
+    {
+      "name": "WHERE",
+      "command": "WHERE",
+      "description": "Filtrar resultados com condições",
+      "category": "SQL Básico",
+      "tags": ["sql", "where", "filtro", "condição", "frequente"],
+      "details": "Filtra resultados baseado em condições.\n\nOperadores:\n  =   igual\n  !=  diferente\n  >   maior\n  <   menor\n  >=  maior ou igual\n  <=  menor ou igual\n  LIKE  padrão (% = qualquer coisa)\n\nExemplos:\n  WHERE id = 5\n  WHERE name LIKE '%Ana%'\n  WHERE age > 18\n  WHERE email IS NOT NULL\n  WHERE id IN (1,2,3)\n\nCombinar:\n  WHERE age > 18 AND city = 'SP'\n  WHERE name LIKE '%Silva%' OR name LIKE '%Costa%'",
+      "related": ["SELECT", "AND", "OR", "LIKE"]
+    },
+    {
+      "name": "JOIN",
+      "command": "JOIN",
+      "description": "Combinar dados de múltiplas tabelas",
+      "category": "SQL Básico",
+      "tags": ["sql", "join", "relacionamento", "combinar", "frequente"],
+      "details": "Combina dados de duas ou mais tabelas.\n\nTipos:\n  INNER JOIN - só registros que existem em AMBAS\n  LEFT JOIN  - todos da esquerda + matches\n  RIGHT JOIN - todos da direita + matches\n\nExemplo básico:\n  SELECT u.name, c.name AS company\n  FROM users u\n  INNER JOIN company_users cu ON u.id = cu.user_id\n  INNER JOIN companies c ON cu.company_id = c.id;\n\nLEFT JOIN (inclui quem não tem match):\n  SELECT u.name, c.name\n  FROM users u\n  LEFT JOIN company_users cu ON u.id = cu.user_id;\n\n💡 Sempre especifica ON (condição de ligação)",
+      "related": ["INNER JOIN", "LEFT JOIN", "ON"]
+    },
+    {
+      "name": "ORDER BY",
+      "command": "ORDER BY",
+      "description": "Ordenar resultados",
+      "category": "SQL Básico",
+      "tags": ["sql", "ordenar", "order", "sort"],
+      "details": "Ordena os resultados.\n\nDireção:\n  ASC  - crescente (padrão)\n  DESC - decrescente\n\nExemplos:\n  ORDER BY name\n  ORDER BY name ASC\n  ORDER BY age DESC\n  ORDER BY created_at DESC\n  ORDER BY name, age DESC\n\n💡 Múltiplas colunas: primeira tem prioridade\n\nCombinado:\n  SELECT * FROM users\n  WHERE age > 18\n  ORDER BY name\n  LIMIT 10;",
+      "related": ["SELECT", "LIMIT", "WHERE"]
+    },
+    {
+      "name": "LIMIT",
+      "command": "LIMIT",
+      "description": "Limitar número de resultados",
+      "category": "SQL Básico",
+      "tags": ["sql", "limit", "limitar", "paginação", "frequente"],
+      "details": "Limita quantos resultados retornam.\n\nExemplos:\n  LIMIT 10        - primeiros 10\n  LIMIT 5, 10     - pula 5, pega 10 (paginação)\n  LIMIT 10 OFFSET 5 - mesma coisa (sintaxe alternativa)\n\nPaginação:\n  Página 1: LIMIT 10 OFFSET 0\n  Página 2: LIMIT 10 OFFSET 10\n  Página 3: LIMIT 10 OFFSET 20\n\n💡 Sempre use LIMIT em testes!\n💡 Evita travar com tabelas gigantes",
+      "related": ["ORDER BY", "OFFSET", "SELECT"]
+    },
+    {
+      "name": "INSERT",
+      "command": "INSERT INTO",
+      "description": "Inserir novos dados na tabela",
+      "category": "SQL Básico",
+      "tags": ["sql", "insert", "inserir", "adicionar", "frequente"],
+      "details": "Insere novos registros na tabela.\n\nSintaxe:\n  INSERT INTO tabela (col1, col2) VALUES (val1, val2);\n\nExemplos:\n  INSERT INTO users (name, email)\n  VALUES ('Ana Silva', 'ana@example.com');\n\n  INSERT INTO users (name, email)\n  VALUES\n    ('Ana', 'ana@email.com'),\n    ('Bruno', 'bruno@email.com'),\n    ('Carla', 'carla@email.com');\n\n💡 Múltiplos inserts em um comando!\n💡 Colunas com DEFAULT podem ser omitidas",
+      "related": ["UPDATE", "DELETE", "VALUES"]
+    },
+    {
+      "name": "UPDATE",
+      "command": "UPDATE",
+      "description": "Atualizar dados existentes",
+      "category": "SQL Básico",
+      "tags": ["sql", "update", "atualizar", "editar", "frequente"],
+      "details": "Atualiza registros existentes.\n\nSintaxe:\n  UPDATE tabela SET coluna = valor WHERE condição;\n\n⚠️ IMPORTANTE: Sempre use WHERE!\n   Sem WHERE atualiza TODOS os registros!\n\nExemplos:\n  UPDATE users\n  SET email = 'novo@email.com'\n  WHERE id = 5;\n\n  UPDATE users\n  SET age = age + 1\n  WHERE id IN (1,2,3);\n\nMúltiplas colunas:\n  UPDATE users\n  SET name = 'Ana', email = 'ana@email.com'\n  WHERE id = 1;\n\n💡 Teste com SELECT antes de UPDATE!",
+      "related": ["SELECT", "WHERE", "DELETE"]
+    },
+    {
+      "name": "DELETE",
+      "command": "DELETE FROM",
+      "description": "Deletar dados da tabela",
+      "category": "SQL Básico",
+      "tags": ["sql", "delete", "deletar", "remover", "cuidado"],
+      "details": "Deleta registros da tabela.\n\n⚠️ PERIGO: Sem WHERE deleta TUDO!\n\nSintaxe:\n  DELETE FROM tabela WHERE condição;\n\nExemplos:\n  DELETE FROM users WHERE id = 5;\n  DELETE FROM users WHERE age < 18;\n  DELETE FROM users WHERE created_at < '2020-01-01';\n\n💡 Teste com SELECT antes!\n   SELECT * FROM users WHERE id = 5;\n   DELETE FROM users WHERE id = 5;\n\n⚠️ Não tem UNDO em SQL!\n💡 Faça backup antes de deletar muito",
+      "related": ["SELECT", "WHERE", "UPDATE"]
+    },
+    {
+      "name": "COUNT",
+      "command": "COUNT(*)",
+      "description": "Contar número de registros",
+      "category": "SQL Funções",
+      "tags": ["sql", "count", "contar", "agregação", "útil"],
+      "details": "Conta quantos registros existem.\n\nExemplos:\n  SELECT COUNT(*) FROM users;\n  SELECT COUNT(*) FROM users WHERE age > 18;\n  SELECT COUNT(DISTINCT city) FROM users;\n\nCom GROUP BY:\n  SELECT company_id, COUNT(*) as total\n  FROM company_users\n  GROUP BY company_id;\n\n💡 COUNT(*) = conta linhas\n💡 COUNT(coluna) = conta não-NULL",
+      "related": ["GROUP BY", "SUM", "AVG"]
+    },
+    {
+      "name": "GROUP BY",
+      "command": "GROUP BY",
+      "description": "Agrupar resultados por coluna",
+      "category": "SQL Funções",
+      "tags": ["sql", "group", "agrupar", "agregação"],
+      "details": "Agrupa resultados pra usar funções (COUNT, SUM, AVG, etc).\n\nExemplo:\n  SELECT city, COUNT(*) as total\n  FROM users\n  GROUP BY city;\n\n  SELECT company_id, COUNT(*) as employees\n  FROM company_users\n  GROUP BY company_id\n  ORDER BY employees DESC;\n\n💡 Colunas no SELECT devem estar no GROUP BY\n💡 Ou ser funções agregadas (COUNT, SUM, etc)",
+      "related": ["COUNT", "HAVING", "SUM", "AVG"]
+    },
+    {
+      "name": "sqlite:///",
+      "command": "sqlite:///path",
+      "description": "Connection string SQLite (3 barras!)",
+      "category": "Connection",
+      "tags": ["sqlite", "conexão", "connection", "string", "frequente"],
+      "details": "String de conexão pro SQLite.\n\n⚠️ IMPORTANTE: 3 barras ///\n\nFormato:\n  sqlite:///caminho/completo/banco.db\n\nExemplos:\n  sqlite:///home/user/Workspaces/sql-practice/practice.db\n  sqlite:////tmp/test.db\n\n❌ ERRADO:\n  sqlite://practice.db (2 barras)\n  sqlite://~/Workspaces/... (~ não funciona)\n\n✅ CERTO:\n  sqlite:///home/user/... (path absoluto)\n\n💡 Path COMPLETO, sem ~",
+      "related": ["Shift+A", "postgresql://", "mysql://"]
+    },
+    {
+      "name": "sqlp",
+      "command": "sqlp",
+      "description": "Abrir SQL Practice (criar/abrir bancos)",
+      "category": "Ferramentas",
+      "tags": ["sqlp", "practice", "ferramenta", "menu", "frequente"],
+      "details": "Menu interativo do SQL Practice.\n\nOpções:\n  1. Criar novo banco\n     - Nome automático (BR) ou manual\n     - 3 presets: Completo/Estrutura/Vazio\n\n  2. Abrir banco existente\n\n  3. Listar bancos\n\n  4. Limpar bancos antigos\n\n  5. Configurações\n\nWorkflow:\n  1. sqlp\n  2. Criar novo → Automático → Completo\n  3. Neovim abre automaticamente\n  4. Connection string JÁ COPIADA!\n  5. Shift+A → Ctrl+Shift+V → Enter → R\n\n💡 Banco vem com 4 tabelas + dados!",
+      "related": ["sqlpHelp", "Space+db"]
+    }
+  ]
+}

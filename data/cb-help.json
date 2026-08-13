@@ -1,0 +1,142 @@
+{
+  "title": "cbdotfiles - Aliases & Ferramentas",
+  "version": "1.0",
+  "source": "cbhelp",
+  "items": [
+    {
+      "name": "nvimHelp",
+      "command": "nvimHelp",
+      "description": "Busca interativa de comandos Neovim",
+      "category": "Help",
+      "tags": ["help", "neovim", "busca", "comandos", "frequente"],
+      "details": "Busca fuzzy em ~48 comandos essenciais do Neovim.\n\nComo usar:\n  nvimHelp\n  → Busca: \"copiar\"\n  → Busca: \"frequente\"\n  → Busca: \"undo\"\n\nBusca em:\n  - Nome do comando\n  - Descrição\n  - Tags\n  - Categoria\n\n💡 Aperta Enter pra copiar o comando!",
+      "related": ["sqlpHelp", "cbHelp", "cbSearch"]
+    },
+    {
+      "name": "sqlpHelp",
+      "command": "sqlpHelp",
+      "description": "Busca interativa de comandos SQL",
+      "category": "Help",
+      "tags": ["help", "sql", "dadbod", "busca", "frequente"],
+      "details": "Busca fuzzy em comandos SQL + vim-dadbod.\n\nInclui:\n  - Comandos SQL básicos\n  - vim-dadbod atalhos\n  - Connection strings\n  - Troubleshooting\n\n💡 Busca: \"join\", \"conectar\", \"executar\"",
+      "related": ["nvimHelp", "sqlp", "cbSearch"]
+    },
+    {
+      "name": "cbHelp",
+      "command": "cbHelp",
+      "description": "Busca interativa de aliases cbdotfiles",
+      "category": "Help",
+      "tags": ["help", "cbdotfiles", "aliases", "busca"],
+      "details": "Busca fuzzy em aliases e ferramentas do cbdotfiles.\n\nInclui:\n  - Aliases de navegação\n  - Zellij layouts\n  - Git atalhos\n  - Ferramentas instaladas\n\n💡 Sistema de help unificado!",
+      "related": ["nvimHelp", "sqlpHelp"]
+    },
+    {
+      "name": "ws",
+      "command": "ws",
+      "description": "Ir pro diretório Workspaces",
+      "category": "Navegação",
+      "tags": ["navegação", "workspace", "diretório", "frequente"],
+      "details": "Atalho pra cd ~/Workspaces\n\nUso:\n  ws  → cd ~/Workspaces\n\nVariações:\n  workspaces    - mesmo comando (nome completo)\n  cbdotfiles    - cd ~/Workspaces/cbdotfiles\n\n💡 Combine com zoxide (z) pra navegar rápido!",
+      "related": ["cbdotfiles", "cd", "z"]
+    },
+    {
+      "name": "ll",
+      "command": "ll",
+      "description": "Listar arquivos (detalhado, com ícones)",
+      "category": "Navegação",
+      "tags": ["listar", "ls", "eza", "arquivos", "frequente"],
+      "details": "Lista arquivos com detalhes (usa eza com ícones).\n\nVariações:\n  ls     - lista simples\n  ll     - lista detalhada (-lah)\n  ls2    - tree level 2\n  ls3    - tree level 3\n  tree   - tree level 3\n\n💡 Usa eza (ls moderno) com ícones coloridos!",
+      "related": ["ls", "tree", "eza"]
+    },
+    {
+      "name": "zj",
+      "command": "zj <layout> <dir>",
+      "description": "Abrir sessão Zellij com layout",
+      "category": "Zellij",
+      "tags": ["zellij", "layout", "sessão", "tmux", "frequente"],
+      "details": "Cria ou reconecta sessão Zellij com layout.\n\nLayouts disponíveis:\n  cbw1 - CbWorkTemplate1 (VSCode-like)\n  cbw2 - CbWorkTemplate2\n\nExemplos:\n  zj cbw1 mnesis_frontend\n  zj cbw1 ~/Workspaces/meu-projeto\n  zj cbw2 volan\n\n💡 Se sessão existe, reconecta!\n💡 Nome da sessão = nome do diretório\n\nOutros comandos:\n  zj-l     - listar sessões\n  zj-a     - attach última\n  zj-k     - kill sessão\n  zj-ka    - kill todas\n  zj-tab   - nova tab no Zellij atual",
+      "related": ["zj-tab", "zj-l", "zj-ka"]
+    },
+    {
+      "name": "zj-tab",
+      "command": "zj-tab <layout> <dir>",
+      "description": "Nova tab no Zellij atual",
+      "category": "Zellij",
+      "tags": ["zellij", "tab", "layout"],
+      "details": "Abre nova tab no Zellij com layout.\n\nUso (DENTRO do Zellij):\n  zj-tab cbw1 outro-projeto\n\n💡 Útil pra trabalhar em múltiplos projetos\n💡 Cada tab com seu layout!\n\nAtalhos Zellij:\n  Ctrl+t n - nova tab\n  Ctrl+t c - fechar tab\n  Ctrl+t → - próxima tab",
+      "related": ["zj", "zj-l"]
+    },
+    {
+      "name": "gs",
+      "command": "gs",
+      "description": "Git status",
+      "category": "Git",
+      "tags": ["git", "status", "frequente"],
+      "details": "Atalho pra git status.\n\nMostra:\n  - Arquivos modificados\n  - Arquivos staged\n  - Branch atual\n  - Commits à frente/atrás\n\nOutros atalhos Git:\n  ga   - git add\n  gc   - git commit -m\n  gp   - git push\n  gl   - git log --oneline --graph\n\n💡 Use LazyGit (lg) pra interface completa!",
+      "related": ["ga", "gc", "gp", "lg"]
+    },
+    {
+      "name": "n",
+      "command": "n [arquivo]",
+      "description": "Abrir Neovim",
+      "category": "Ferramentas",
+      "tags": ["neovim", "editor", "nvim", "frequente"],
+      "details": "Atalho pra nvim.\n\nUso:\n  n           - abre Neovim vazio\n  n file.js   - abre arquivo\n  n .         - abre diretório (file explorer)\n\n💡 LazyVim instalado com tema Origamid!\n💡 Plugins: dadbod, LazyGit, fzf, etc",
+      "related": ["nvimHelp", "Space+db"]
+    },
+    {
+      "name": "sqlp",
+      "command": "sqlp",
+      "description": "SQL Practice - criar/gerenciar bancos SQLite",
+      "category": "Ferramentas",
+      "tags": ["sql", "sqlite", "practice", "frequente"],
+      "details": "Ferramenta interativa pra treinar SQL.\n\nFeatures:\n  - Nome automático brasileiro\n  - 3 presets (Completo/Estrutura/Vazio)\n  - Auto-copia connection string\n  - Abre Neovim com dadbod\n  - Limpar bancos antigos\n\nWorkflow:\n  1. sqlp\n  2. Criar novo → Automático\n  3. Completo (4 tabelas + dados)\n  4. Neovim abre automaticamente\n  5. Shift+A → Ctrl+Shift+V → R\n\n💡 Connection string JÁ vem copiada!",
+      "related": ["sqlpHelp", "Space+db"]
+    },
+    {
+      "name": "cbSearch",
+      "command": "cbSearch <json>",
+      "description": "Busca interativa genérica (data-driven)",
+      "category": "Ferramentas",
+      "tags": ["busca", "search", "fzf", "json", "útil"],
+      "details": "Ferramenta genérica de busca fuzzy.\n\nUso:\n  cbSearch nvim-tips\n  cbSearch sql-help\n  cbSearch cb-help\n  cbSearch ~/.config/meu-arquivo.json\n\nBusca em:\n  - Nome\n  - Descrição\n  - Tags\n  - Categoria\n\n💡 Data-driven: qualquer JSON funciona!\n💡 Preparado pra migrar pro Charm/bubbletea",
+      "related": ["nvimHelp", "sqlpHelp", "cbHelp"]
+    },
+    {
+      "name": "cbdotInstall",
+      "command": "cbdotInstall",
+      "description": "Instalar/reinstalar cbdotfiles",
+      "category": "cbdotfiles",
+      "tags": ["install", "setup", "cbdotfiles"],
+      "details": "Menu interativo de instalação.\n\nModos:\n  - Padrão (módulos recomendados)\n  - Custom (escolhe módulos)\n\nMódulos:\n  - Zsh + aliases\n  - Kitty config\n  - Neovim config\n  - Git config\n  - Zellij layouts\n\nAliases:\n  cbdotInstall / cbinstall\n  cbdotUpdate / cbupdate\n  cbdotReinstall / cbreinstall",
+      "related": ["cbdotUpdate", "cbdotReinstall"]
+    },
+    {
+      "name": "cbdotUpdate",
+      "command": "cbdotUpdate",
+      "description": "Atualizar cbdotfiles do GitHub",
+      "category": "cbdotfiles",
+      "tags": ["update", "atualizar", "git", "cbdotfiles"],
+      "details": "Atualiza cbdotfiles do repositório.\n\nO que faz:\n  1. git pull (puxa últimas mudanças)\n  2. Reinstala módulos salvos\n  3. source ~/.zshrc (recarrega)\n\nAliases:\n  cbdotUpdate / cbupdate\n\n💡 Mantém suas configurações locais!",
+      "related": ["cbdotInstall", "cbdotReinstall"]
+    },
+    {
+      "name": "aliases",
+      "command": "aliases",
+      "description": "Editar aliases locais (não vai pro git)",
+      "category": "cbdotfiles",
+      "tags": ["aliases", "editar", "local", "config"],
+      "details": "Abre editor pra adicionar aliases pessoais.\n\nArquivo:\n  ~/Workspaces/cbdotfiles/local/zsh/local.zsh\n\n💡 NÃO vai pro git!\n💡 Pra configs pessoais/privadas\n💡 Recarrega .zshrc automaticamente\n\nOutros:\n  cbkitty  - config Kitty local\n  cblocal  - variáveis locais",
+      "related": ["cbkitty", "cblocal", "cbzshrc"]
+    },
+    {
+      "name": "pcinfo",
+      "command": "pcinfo",
+      "description": "Informações do sistema (hardware/software)",
+      "category": "Ferramentas",
+      "tags": ["info", "sistema", "hardware", "cpu", "ram"],
+      "details": "Mostra informações completas do sistema.\n\nInclui:\n  - OS e distro\n  - Kernel\n  - CPU e cores\n  - RAM (total/usada)\n  - GPU\n  - Disco\n\n💡 Útil pra troubleshooting!",
+      "related": ["htop", "neofetch"]
+    }
+  ]
+}
