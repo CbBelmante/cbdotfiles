@@ -20,9 +20,12 @@ sqlpHelp          # guia passo a passo (como conectar no Neovim)
 1. 🆕 Criar novo banco
 2. 📂 Abrir banco existente
 3. 📋 Listar bancos salvos
-4. ⚙️  Configurações
-5. ❌ Sair
+4. 🗑️  Limpar bancos
+5. ⚙️  Configurações
+6. ❌ Sair
 ```
+
+> 💡 **Todas as ações voltam ao menu principal!** Use "◀️ Voltar" ou complete a ação para retornar.
 
 ## 🎨 Presets disponíveis
 
@@ -44,7 +47,9 @@ Ao criar um novo banco, você escolhe entre 3 presets:
 
 ### 1️⃣ Criar novo banco
 
-- Pede o nome (ex: `practice`, `curso-sql`, `treino-joins`)
+- **Nome:**
+  - ⚡ **Automático** — formato brasileiro: `practice-13-08-2026-11h51` (DD-MM-YYYY-HHhMM)
+  - ✏️ **Manual** — você escolhe (ex: `curso-sql`, `treino-joins`)
 - Escolhe o preset:
   - **🏢 Completo** — 4 tabelas + 24 registros (pronto pra treinar SQL)
   - **📐 Estrutura apenas** — 4 tabelas vazias (pronto pra treinar INSERT)
@@ -61,7 +66,21 @@ Ao criar um novo banco, você escolhe entre 3 presets:
 
 - Mostra todos os bancos criados com índice numérico
 
-### 4️⃣ Configurações
+### 4️⃣ Limpar bancos
+
+- Lista todos os bancos com **data de criação**
+- Multi-select (espaço = marcar)
+- Deleta múltiplos de uma vez
+- **Confirma antes de deletar**
+
+**Exemplo:**
+```
+☑ practice-13-08-2026-11h51 (criado: 13/08/2026 11:51:30)
+☑ practice-12-08-2026-15h20 (criado: 12/08/2026 15:20:15)
+☐ meu-projeto-importante (criado: 10/08/2026 10:00:00)
+```
+
+### 5️⃣ Configurações
 
 **Opções:**
 - **📂 Alterar path padrão** — escolhe onde salvar os bancos

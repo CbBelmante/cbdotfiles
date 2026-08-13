@@ -6,10 +6,10 @@
  */
 
 import { Database } from 'bun:sqlite';
-import { existsSync, mkdirSync, readdirSync, readFileSync } from 'fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, unlinkSync, statSync } from 'fs';
 import { execSync } from 'child_process';
 import { resolve, join } from 'path';
-import { select, input, confirm } from '@inquirer/prompts';
+import { select, input, confirm, checkbox } from '@inquirer/prompts';
 import { buildDemoSQL } from './seeds/demo';
 
 // ============== CONSTANTS ==============
@@ -51,6 +51,21 @@ function getPracticeDir(): string {
 }
 
 // ============== HELPERS ==============
+
+/**
+ * Gera nome automático com timestamp brasileiro
+ * Formato: practice-DD-MM-YYYY-HHhMM
+ */
+function generateAutoName(): string {
+  const now = new Date();
+  const day = String(now.getDate()).padStart(2, '0');
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const year = now.getFullYear();
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+
+  return `practice-${day}-${month}-${year}-${hours}h${minutes}`;
+}
 
 /**
  * Garante que o diretório de prática existe
@@ -144,40 +159,130 @@ function openInNeovim(dbPath: string): void {
   });
 }
 
+/**
+ * Limpa bancos antigos (deletar múltiplos)
+ */
+async function cleanDatabases(): Promise<void> {
+  const databases = listDatabases();
+  const practiceDir = getPracticeDir();
+
+  if (databases.length === 0) {
+    console.log('\n📭 Nenhum banco encontrado para limpar\n');
+    return;
+  }
+
+  // Monta lista com info de data
+  const choices = databases.map(db => {
+    const dbPath = join(practiceDir, db);
+    const stats = statSync(dbPath);
+    const date = stats.mtime.toLocaleString('pt-BR');
+    return {
+      name: `${db} (criado: ${date})`,
+      value: db,
+    };
+  });
+
+  const selected = await checkbox({
+    message: 'Selecione os bancos para deletar (espaço = marcar):',
+    choices,
+  });
+
+  if (selected.length === 0) {
+    console.log('\n✅ Nenhum banco selecionado\n');
+    return;
+  }
+
+  // Confirma antes de deletar
+  console.log(`\n⚠️  Você vai deletar ${selected.length} banco(s):`);
+  for (let i = 0; i < selected.length; i++) {
+    console.log(`  - ${selected[i]}`);
+  }
+  console.log('');
+
+  const confirmed = await confirm({
+    message: 'Tem certeza?',
+    default: false,
+  });
+
+  if (!confirmed) {
+    console.log('\n✅ Cancelado\n');
+    return;
+  }
+
+  // Deleta os selecionados
+  let deleted = 0;
+  for (let i = 0; i < selected.length; i++) {
+    const dbPath = join(practiceDir, selected[i]);
+    try {
+      unlinkSync(dbPath);
+      console.log(`  ✅ Deletado: ${selected[i]}`);
+      deleted++;
+    } catch (error) {
+      console.log(`  ❌ Erro ao deletar ${selected[i]}: ${error}`);
+    }
+  }
+
+  console.log(`\n🎉 ${deleted} banco(s) deletado(s)\n`);
+}
+
 // ============== MENU ==============
 
 async function showMenu(): Promise<void> {
   ensurePracticeDir();
 
-  console.log('\n🗄️  SQL Practice\n');
+  // Loop infinito - só sai com "Sair"
+  while (true) {
+    console.log('\n🗄️  SQL Practice\n');
 
-  const action = await select({
-    message: 'O que você quer fazer?',
-    choices: [
-      { name: '🆕 Criar novo banco', value: 'create' },
-      { name: '📂 Abrir banco existente', value: 'open' },
-      { name: '📋 Listar bancos salvos', value: 'list' },
-      { name: '⚙️  Configurações', value: 'config' },
-      { name: '❌ Sair', value: 'exit' },
-    ],
-  });
-
-  if (action === 'exit') {
-    console.log('\n👋 Até mais!\n');
-    process.exit(0);
-  }
-
-  if (action === 'create') {
-    const name = await input({
-      message: 'Nome do banco (sem .db):',
-      default: 'practice',
-      validate: (value) => {
-        if (!value.trim()) return 'Nome não pode ser vazio';
-        if (value.includes('.')) return 'Não inclua a extensão .db';
-        if (!/^[a-zA-Z0-9_-]+$/.test(value)) return 'Use apenas letras, números, - e _';
-        return true;
-      },
+    const action = await select({
+      message: 'O que você quer fazer?',
+      choices: [
+        { name: '🆕 Criar novo banco', value: 'create' },
+        { name: '📂 Abrir banco existente', value: 'open' },
+        { name: '📋 Listar bancos salvos', value: 'list' },
+        { name: '🗑️  Limpar bancos', value: 'clean' },
+        { name: '⚙️  Configurações', value: 'config' },
+        { name: '❌ Sair', value: 'exit' },
+      ],
     });
+
+    if (action === 'exit') {
+      console.log('\n👋 Até mais!\n');
+      process.exit(0);
+    }
+
+    if (action === 'create') {
+      // Oferece nome automático ou manual
+      const nameChoice = await select({
+        message: 'Como quer nomear o banco?',
+        choices: [
+          { name: `⚡ Automático (${generateAutoName()})`, value: 'auto' },
+          { name: '✏️  Manual (você digita)', value: 'manual' },
+          { name: '◀️  Voltar', value: '__back__' },
+        ],
+      });
+
+      if (nameChoice === '__back__') {
+        continue; // Volta pro menu
+      }
+
+    let name: string;
+
+    if (nameChoice === 'auto') {
+      name = generateAutoName();
+      console.log(`\n✅ Nome: ${name}\n`);
+    } else {
+      name = await input({
+        message: 'Nome do banco (sem .db):',
+        default: 'practice',
+        validate: (value) => {
+          if (!value.trim()) return 'Nome não pode ser vazio';
+          if (value.includes('.')) return 'Não inclua a extensão .db';
+          if (!/^[a-zA-Z0-9_-]+$/.test(value)) return 'Use apenas letras, números, - e _';
+          return true;
+        },
+      });
+    }
 
     const dbPath = await createDatabase(name.trim());
 
@@ -190,107 +295,120 @@ async function showMenu(): Promise<void> {
       openInNeovim(dbPath);
     }
 
-    return;
-  }
-
-  if (action === 'open') {
-    const databases = listDatabases();
-
-    if (databases.length === 0) {
-      console.log('\n⚠️  Nenhum banco encontrado em ~/sql-practice\n');
-      console.log('💡 Crie um novo primeiro!\n');
-      return;
+    continue; // Volta pro menu
     }
 
-    const selected = await select({
-      message: 'Selecione o banco:',
-      choices: databases.map(db => ({
-        name: db,
-        value: db,
-      })),
-    });
+    if (action === 'open') {
+      const databases = listDatabases();
 
-    const practiceDir = getPracticeDir();
-    const dbPath = join(practiceDir, selected);
-    openInNeovim(dbPath);
-
-    return;
-  }
-
-  if (action === 'list') {
-    const databases = listDatabases();
-    const practiceDir = getPracticeDir();
-
-    if (databases.length === 0) {
-      console.log('\n📭 Nenhum banco encontrado\n');
-    } else {
-      console.log(`\n📋 Bancos em ${practiceDir}:\n`);
-      for (let i = 0; i < databases.length; i++) {
-        console.log(`  ${i + 1}. ${databases[i]}`);
+      if (databases.length === 0) {
+        console.log('\n⚠️  Nenhum banco encontrado\n');
+        console.log('💡 Crie um novo primeiro!\n');
+        continue; // Volta pro menu
       }
-      console.log('');
-    }
 
-    return;
-  }
+      // Adiciona opção "Voltar"
+      const choices = [
+        ...databases.map(db => ({ name: db, value: db })),
+        { name: '◀️  Voltar', value: '__back__' },
+      ];
 
-  if (action === 'config') {
-    const currentPath = getPracticeDir();
-    console.log(`\n⚙️  Configurações\n`);
-    console.log(`📁 Path atual: ${currentPath}\n`);
-
-    const configAction = await select({
-      message: 'O que deseja configurar?',
-      choices: [
-        { name: '📂 Alterar path padrão', value: 'change-path' },
-        { name: '🔄 Resetar para padrão (Workspaces)', value: 'reset' },
-        { name: '◀️  Voltar', value: 'back' },
-      ],
-    });
-
-    if (configAction === 'back') {
-      return;
-    }
-
-    if (configAction === 'reset') {
-      const config = loadConfig();
-      delete config.defaultPath;
-      saveConfig(config);
-      console.log(`✅ Path resetado para: ${DEFAULT_PRACTICE_DIR}\n`);
-      return;
-    }
-
-    if (configAction === 'change-path') {
-      const newPath = await input({
-        message: 'Novo path (use ~ para home):',
-        default: currentPath,
-        validate: (value) => {
-          if (!value.trim()) return 'Path não pode ser vazio';
-          return true;
-        },
+      const selected = await select({
+        message: 'Selecione o banco:',
+        choices,
       });
 
-      const expandedPath = newPath.replace(/^~/, HOME);
-      const config = loadConfig();
-      config.defaultPath = expandedPath;
-      saveConfig(config);
-
-      // Cria o novo diretório se não existir
-      if (!existsSync(expandedPath)) {
-        const shouldCreate = await confirm({
-          message: `Diretório não existe. Criar ${expandedPath}?`,
-          default: true,
-        });
-
-        if (shouldCreate) {
-          mkdirSync(expandedPath, { recursive: true });
-          console.log(`✅ Diretório criado!\n`);
-        }
+      if (selected === '__back__') {
+        continue; // Volta pro menu
       }
 
-      return;
+      const practiceDir = getPracticeDir();
+      const dbPath = join(practiceDir, selected);
+      openInNeovim(dbPath);
+
+      continue; // Volta pro menu
     }
-  }
+
+    if (action === 'list') {
+      const databases = listDatabases();
+      const practiceDir = getPracticeDir();
+
+      if (databases.length === 0) {
+        console.log('\n📭 Nenhum banco encontrado\n');
+      } else {
+        console.log(`\n📋 Bancos em ${practiceDir}:\n`);
+        for (let i = 0; i < databases.length; i++) {
+          console.log(`  ${i + 1}. ${databases[i]}`);
+        }
+        console.log('');
+      }
+
+      continue; // Volta pro menu
+    }
+
+    if (action === 'clean') {
+      await cleanDatabases();
+      continue; // Volta pro menu
+    }
+
+    if (action === 'config') {
+      const currentPath = getPracticeDir();
+      console.log(`\n⚙️  Configurações\n`);
+      console.log(`📁 Path atual: ${currentPath}\n`);
+
+      const configAction = await select({
+        message: 'O que deseja configurar?',
+        choices: [
+          { name: '📂 Alterar path padrão', value: 'change-path' },
+          { name: '🔄 Resetar para padrão (Workspaces)', value: 'reset' },
+          { name: '◀️  Voltar', value: 'back' },
+        ],
+      });
+
+      if (configAction === 'back') {
+        continue; // Volta pro menu
+      }
+
+      if (configAction === 'reset') {
+        const config = loadConfig();
+        delete config.defaultPath;
+        saveConfig(config);
+        console.log(`✅ Path resetado para: ${DEFAULT_PRACTICE_DIR}\n`);
+        continue; // Volta pro menu
+      }
+
+      if (configAction === 'change-path') {
+        const newPath = await input({
+          message: 'Novo path (use ~ para home):',
+          default: currentPath,
+          validate: (value) => {
+            if (!value.trim()) return 'Path não pode ser vazio';
+            return true;
+          },
+        });
+
+        const expandedPath = newPath.replace(/^~/, HOME);
+        const config = loadConfig();
+        config.defaultPath = expandedPath;
+        saveConfig(config);
+
+        // Cria o novo diretório se não existir
+        if (!existsSync(expandedPath)) {
+          const shouldCreate = await confirm({
+            message: `Diretório não existe. Criar ${expandedPath}?`,
+            default: true,
+          });
+
+          if (shouldCreate) {
+            mkdirSync(expandedPath, { recursive: true });
+            console.log(`✅ Diretório criado!\n`);
+          }
+        }
+
+        continue; // Volta pro menu
+      }
+    }
+  } // Fecha o while (true)
 }
 
 // ============== MAIN ==============
