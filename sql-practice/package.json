@@ -1,0 +1,12 @@
+{
+  "name": "cbdotfiles-sql-practice",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "SQL Practice - cria/abre bancos SQLite para treinar SQL",
+  "scripts": {
+    "start": "bun index.ts"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^8.2.1"
+  }
+}

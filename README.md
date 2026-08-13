@@ -285,6 +285,20 @@ Ctrl+R                # historico de comandos com busca fuzzy
 | `bat` | Cat com syntax highlight |
 | `open` | Abre arquivo/diretorio com app padrao (xdg-open) |
 | `d` | Docker |
+| `sqlp` / `sqlpractice` | Menu interativo para criar/abrir bancos SQLite de pratica |
+
+## 🗄️ SQL Practice
+
+Ferramenta interativa para criar e gerenciar bancos SQLite de pratica. Menu com 3 presets (completo/estrutura/vazio) e abre direto no Neovim com dadbod UI.
+
+```bash
+sqlp              # atalho curto
+sqlpractice       # nome completo
+```
+
+**Path padrao:** `~/Workspaces/sql-practice/`
+
+> 📖 Documentacao completa: [`sql-practice/README.md`](sql-practice/README.md)
 
 ## 🖥️ Layouts do Zellij
 

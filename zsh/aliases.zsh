@@ -90,6 +90,8 @@ alias d='docker'
 alias dc='docker compose'
 alias p10kconfig='p10k configure'
 alias pcinfo='bash ~/Workspaces/cbdotfiles/bin/pcinfo.sh'
+alias sqlpractice='bun ~/Workspaces/cbdotfiles/sql-practice/index.ts'
+alias sqlp='bun ~/Workspaces/cbdotfiles/sql-practice/index.ts'
 
 open() {
     xdg-open "$@" >/dev/null 2>&1 &
