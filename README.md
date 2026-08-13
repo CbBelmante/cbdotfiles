@@ -286,6 +286,32 @@ Ctrl+R                # historico de comandos com busca fuzzy
 | `open` | Abre arquivo/diretorio com app padrao (xdg-open) |
 | `d` | Docker |
 | `sqlp` / `sqlpractice` | Menu interativo para criar/abrir bancos SQLite de pratica |
+| `nvimHelp` / `sqlpHelp` / `cbHelp` | Busca interativa fuzzy de comandos e dicas |
+
+## 🔍 cbSearch - Sistema de Help Interativo
+
+Busca fuzzy (fzf) em comandos e dicas. **82 comandos buscáveis** em 3 helps especializados!
+
+```bash
+nvimHelp    # 48 comandos Neovim essenciais
+sqlpHelp    # 19 comandos SQL + dadbod
+cbHelp      # 15 aliases + ferramentas cbdotfiles
+```
+
+**Features:**
+- 🔍 Busca fuzzy em nome + descrição + tags
+- 📖 Preview detalhado com exemplos
+- 📋 Copia comando (Enter)
+- ⌨️ Navegação rápida (setas)
+- 🎯 Layout top-down intuitivo
+- 📦 Data-driven (JSON)
+
+**Busque por:**
+- Nome: `yi"`, `gg`, `SELECT`
+- Tags: `frequente`, `copiar`, `deletar`
+- Descrição: `aspas`, `undo`, `join`
+
+> 📖 Documentação completa: [`data/README.md`](data/README.md)
 
 ## 🗄️ SQL Practice
 
