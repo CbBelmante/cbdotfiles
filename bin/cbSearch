@@ -1,0 +1,265 @@
+#!/bin/bash
+# ═══════════════════════════════════════════════════════════════════════════════
+# cbSearch - Busca interativa genérica com fzf
+# Data-driven: recebe JSON, mostra busca fuzzy com preview
+# ═══════════════════════════════════════════════════════════════════════════════
+
+set -euo pipefail
+
+# ───────────────────────────────────────────────────────────────────────────────
+# Configuração
+# ───────────────────────────────────────────────────────────────────────────────
+
+readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly DATA_DIR="${SCRIPT_DIR}/../data"
+
+# ───────────────────────────────────────────────────────────────────────────────
+# Helpers
+# ───────────────────────────────────────────────────────────────────────────────
+
+show_usage() {
+  cat << EOF
+🔍 cbSearch - Busca interativa genérica
+
+USO:
+  cbSearch <arquivo.json>
+  cbSearch nvim-tips       # atalho para data/nvim-tips.json
+  cbSearch sql-help        # atalho para data/sql-help.json
+
+EXEMPLOS:
+  cbSearch nvim-tips
+  cbSearch ~/.config/my-commands.json
+
+BUSCA:
+  - Nome do comando
+  - Descrição
+  - Tags
+  - Categoria
+
+NAVEGAÇÃO:
+  ↑↓      Navegar
+  Enter   Copiar comando pro clipboard
+  Esc     Sair
+
+EOF
+}
+
+# ───────────────────────────────────────────────────────────────────────────────
+# Funções principais
+# ───────────────────────────────────────────────────────────────────────────────
+
+resolve_json_path() {
+  local input="$1"
+
+  # Se é caminho absoluto ou relativo com /, usa direto
+  if [[ "$input" == /* ]] || [[ "$input" == ./* ]] || [[ "$input" == */* ]]; then
+    echo "$input"
+    return
+  fi
+
+  # Se termina com .json, assume que tá no data/
+  if [[ "$input" == *.json ]]; then
+    echo "${DATA_DIR}/${input}"
+    return
+  fi
+
+  # Senão, adiciona .json e procura no data/
+  echo "${DATA_DIR}/${input}.json"
+}
+
+extract_items() {
+  local json_file="$1"
+
+  # Extrai items e formata: "comando | descrição [categoria]"
+  jq -r '.items[] |
+    "\(.command // .name)\t\(.description)\t\(.category // "Geral")\t\(.name)"' \
+    "$json_file"
+}
+
+format_for_fzf() {
+  # Formata cada linha pra fzf
+  # Input: comando\tdescrição\tcategoria\tname
+  # Output: "comando - descrição [categoria]"
+  while IFS=$'\t' read -r command desc category name; do
+    printf "%-20s %s %s\n" "$command" "$desc" "$(tput dim)[${category}]$(tput sgr0)"
+  done
+}
+
+show_preview() {
+  local json_file="$1"
+  local selected_line="$2"
+
+  # Extrai o comando da linha selecionada (primeira palavra)
+  local command
+  command=$(echo "$selected_line" | awk '{print $1}')
+
+  # Busca o item no JSON pelo comando
+  local item
+  item=$(jq -r --arg cmd "$command" '
+    .items[] |
+    select(.command == $cmd or .name == $cmd) |
+    {
+      name: .name,
+      command: (.command // .name),
+      description: .description,
+      category: (.category // "Geral"),
+      details: .details,
+      tags: (.tags // []),
+      related: (.related // [])
+    }
+  ' "$json_file")
+
+  if [[ -z "$item" ]]; then
+    echo "❌ Item não encontrado"
+    return
+  fi
+
+  # Renderiza preview bonito
+  {
+    # Header
+    echo "$(tput bold)$(tput setaf 6)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(tput sgr0)"
+    echo "$(tput bold)$(echo "$item" | jq -r '.command')$(tput sgr0)"
+    echo "$(tput setaf 245)$(echo "$item" | jq -r '.description')$(tput sgr0)"
+    echo ""
+
+    # Categoria
+    local category
+    category=$(echo "$item" | jq -r '.category')
+    echo "$(tput setaf 3)📂 Categoria:$(tput sgr0) $category"
+    echo ""
+
+    # Details
+    echo "$(tput bold)📖 Detalhes:$(tput sgr0)"
+    echo "$(tput setaf 6)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(tput sgr0)"
+    echo "$item" | jq -r '.details'
+    echo ""
+
+    # Tags (se tiver)
+    local tags
+    tags=$(echo "$item" | jq -r '.tags | join(", ")')
+    if [[ -n "$tags" ]] && [[ "$tags" != "null" ]]; then
+      echo "$(tput setaf 5)🏷️  Tags:$(tput sgr0) $tags"
+      echo ""
+    fi
+
+    # Related (se tiver)
+    local related
+    related=$(echo "$item" | jq -r '.related | join(", ")')
+    if [[ -n "$related" ]] && [[ "$related" != "null" ]]; then
+      echo "$(tput setaf 2)🔗 Relacionados:$(tput sgr0) $related"
+    fi
+
+    echo "$(tput setaf 6)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(tput sgr0)"
+  }
+}
+
+copy_to_clipboard() {
+  local text="$1"
+
+  # Tenta wl-copy (Wayland)
+  if command -v wl-copy &> /dev/null; then
+    echo -n "$text" | wl-copy
+    return 0
+  fi
+
+  # Tenta xclip (X11)
+  if command -v xclip &> /dev/null; then
+    echo -n "$text" | xclip -selection clipboard
+    return 0
+  fi
+
+  return 1
+}
+
+run_search() {
+  local json_file="$1"
+
+  # Valida JSON
+  if ! jq empty "$json_file" 2>/dev/null; then
+    echo "❌ Erro: JSON inválido em $json_file"
+    exit 1
+  fi
+
+  # Pega título do JSON
+  local title
+  title=$(jq -r '.title // "Busca"' "$json_file")
+
+  # Extrai e formata items
+  local items
+  items=$(extract_items "$json_file" | format_for_fzf)
+
+  if [[ -z "$items" ]]; then
+    echo "❌ Nenhum item encontrado em $json_file"
+    exit 1
+  fi
+
+  # Roda fzf com preview
+  local selected
+  selected=$(echo "$items" | fzf \
+    --ansi \
+    --header="🔍 $title - Busca fuzzy (Enter = copiar comando)" \
+    --header-first \
+    --prompt="❯ " \
+    --pointer="▶" \
+    --preview="bash -c 'source \"$0\"; show_preview \"$json_file\" \"{}\"'" \
+    --preview-window=right:60%:wrap \
+    --bind='ctrl-/:toggle-preview' \
+    --color='header:italic:cyan,prompt:bold:cyan,pointer:bold:green' \
+  ) || return 0
+
+  if [[ -n "$selected" ]]; then
+    # Extrai comando
+    local command
+    command=$(echo "$selected" | awk '{print $1}')
+
+    # Copia pro clipboard
+    if copy_to_clipboard "$command"; then
+      echo "✅ Comando copiado: $command"
+    else
+      echo "📋 Comando: $command"
+      echo "⚠️  Clipboard não disponível (instale wl-copy ou xclip)"
+    fi
+  fi
+}
+
+# ───────────────────────────────────────────────────────────────────────────────
+# Main
+# ───────────────────────────────────────────────────────────────────────────────
+
+main() {
+  # Valida argumentos
+  if [[ $# -eq 0 ]] || [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
+    show_usage
+    exit 0
+  fi
+
+  # Valida dependências
+  if ! command -v fzf &> /dev/null; then
+    echo "❌ Erro: fzf não encontrado"
+    echo "Instale: sudo apt install fzf"
+    exit 1
+  fi
+
+  if ! command -v jq &> /dev/null; then
+    echo "❌ Erro: jq não encontrado"
+    echo "Instale: sudo apt install jq"
+    exit 1
+  fi
+
+  # Resolve caminho do JSON
+  local json_file
+  json_file=$(resolve_json_path "$1")
+
+  if [[ ! -f "$json_file" ]]; then
+    echo "❌ Erro: arquivo não encontrado: $json_file"
+    exit 1
+  fi
+
+  # Roda busca
+  run_search "$json_file"
+}
+
+# Exporta função pra preview poder usar
+export -f show_preview
+
+main "$@"

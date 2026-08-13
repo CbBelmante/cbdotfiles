@@ -103,6 +103,10 @@ open() {
 alias cbHelp='bash ~/Workspaces/cbdotfiles/bin/cbhelp.sh'
 alias nvimTips='bash ~/Workspaces/cbdotfiles/bin/nvimtips.sh'
 alias sqlpHelp='bash ~/Workspaces/cbdotfiles/bin/sqlpHelp.sh'
+
+# cbSearch - Busca interativa (fzf + JSON)
+alias cbSearch='~/Workspaces/cbdotfiles/bin/cbSearch'
+alias nvimSearch='cbSearch nvim-tips'   # Busca Neovim interativa
 alias cbbrowser='~/Workspaces/cbdotfiles/install.sh --chbrowser'
 _cb_edit_local() {
     local f=~/Workspaces/cbdotfiles/local/$1

@@ -1,0 +1,79 @@
+{
+  "title": "Neovim Tips & Tricks",
+  "version": "1.0",
+  "source": "nvimtips",
+  "items": [
+    {
+      "name": "yi\"",
+      "command": "yi\"",
+      "description": "Copiar texto entre aspas duplas",
+      "category": "Text Objects",
+      "tags": ["copiar", "yank", "aspas", "inside", "text-object"],
+      "details": "Copia (yank) o texto que está ENTRE aspas duplas (não inclui as aspas).\n\nExemplo:\n  const name = \"Claude Code\";\n               ↑ cursor aqui\n  yi\" → copia: Claude Code\n\nVariações:\n  yi'  - entre aspas simples\n  yi`  - entre backticks\n  yi)  - entre parênteses\n  yi}  - entre chaves\n  yi]  - entre colchetes",
+      "related": ["ya\"", "ci\"", "di\"", "vi\""]
+    },
+    {
+      "name": "ya\"",
+      "command": "ya\"",
+      "description": "Copiar texto incluindo aspas duplas",
+      "category": "Text Objects",
+      "tags": ["copiar", "yank", "aspas", "around", "text-object"],
+      "details": "Copia (yank) o texto INCLUINDO as aspas duplas.\n\nExemplo:\n  const name = \"Claude Code\";\n               ↑ cursor aqui\n  ya\" → copia: \"Claude Code\"\n\nDiferença:\n  yi\" = inside (só conteúdo)\n  ya\" = around (com delimitadores)",
+      "related": ["yi\"", "ca\"", "da\""]
+    },
+    {
+      "name": "gg",
+      "command": "gg",
+      "description": "Ir pro início do arquivo",
+      "category": "Navegação",
+      "tags": ["navegação", "arquivo", "início", "topo", "movimento"],
+      "details": "Move o cursor pra primeira linha do arquivo.\n\nCombinações úteis:\n  gg     - linha 1\n  42gg   - linha 42\n  dgg    - deleta do cursor até o início\n  ygg    - copia do cursor até o início\n  =gg    - indenta do cursor até o início",
+      "related": ["G", ":1", "H"]
+    },
+    {
+      "name": "G",
+      "command": "G",
+      "description": "Ir pro final do arquivo",
+      "category": "Navegação",
+      "tags": ["navegação", "arquivo", "final", "última-linha", "movimento"],
+      "details": "Move o cursor pra última linha do arquivo.\n\nCombinações úteis:\n  G      - última linha\n  dG     - deleta do cursor até o final\n  yG     - copia do cursor até o final\n  =G     - indenta do cursor até o final",
+      "related": ["gg", ":$", "L"]
+    },
+    {
+      "name": "0",
+      "command": "0",
+      "description": "Ir pro início da linha (coluna 0)",
+      "category": "Navegação",
+      "tags": ["navegação", "linha", "início", "coluna", "movimento"],
+      "details": "Move o cursor pro início absoluto da linha (coluna 0).\n\nDiferença:\n  0  - coluna 0 (início absoluto)\n  ^  - primeiro caractere não-branco\n  \nExemplo:\n      const name = \"CB\";\n  ↑ 0 vai aqui\n      ↑ ^ vai aqui",
+      "related": ["^", "$", "I"]
+    },
+    {
+      "name": "$",
+      "command": "$",
+      "description": "Ir pro final da linha",
+      "category": "Navegação",
+      "tags": ["navegação", "linha", "final", "movimento"],
+      "details": "Move o cursor pro final da linha.\n\nCombinações úteis:\n  $      - final da linha\n  d$     - deleta até o final (igual D)\n  y$     - copia até o final (igual Y)\n  c$     - muda até o final (igual C)",
+      "related": ["0", "^", "A"]
+    },
+    {
+      "name": "ci\"",
+      "command": "ci\"",
+      "description": "Deletar entre aspas e entrar INSERT",
+      "category": "Text Objects",
+      "tags": ["deletar", "change", "aspas", "insert", "editar"],
+      "details": "Deleta o texto entre aspas e entra em modo INSERT.\n\nExemplo:\n  const name = \"Claude Code\";\n               ↑ cursor aqui\n  ci\" → deleta \"Claude Code\", fica: \"\", modo INSERT\n\nMnemônico: Change Inside\n  c = change (deletar e INSERT)\n  i = inside (entre)\n  \" = aspas",
+      "related": ["yi\"", "di\"", "ca\""]
+    },
+    {
+      "name": "Space+Shift+S",
+      "command": "<Space>S",
+      "description": "Executar query SQL (dadbod)",
+      "category": "SQL/Dadbod",
+      "tags": ["sql", "dadbod", "executar", "query", "database"],
+      "details": "Executa a query SQL sob o cursor no vim-dadbod.\n\nPré-requisitos:\n  - Banco conectado no dadbod UI\n  - Cursor na linha da query\n  - Query termina com ;\n\nWorkflow:\n  1. Escreve query\n  2. Esc (sai do INSERT)\n  3. Space+Shift+S\n  4. Resultado aparece embaixo!",
+      "related": ["Space+Shift+W", "Space+db"]
+    }
+  ]
+}
