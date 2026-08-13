@@ -70,87 +70,27 @@ resolve_json_path() {
 extract_items() {
   local json_file="$1"
 
-  # Extrai items e formata: "comando | descrição [categoria]"
+  # Extrai items com TAGS pra busca fuzzy
+  # Formato: comando\tdescrição\tcategoria\tname\ttags
   jq -r '.items[] |
-    "\(.command // .name)\t\(.description)\t\(.category // "Geral")\t\(.name)"' \
+    "\(.command // .name)\t\(.description)\t\(.category // "Geral")\t\(.name)\t\((.tags // []) | join(" "))"' \
     "$json_file"
 }
 
 format_for_fzf() {
   # Formata cada linha pra fzf
-  # Input: comando\tdescrição\tcategoria\tname
-  # Output: "comando - descrição [categoria]"
-  while IFS=$'\t' read -r command desc category name; do
-    printf "%-20s %s %s\n" "$command" "$desc" "$(tput dim)[${category}]$(tput sgr0)"
+  # Input: comando\tdescrição\tcategoria\tname\ttags
+  # Output: "comando - descrição (categoria) #tags"
+  # Tags ficam ao final pra busca fuzzy funcionar nelas também!
+  while IFS=$'\t' read -r command desc category name tags; do
+    if [[ -n "$tags" ]]; then
+      # Com tags (discretas, mas buscáveis)
+      printf "%-20s %s (%s) %s\n" "$command" "$desc" "$category" "$tags"
+    else
+      # Sem tags
+      printf "%-20s %s (%s)\n" "$command" "$desc" "$category"
+    fi
   done
-}
-
-show_preview() {
-  local json_file="$1"
-  local selected_line="$2"
-
-  # Extrai o comando da linha selecionada (primeira palavra)
-  local command
-  command=$(echo "$selected_line" | awk '{print $1}')
-
-  # Busca o item no JSON pelo comando
-  local item
-  item=$(jq -r --arg cmd "$command" '
-    .items[] |
-    select(.command == $cmd or .name == $cmd) |
-    {
-      name: .name,
-      command: (.command // .name),
-      description: .description,
-      category: (.category // "Geral"),
-      details: .details,
-      tags: (.tags // []),
-      related: (.related // [])
-    }
-  ' "$json_file")
-
-  if [[ -z "$item" ]]; then
-    echo "❌ Item não encontrado"
-    return
-  fi
-
-  # Renderiza preview bonito
-  {
-    # Header
-    echo "$(tput bold)$(tput setaf 6)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(tput sgr0)"
-    echo "$(tput bold)$(echo "$item" | jq -r '.command')$(tput sgr0)"
-    echo "$(tput setaf 245)$(echo "$item" | jq -r '.description')$(tput sgr0)"
-    echo ""
-
-    # Categoria
-    local category
-    category=$(echo "$item" | jq -r '.category')
-    echo "$(tput setaf 3)📂 Categoria:$(tput sgr0) $category"
-    echo ""
-
-    # Details
-    echo "$(tput bold)📖 Detalhes:$(tput sgr0)"
-    echo "$(tput setaf 6)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(tput sgr0)"
-    echo "$item" | jq -r '.details'
-    echo ""
-
-    # Tags (se tiver)
-    local tags
-    tags=$(echo "$item" | jq -r '.tags | join(", ")')
-    if [[ -n "$tags" ]] && [[ "$tags" != "null" ]]; then
-      echo "$(tput setaf 5)🏷️  Tags:$(tput sgr0) $tags"
-      echo ""
-    fi
-
-    # Related (se tiver)
-    local related
-    related=$(echo "$item" | jq -r '.related | join(", ")')
-    if [[ -n "$related" ]] && [[ "$related" != "null" ]]; then
-      echo "$(tput setaf 2)🔗 Relacionados:$(tput sgr0) $related"
-    fi
-
-    echo "$(tput setaf 6)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(tput sgr0)"
-  }
 }
 
 copy_to_clipboard() {
@@ -195,13 +135,15 @@ run_search() {
 
   # Roda fzf com preview
   local selected
+  local preview_script="${SCRIPT_DIR}/.cbSearch-preview.sh"
+
   selected=$(echo "$items" | fzf \
     --ansi \
     --header="🔍 $title - Busca fuzzy (Enter = copiar comando)" \
     --header-first \
     --prompt="❯ " \
     --pointer="▶" \
-    --preview="bash -c 'source \"$0\"; show_preview \"$json_file\" \"{}\"'" \
+    --preview="$preview_script '$json_file' {}" \
     --preview-window=right:60%:wrap \
     --bind='ctrl-/:toggle-preview' \
     --color='header:italic:cyan,prompt:bold:cyan,pointer:bold:green' \
@@ -258,8 +200,5 @@ main() {
   # Roda busca
   run_search "$json_file"
 }
-
-# Exporta função pra preview poder usar
-export -f show_preview
 
 main "$@"

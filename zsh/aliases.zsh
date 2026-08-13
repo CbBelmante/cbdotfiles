@@ -98,15 +98,14 @@ open() {
 }
 
 # ───────────────────────────────────────────────────────────────────────────────
-# Help & Info (scripts em bin/)
+# Help & Info - cbSearch (busca interativa com fzf + JSON)
 # ───────────────────────────────────────────────────────────────────────────────
-alias cbHelp='bash ~/Workspaces/cbdotfiles/bin/cbhelp.sh'
-alias nvimTips='bash ~/Workspaces/cbdotfiles/bin/nvimtips.sh'
-alias sqlpHelp='bash ~/Workspaces/cbdotfiles/bin/sqlpHelp.sh'
-
-# cbSearch - Busca interativa (fzf + JSON)
 alias cbSearch='~/Workspaces/cbdotfiles/bin/cbSearch'
-alias nvimSearch='cbSearch nvim-tips'   # Busca Neovim interativa
+
+# Helps específicos (todos usam cbSearch)
+alias nvimHelp='cbSearch nvim-tips'
+alias cbHelp='cbSearch cb-help'
+alias sqlpHelp='cbSearch sql-help'
 alias cbbrowser='~/Workspaces/cbdotfiles/install.sh --chbrowser'
 _cb_edit_local() {
     local f=~/Workspaces/cbdotfiles/local/$1

@@ -1,6 +1,6 @@
 {
   "title": "Neovim Tips & Tricks",
-  "version": "1.0",
+  "version": "2.0",
   "source": "nvimtips",
   "items": [
     {
@@ -8,35 +8,53 @@
       "command": "yi\"",
       "description": "Copiar texto entre aspas duplas",
       "category": "Text Objects",
-      "tags": ["copiar", "yank", "aspas", "inside", "text-object"],
-      "details": "Copia (yank) o texto que está ENTRE aspas duplas (não inclui as aspas).\n\nExemplo:\n  const name = \"Claude Code\";\n               ↑ cursor aqui\n  yi\" → copia: Claude Code\n\nVariações:\n  yi'  - entre aspas simples\n  yi`  - entre backticks\n  yi)  - entre parênteses\n  yi}  - entre chaves\n  yi]  - entre colchetes",
+      "tags": ["copiar", "yank", "aspas", "inside", "text-object", "frequente"],
+      "details": "Copia (yank) o texto que está ENTRE aspas duplas (não inclui as aspas).\n\nExemplo:\n  const name = \"Claude Code\";\n               ↑ cursor aqui\n  yi\" → copia: Claude Code\n\nVariações:\n  yi'  - entre aspas simples\n  yi`  - entre backticks\n  yi)  - entre parênteses\n  yi}  - entre chaves\n  yi]  - entre colchetes\n  yit  - entre tags HTML\n\n💡 Dica: 'i' = inside (só o conteúdo)",
       "related": ["ya\"", "ci\"", "di\"", "vi\""]
     },
     {
       "name": "ya\"",
       "command": "ya\"",
-      "description": "Copiar texto incluindo aspas duplas",
+      "description": "Copiar texto incluindo aspas",
       "category": "Text Objects",
       "tags": ["copiar", "yank", "aspas", "around", "text-object"],
-      "details": "Copia (yank) o texto INCLUINDO as aspas duplas.\n\nExemplo:\n  const name = \"Claude Code\";\n               ↑ cursor aqui\n  ya\" → copia: \"Claude Code\"\n\nDiferença:\n  yi\" = inside (só conteúdo)\n  ya\" = around (com delimitadores)",
+      "details": "Copia (yank) o texto INCLUINDO as aspas duplas.\n\nExemplo:\n  const name = \"Claude Code\";\n               ↑ cursor aqui\n  ya\" → copia: \"Claude Code\"\n\nDiferença:\n  yi\" = inside (só conteúdo)\n  ya\" = around (com delimitadores)\n\n💡 Funciona com: () {} [] <> '' `` tags",
       "related": ["yi\"", "ca\"", "da\""]
+    },
+    {
+      "name": "ci\"",
+      "command": "ci\"",
+      "description": "Deletar entre aspas e entrar INSERT",
+      "category": "Text Objects",
+      "tags": ["deletar", "change", "aspas", "insert", "editar", "frequente"],
+      "details": "Deleta o texto entre aspas e entra em modo INSERT.\n\nExemplo:\n  const name = \"Claude Code\";\n               ↑ cursor aqui\n  ci\" → deleta conteúdo, fica: \"\", modo INSERT\n\nMnemônico: Change Inside\n  c = change (deletar + INSERT)\n  i = inside (entre delimitadores)\n  \" = aspas\n\nVariações úteis:\n  ci(  - change inside parênteses\n  ci{  - change inside chaves\n  cit  - change inside tag HTML",
+      "related": ["yi\"", "di\"", "ca\"", "vi\""]
+    },
+    {
+      "name": "di\"",
+      "command": "di\"",
+      "description": "Deletar texto entre aspas",
+      "category": "Text Objects",
+      "tags": ["deletar", "delete", "aspas", "inside", "text-object"],
+      "details": "Deleta o texto entre aspas (SEM entrar em INSERT).\n\nExemplo:\n  const name = \"Claude Code\";\n               ↑ cursor aqui\n  di\" → deleta conteúdo, fica: \"\"\n\nDiferença:\n  di\" = delete inside (deleta, fica normal)\n  ci\" = change inside (deleta, entra INSERT)\n\n💡 Útil quando só quer limpar sem editar",
+      "related": ["ci\"", "yi\"", "da\""]
     },
     {
       "name": "gg",
       "command": "gg",
       "description": "Ir pro início do arquivo",
       "category": "Navegação",
-      "tags": ["navegação", "arquivo", "início", "topo", "movimento"],
-      "details": "Move o cursor pra primeira linha do arquivo.\n\nCombinações úteis:\n  gg     - linha 1\n  42gg   - linha 42\n  dgg    - deleta do cursor até o início\n  ygg    - copia do cursor até o início\n  =gg    - indenta do cursor até o início",
-      "related": ["G", ":1", "H"]
+      "tags": ["navegação", "arquivo", "início", "topo", "movimento", "frequente"],
+      "details": "Move o cursor pra primeira linha do arquivo.\n\nCombinações úteis:\n  gg      - linha 1\n  42gg    - linha 42\n  dgg     - deleta do cursor até o início\n  ygg     - copia do cursor até o início\n  =gg     - indenta do cursor até o início\n  vgg     - seleciona do cursor até o início\n\n💡 Lembre: gg = topo, G = final",
+      "related": ["G", ":1", "H", "42gg"]
     },
     {
       "name": "G",
       "command": "G",
       "description": "Ir pro final do arquivo",
       "category": "Navegação",
-      "tags": ["navegação", "arquivo", "final", "última-linha", "movimento"],
-      "details": "Move o cursor pra última linha do arquivo.\n\nCombinações úteis:\n  G      - última linha\n  dG     - deleta do cursor até o final\n  yG     - copia do cursor até o final\n  =G     - indenta do cursor até o final",
+      "tags": ["navegação", "arquivo", "final", "última-linha", "movimento", "frequente"],
+      "details": "Move o cursor pra última linha do arquivo.\n\nCombinações úteis:\n  G       - última linha\n  dG      - deleta do cursor até o final\n  yG      - copia do cursor até o final\n  =G      - indenta do cursor até o final\n  vG      - seleciona do cursor até o final\n\n💡 Shift+G = final do arquivo",
       "related": ["gg", ":$", "L"]
     },
     {
@@ -44,27 +62,270 @@
       "command": "0",
       "description": "Ir pro início da linha (coluna 0)",
       "category": "Navegação",
-      "tags": ["navegação", "linha", "início", "coluna", "movimento"],
-      "details": "Move o cursor pro início absoluto da linha (coluna 0).\n\nDiferença:\n  0  - coluna 0 (início absoluto)\n  ^  - primeiro caractere não-branco\n  \nExemplo:\n      const name = \"CB\";\n  ↑ 0 vai aqui\n      ↑ ^ vai aqui",
-      "related": ["^", "$", "I"]
+      "tags": ["navegação", "linha", "início", "coluna", "movimento", "frequente"],
+      "details": "Move o cursor pro início ABSOLUTO da linha (coluna 0).\n\nDiferença:\n  0  - coluna 0 (início absoluto)\n  ^  - primeiro caractere não-branco\n  \nExemplo:\n      const name = \"CB\";\n  ↑ 0 vai aqui (coluna 0)\n      ↑ ^ vai aqui (primeiro char)\n\n💡 Use 0 pra editar indentação, ^ pra código",
+      "related": ["^", "$", "I", "_"]
+    },
+    {
+      "name": "^",
+      "command": "^",
+      "description": "Ir pro primeiro caractere não-branco",
+      "category": "Navegação",
+      "tags": ["navegação", "linha", "início", "primeiro-char", "movimento"],
+      "details": "Move o cursor pro primeiro caractere que não é espaço/tab.\n\nExemplo:\n      const name = \"CB\";\n  ↑ 0 vai aqui\n      ↑ ^ vai aqui (pula espaços)\n\n💡 Útil pra começar a editar código indentado",
+      "related": ["0", "$", "I", "_"]
     },
     {
       "name": "$",
       "command": "$",
       "description": "Ir pro final da linha",
       "category": "Navegação",
-      "tags": ["navegação", "linha", "final", "movimento"],
-      "details": "Move o cursor pro final da linha.\n\nCombinações úteis:\n  $      - final da linha\n  d$     - deleta até o final (igual D)\n  y$     - copia até o final (igual Y)\n  c$     - muda até o final (igual C)",
+      "tags": ["navegação", "linha", "final", "movimento", "frequente"],
+      "details": "Move o cursor pro final da linha.\n\nCombinações úteis:\n  $       - final da linha\n  d$      - deleta até o final (igual D)\n  y$      - copia até o final (igual Y)\n  c$      - muda até o final (igual C)\n  v$      - seleciona até o final\n\n💡 Shift+4 = final da linha",
       "related": ["0", "^", "A"]
     },
     {
-      "name": "ci\"",
-      "command": "ci\"",
-      "description": "Deletar entre aspas e entrar INSERT",
-      "category": "Text Objects",
-      "tags": ["deletar", "change", "aspas", "insert", "editar"],
-      "details": "Deleta o texto entre aspas e entra em modo INSERT.\n\nExemplo:\n  const name = \"Claude Code\";\n               ↑ cursor aqui\n  ci\" → deleta \"Claude Code\", fica: \"\", modo INSERT\n\nMnemônico: Change Inside\n  c = change (deletar e INSERT)\n  i = inside (entre)\n  \" = aspas",
-      "related": ["yi\"", "di\"", "ca\""]
+      "name": "w",
+      "command": "w",
+      "description": "Próxima palavra (início)",
+      "category": "Navegação",
+      "tags": ["navegação", "palavra", "próximo", "movimento", "frequente"],
+      "details": "Move o cursor pro INÍCIO da próxima palavra.\n\nO que é palavra:\n  palavra = letras, números, underscore\n  pontuação = palavra separada\n\nExemplo:\n  const my_var = \"hello\";\n  ↑     ↑  ↑    ↑ ↑\n  w salta pra cada ↑\n\nVariações:\n  w  - próxima palavra (conta pontuação)\n  W  - próxima WORD (ignora pontuação)\n  3w - pula 3 palavras\n\n💡 w = word",
+      "related": ["b", "e", "W", "ge"]
+    },
+    {
+      "name": "b",
+      "command": "b",
+      "description": "Palavra anterior (início)",
+      "category": "Navegação",
+      "tags": ["navegação", "palavra", "anterior", "volta", "movimento"],
+      "details": "Move o cursor pro INÍCIO da palavra anterior.\n\nExemplo:\n  const my_var = \"hello\";\n  ↓     ↓  ↓    ↓ ↓\n  b volta pra cada ↓\n\nVariações:\n  b  - palavra anterior\n  B  - WORD anterior (ignora pontuação)\n  3b - volta 3 palavras\n\n💡 b = back",
+      "related": ["w", "e", "B", "ge"]
+    },
+    {
+      "name": "e",
+      "command": "e",
+      "description": "Próxima palavra (final)",
+      "category": "Navegação",
+      "tags": ["navegação", "palavra", "final", "movimento"],
+      "details": "Move o cursor pro FINAL da próxima palavra.\n\nDiferença:\n  w = início da próxima palavra\n  e = final da próxima palavra\n\nExemplo:\n  const my_var;\n  ↑    ↑      ↑\n  w    e      e\n\n💡 e = end of word",
+      "related": ["w", "b", "E", "ge"]
+    },
+    {
+      "name": "f<char>",
+      "command": "f",
+      "description": "Find: pular pra próximo caractere",
+      "category": "Navegação",
+      "tags": ["navegação", "busca", "find", "caractere", "movimento", "útil"],
+      "details": "Pula pro próximo caractere especificado (na mesma linha).\n\nExemplo:\n  const name = \"Claude\";\n  ↑\n  fa → pula pro 'a' (name)\n  f\" → pula pra aspas\n\nVariações:\n  f<char>  - pra frente (find)\n  F<char>  - pra trás (Find backwards)\n  ;        - repete último f/F/t/T\n  ,        - repete na direção oposta\n\n💡 Super útil pra navegação rápida na linha!",
+      "related": ["F", "t", "T", ";", ","]
+    },
+    {
+      "name": "t<char>",
+      "command": "t",
+      "description": "Till: pular ATÉ próximo caractere",
+      "category": "Navegação",
+      "tags": ["navegação", "busca", "till", "caractere", "movimento"],
+      "details": "Pula ATÉ (antes de) o próximo caractere.\n\nDiferença:\n  f\" - pula PRA aspas\n  t\" - pula ATÉ aspas (para antes)\n\nExemplo:\n  const name = \"Claude\";\n  ↑\n  t\" → para aqui: name █\n  f\" → para aqui: name = █\n\nÚtil pra:\n  ct\" - change till (muda até aspas)\n  dt\" - delete till (deleta até aspas)\n\n💡 t = till (até)",
+      "related": ["f", "T", "F", ";", ","]
+    },
+    {
+      "name": "%",
+      "command": "%",
+      "description": "Pular pro par do bracket/parêntese",
+      "category": "Navegação",
+      "tags": ["navegação", "bracket", "parêntese", "par", "movimento", "útil"],
+      "details": "Pula entre pares de delimitadores.\n\nFunciona com:\n  ( )  - parênteses\n  { }  - chaves\n  [ ]  - colchetes\n  /* */ - comentários (alguns configs)\n\nExemplo:\n  function sum(a, b) {\n                ↑    ↑\n                %    %\n    return a + b;\n  }\n  ↑\n  % pula entre chaves\n\n💡 Essencial pra navegar em código!",
+      "related": ["[{", "]}", "[(", "])"]
+    },
+    {
+      "name": "{",
+      "command": "{",
+      "description": "Parágrafo anterior",
+      "category": "Navegação",
+      "tags": ["navegação", "parágrafo", "anterior", "bloco", "movimento"],
+      "details": "Pula pro parágrafo/bloco anterior (linha em branco).\n\nÚtil pra:\n  - Navegar entre funções\n  - Pular blocos de código\n  - Editar seções de texto\n\nExemplo:\n  function a() {\n    ...\n  }\n  ← linha em branco\n  function b() {\n    ...\n  }\n  { pula entre funções\n\n💡 Shift+[ = parágrafo anterior",
+      "related": ["}", "[[", "]]"]
+    },
+    {
+      "name": "}",
+      "command": "}",
+      "description": "Próximo parágrafo",
+      "category": "Navegação",
+      "tags": ["navegação", "parágrafo", "próximo", "bloco", "movimento"],
+      "details": "Pula pro próximo parágrafo/bloco (linha em branco).\n\nÚtil pra:\n  - Navegar entre funções\n  - Pular blocos de código\n  - Editar seções de texto\n\nCombinações:\n  d}  - deleta até próximo parágrafo\n  y}  - copia até próximo parágrafo\n  v}  - seleciona até próximo parágrafo\n\n💡 Shift+] = próximo parágrafo",
+      "related": ["{", "[[", "]]"]
+    },
+    {
+      "name": "dd",
+      "command": "dd",
+      "description": "Deletar linha inteira",
+      "category": "Edição",
+      "tags": ["deletar", "linha", "editar", "frequente"],
+      "details": "Deleta a linha inteira (vai pro register).\n\nVariações:\n  dd   - deleta 1 linha\n  3dd  - deleta 3 linhas\n  dj   - deleta linha atual + próxima\n  dk   - deleta linha atual + anterior\n\n💡 Vai pro register (\") então pode colar com p!\n\nRecuperar:\n  dd → p (cola de volta)",
+      "related": ["cc", "yy", "p", "D"]
+    },
+    {
+      "name": "yy",
+      "command": "yy",
+      "description": "Copiar linha inteira",
+      "category": "Edição",
+      "tags": ["copiar", "yank", "linha", "frequente"],
+      "details": "Copia (yank) a linha inteira.\n\nVariações:\n  yy   - copia 1 linha\n  3yy  - copia 3 linhas\n  yj   - copia linha atual + próxima\n  yk   - copia linha atual + anterior\n\nDepois:\n  p  - cola abaixo\n  P  - cola acima\n\n💡 y = yank (copiar)",
+      "related": ["dd", "p", "P", "y$"]
+    },
+    {
+      "name": "p",
+      "command": "p",
+      "description": "Colar abaixo/depois",
+      "category": "Edição",
+      "tags": ["colar", "paste", "frequente"],
+      "details": "Cola o conteúdo do register.\n\nComportamento:\n  - Se copiou/deletou linha → cola ABAIXO\n  - Se copiou/deletou palavra → cola DEPOIS\n\nExemplo:\n  yy → p   (copia linha, cola abaixo)\n  yiw → p  (copia palavra, cola depois)\n\nRegisters:\n  \"0p  - cola do register 0 (último yank)\n  \"+p  - cola do clipboard do sistema\n\n💡 p = paste",
+      "related": ["P", "yy", "dd", "\"+p"]
+    },
+    {
+      "name": "P",
+      "command": "P",
+      "description": "Colar acima/antes",
+      "category": "Edição",
+      "tags": ["colar", "paste", "acima"],
+      "details": "Cola o conteúdo ACIMA/ANTES (oposto de p).\n\nComportamento:\n  - Se linha → cola ACIMA\n  - Se palavra → cola ANTES\n\nExemplo:\n  yy → P   (copia linha, cola acima)\n  yiw → P  (copia palavra, cola antes)\n\n💡 Shift+P = cola acima/antes",
+      "related": ["p", "yy", "dd"]
+    },
+    {
+      "name": "u",
+      "command": "u",
+      "description": "Desfazer (undo)",
+      "category": "Edição",
+      "tags": ["desfazer", "undo", "voltar", "frequente"],
+      "details": "Desfaz a última mudança.\n\nVariações:\n  u      - desfaz 1 vez\n  3u     - desfaz 3 vezes\n  U      - desfaz todas mudanças na linha\n\n💡 Neovim tem undo INFINITO (até reiniciar)\n\nArquivo de undo:\n  - Fica em ~/.local/state/nvim/undo/\n  - Persiste entre sessões!",
+      "related": ["Ctrl+r", "U", ":earlier"]
+    },
+    {
+      "name": "Ctrl+r",
+      "command": "<C-r>",
+      "description": "Refazer (redo)",
+      "category": "Edição",
+      "tags": ["refazer", "redo", "frequente"],
+      "details": "Refaz a mudança desfeita (oposto de u).\n\nExemplo:\n  1. Deleta linha (dd)\n  2. Desfaz (u) → linha volta\n  3. Refaz (Ctrl+r) → linha some de novo\n\n💡 Ctrl+r = redo\n\nNavegar no tempo:\n  :earlier 5m  - volta 5 minutos\n  :later 5m    - avança 5 minutos",
+      "related": ["u", ":earlier", ":later"]
+    },
+    {
+      "name": ".",
+      "command": ".",
+      "description": "Repetir última mudança",
+      "category": "Edição",
+      "tags": ["repetir", "repeat", "último", "útil", "frequente"],
+      "details": "Repete a última mudança feita.\n\nExemplos:\n  1. ciw novo Esc  (muda palavra)\n     w . . .        (repete em outras palavras)\n\n  2. dd  (deleta linha)\n     . . . (deleta mais 3 linhas)\n\n  3. x  (deleta char)\n     ... (deleta 3 chars)\n\n💡 O comando MAIS ÚTIL do Vim!\n💡 Funciona com: c, d, y, >, <, etc",
+      "related": ["@:", "@@", "q"]
+    },
+    {
+      "name": ">>",
+      "command": ">>",
+      "description": "Indentar linha pra direita",
+      "category": "Edição",
+      "tags": ["indentar", "indent", "tab", "formatação"],
+      "details": "Indenta a linha pra direita (adiciona tab/espaços).\n\nVariações:\n  >>    - indenta 1 linha\n  3>>   - indenta 3 linhas\n  >}    - indenta até próximo parágrafo\n  >G    - indenta até final do arquivo\n\nVisual mode:\n  V > > >  - indenta múltiplas vezes\n\n💡 Shift+> = indenta",
+      "related": ["<<", "=", "=%"]
+    },
+    {
+      "name": "<<",
+      "command": "<<",
+      "description": "Indentar linha pra esquerda",
+      "category": "Edição",
+      "tags": ["indentar", "unindent", "formatação"],
+      "details": "Remove indentação (move pra esquerda).\n\nVariações:\n  <<    - remove indent de 1 linha\n  3<<   - remove indent de 3 linhas\n  <}    - remove indent até próximo parágrafo\n\nVisual mode:\n  V < < <  - remove indent múltiplas vezes\n\n💡 Shift+< = remove indent",
+      "related": [">>", "=", "=%"]
+    },
+    {
+      "name": "=",
+      "command": "=",
+      "description": "Auto-indentar (formatação)",
+      "category": "Edição",
+      "tags": ["indentar", "formatar", "auto-indent", "útil"],
+      "details": "Formata/indenta automaticamente baseado na sintaxe.\n\nVariações:\n  ==    - formata linha atual\n  =}    - formata até próximo parágrafo\n  =G    - formata até final do arquivo\n  gg=G  - formata arquivo INTEIRO\n  =%    - formata bloco inteiro {}\n\n💡 SUPER ÚTIL pra corrigir indentação bagunçada!\n\nVisual mode:\n  V = (seleciona e formata)",
+      "related": [">>", "<<", "gq"]
+    },
+    {
+      "name": "v",
+      "command": "v",
+      "description": "Visual mode (seleção por caractere)",
+      "category": "Visual Mode",
+      "tags": ["visual", "selecionar", "modo", "frequente"],
+      "details": "Entra em Visual mode (seleção por caractere).\n\nUso:\n  1. v (entra visual)\n  2. Navega (h/j/k/l/w/e/etc)\n  3. Comando (d/y/c/>/etc)\n\nExemplo:\n  viw  - seleciona palavra (visual inside word)\n  vi\"  - seleciona entre aspas\n  v$   - seleciona até final da linha\n  v3w  - seleciona 3 palavras\n\nDepois:\n  y  - copia seleção\n  d  - deleta seleção\n  c  - muda seleção",
+      "related": ["V", "Ctrl+v", "gv"]
+    },
+    {
+      "name": "V",
+      "command": "V",
+      "description": "Visual LINE mode (seleção por linha)",
+      "category": "Visual Mode",
+      "tags": ["visual", "selecionar", "linha", "modo", "frequente"],
+      "details": "Entra em Visual LINE mode (seleciona linhas inteiras).\n\nUso:\n  1. V (entra visual line)\n  2. j/k (sobe/desce linhas)\n  3. Comando (d/y/>/etc)\n\nExemplo:\n  V3j  - seleciona 4 linhas (atual + 3 abaixo)\n  V}   - seleciona até próximo parágrafo\n  VG   - seleciona até final do arquivo\n  Vgg  - seleciona até início do arquivo\n\nDepois:\n  >  - indenta seleção\n  <  - remove indent\n  d  - deleta linhas",
+      "related": ["v", "Ctrl+v", "gv"]
+    },
+    {
+      "name": "Ctrl+v",
+      "command": "<C-v>",
+      "description": "Visual BLOCK mode (seleção em bloco)",
+      "category": "Visual Mode",
+      "tags": ["visual", "block", "coluna", "modo", "útil"],
+      "details": "Entra em Visual BLOCK mode (seleção retangular).\n\nUso:\n  1. Ctrl+v (entra visual block)\n  2. j/k/h/l (define o bloco)\n  3. Comando\n\nExemplos práticos:\n  Comentar múltiplas linhas:\n    Ctrl+v → j j j → I // Esc\n\n  Deletar coluna:\n    Ctrl+v → j j j → d\n\n  Editar múltiplas linhas:\n    Ctrl+v → j j j → I texto Esc\n\n💡 MUITO útil pra editar colunas!",
+      "related": ["v", "V", "I", "A"]
+    },
+    {
+      "name": "/",
+      "command": "/",
+      "description": "Buscar pra frente",
+      "category": "Busca",
+      "tags": ["busca", "search", "find", "frequente"],
+      "details": "Busca texto pra frente no arquivo.\n\nUso:\n  /texto Enter  - busca \"texto\"\n  n             - próximo resultado\n  N             - resultado anterior\n\nRegex:\n  /\\d\\+         - busca números\n  /\\w\\+@        - busca email\n  /function.*{  - busca funções\n\nIgnorar case:\n  /texto\\c      - ignora maiúsculas\n  :set ic       - ignora sempre\n\n💡 / = buscar pra frente",
+      "related": ["?", "n", "N", "*", "#"]
+    },
+    {
+      "name": "n",
+      "command": "n",
+      "description": "Próximo resultado da busca",
+      "category": "Busca",
+      "tags": ["busca", "próximo", "next", "frequente"],
+      "details": "Vai pro próximo resultado da busca.\n\nFluxo:\n  /texto Enter  - busca\n  n n n         - navega resultados\n  N             - volta\n\n💡 n = next\n\nLimpar highlight:\n  :noh  (no highlight)",
+      "related": ["/", "?", "N", "*"]
+    },
+    {
+      "name": "*",
+      "command": "*",
+      "description": "Buscar palavra sob o cursor",
+      "category": "Busca",
+      "tags": ["busca", "palavra", "cursor", "útil", "frequente"],
+      "details": "Busca a palavra sob o cursor (pra frente).\n\nExemplo:\n  const myVar = 42;\n        ↑ cursor aqui\n  * busca todas ocorrências de \"myVar\"\n\nDepois:\n  n - próxima ocorrência\n  N - ocorrência anterior\n\nVariações:\n  *  - busca palavra exata\n  g* - busca palavra parcial\n  #  - busca pra trás\n\n💡 SUPER rápido pra refatorar!",
+      "related": ["#", "n", "N", "/", "gd"]
+    },
+    {
+      "name": ":s",
+      "command": ":s/old/new",
+      "description": "Substituir texto (find and replace)",
+      "category": "Busca",
+      "tags": ["substituir", "replace", "buscar-substituir", "útil"],
+      "details": "Substitui texto (find and replace).\n\nVariações:\n  :s/old/new       - substitui 1ª ocorrência na linha\n  :s/old/new/g     - substitui todas na linha\n  :%s/old/new/g    - substitui todas no arquivo\n  :%s/old/new/gc   - substitui com confirmação\n  :5,10s/old/new/g - linhas 5 a 10\n\nRegex:\n  :%s/\\d\\+/NUM/g   - números → NUM\n  :%s/^/  /g       - indenta todas linhas\n\n💡 Adicione 'c' pra confirmar cada substituição!",
+      "related": ["/", "n", "*", ":%s"]
+    },
+    {
+      "name": ":w",
+      "command": ":w",
+      "description": "Salvar arquivo",
+      "category": "Comandos",
+      "tags": ["salvar", "save", "write", "frequente"],
+      "details": "Salva o arquivo (write).\n\nVariações:\n  :w           - salva\n  :w!          - salva forçado\n  :w arquivo   - salva como \"arquivo\"\n  :wa          - salva todos buffers\n  :wq          - salva e sai\n  :x           - salva (se mudou) e sai\n\n💡 :w = write (salvar)",
+      "related": [":q", ":wq", ":x", ":wa"]
+    },
+    {
+      "name": ":q",
+      "command": ":q",
+      "description": "Sair do Neovim",
+      "category": "Comandos",
+      "tags": ["sair", "quit", "fechar", "frequente"],
+      "details": "Fecha o Neovim (quit).\n\nVariações:\n  :q      - sai (só se salvou)\n  :q!     - sai SEM salvar (força)\n  :qa     - sai de todos buffers\n  :qa!    - sai de todos SEM salvar\n  :wq     - salva e sai\n  :x      - salva (se mudou) e sai\n  ZZ      - salva e sai (atalho)\n  ZQ      - sai sem salvar (atalho)\n\n💡 :q! = abandona mudanças",
+      "related": [":w", ":wq", ":qa", "ZZ", "ZQ"]
     },
     {
       "name": "Space+Shift+S",
@@ -72,8 +333,8 @@
       "description": "Executar query SQL (dadbod)",
       "category": "SQL/Dadbod",
       "tags": ["sql", "dadbod", "executar", "query", "database"],
-      "details": "Executa a query SQL sob o cursor no vim-dadbod.\n\nPré-requisitos:\n  - Banco conectado no dadbod UI\n  - Cursor na linha da query\n  - Query termina com ;\n\nWorkflow:\n  1. Escreve query\n  2. Esc (sai do INSERT)\n  3. Space+Shift+S\n  4. Resultado aparece embaixo!",
-      "related": ["Space+Shift+W", "Space+db"]
+      "details": "Executa a query SQL sob o cursor no vim-dadbod.\n\nPré-requisitos:\n  - Banco conectado no dadbod UI (Space+db)\n  - Cursor na linha da query\n  - Query termina com ;\n\nWorkflow:\n  1. Escreve query\n  2. Esc (sai do INSERT)\n  3. Space+Shift+S\n  4. Resultado aparece embaixo!\n\nVariações:\n  Space+S - executa linha/query\n  Space+W - executa seleção (visual)\n\n💡 Precisa conectar banco antes (Shift+A no dadbod)",
+      "related": ["Space+Shift+W", "Space+db", "Shift+A"]
     }
   ]
 }
