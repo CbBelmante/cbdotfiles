@@ -145,16 +145,41 @@ async function createDatabase(name: string): Promise<string> {
 
 /**
  * Abre Neovim com o banco já conectado no dadbod
- * Abre no diretório do banco para sidebar mostrar arquivos corretos
+ * - Copia connection string pro clipboard
+ * - Abre dadbod UI automaticamente
+ * - Abre no diretório do banco para sidebar mostrar arquivos corretos
  */
 function openInNeovim(dbPath: string): void {
   const dbDir = dirname(dbPath);
-  console.log(`🚀 Abrindo Neovim em: ${dbDir}\n`);
+  const connectionString = `sqlite://${dbPath}`;
 
-  // Abre Neovim no diretório do banco
+  // Tenta copiar pro clipboard (X11 ou Wayland)
+  try {
+    // Tenta wl-copy (Wayland) primeiro
+    execSync(`echo -n "${connectionString}" | wl-copy`, { stdio: 'ignore' });
+    console.log(`📋 Connection string copiada pro clipboard!`);
+  } catch {
+    try {
+      // Fallback: xclip (X11)
+      execSync(`echo -n "${connectionString}" | xclip -selection clipboard`, { stdio: 'ignore' });
+      console.log(`📋 Connection string copiada pro clipboard!`);
+    } catch {
+      // Se nenhum funcionar, mostra a string
+      console.log(`⚠️  Clipboard não disponível`);
+      console.log(`📋 Connection string: ${connectionString}`);
+    }
+  }
+
+  console.log(`\n💡 No Neovim:`);
+  console.log(`   1. Pressiona: Shift+A  (Add connection)`);
+  console.log(`   2. Cola: Ctrl+Shift+V  (connection string)`);
+  console.log(`   3. Enter pra confirmar\n`);
+  console.log(`🚀 Abrindo Neovim...\n`);
+
+  // Abre Neovim no diretório do banco com dadbod UI já aberto
   execSync(`nvim -c "DBUI"`, {
     stdio: 'inherit',
-    cwd: dbDir, // Muda pro diretório do banco
+    cwd: dbDir,
     env: {
       ...process.env,
       NVIM_DB_PATH: dbPath
