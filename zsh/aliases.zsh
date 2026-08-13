@@ -294,6 +294,56 @@ cbdotUpdate() {
     echo "=== Atualizando cbdotfiles ==="
     git -C "$dotdir" pull && "$dotdir/install.sh" --update && source ~/.zshrc
     echo "=== cbdotfiles atualizado! ==="
+    echo ""
+
+    # Verifica dependências do cbSearch
+    local missing_deps=()
+    command -v fzf &> /dev/null || missing_deps+=("fzf")
+    command -v jq &> /dev/null || missing_deps+=("jq")
+
+    if [[ ${#missing_deps[@]} -gt 0 ]]; then
+        echo "⚠️  Dependências faltando para cbSearch: ${missing_deps[*]}"
+        echo ""
+
+        # Detecta gerenciador de pacotes
+        local install_cmd=""
+        if command -v apt &> /dev/null; then
+            install_cmd="sudo apt install ${missing_deps[*]}"
+        elif command -v pacman &> /dev/null; then
+            install_cmd="sudo pacman -S ${missing_deps[*]}"
+        elif command -v brew &> /dev/null; then
+            install_cmd="brew install ${missing_deps[*]}"
+        elif command -v dnf &> /dev/null; then
+            install_cmd="sudo dnf install ${missing_deps[*]}"
+        fi
+
+        if [[ -n "$install_cmd" ]]; then
+            echo "📦 Comando de instalação:"
+            echo "   $install_cmd"
+            echo ""
+            read -q "REPLY?Instalar agora? (y/N) "
+            echo ""
+
+            if [[ "$REPLY" =~ ^[Yy]$ ]]; then
+                echo "Instalando..."
+                eval "$install_cmd"
+                if [[ $? -eq 0 ]]; then
+                    echo "✅ Dependências instaladas!"
+                else
+                    echo "❌ Erro ao instalar. Tente manualmente:"
+                    echo "   $install_cmd"
+                fi
+            else
+                echo "⏭️  Pulado. Para instalar depois:"
+                echo "   $install_cmd"
+            fi
+        else
+            echo "📦 Instale fzf e jq usando o gerenciador de pacotes da sua distro"
+        fi
+        echo ""
+    else
+        echo "✅ Todas as dependências instaladas!"
+    fi
 }
 alias cbdotupdate='cbdotUpdate'
 alias cbupdate='cbdotUpdate'
