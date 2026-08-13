@@ -8,7 +8,7 @@
 import { Database } from 'bun:sqlite';
 import { existsSync, mkdirSync, readdirSync, readFileSync, unlinkSync, statSync } from 'fs';
 import { execSync } from 'child_process';
-import { resolve, join } from 'path';
+import { resolve, join, dirname } from 'path';
 import { select, input, confirm, checkbox } from '@inquirer/prompts';
 import { buildDemoSQL } from './seeds/demo';
 
@@ -145,16 +145,19 @@ async function createDatabase(name: string): Promise<string> {
 
 /**
  * Abre Neovim com o banco já conectado no dadbod
+ * Abre no diretório do banco para sidebar mostrar arquivos corretos
  */
 function openInNeovim(dbPath: string): void {
-  console.log(`🚀 Abrindo Neovim...\n`);
+  const dbDir = dirname(dbPath);
+  console.log(`🚀 Abrindo Neovim em: ${dbDir}\n`);
 
-  // Abre Neovim e já ativa o dadbod UI
+  // Abre Neovim no diretório do banco
   execSync(`nvim -c "DBUI"`, {
     stdio: 'inherit',
+    cwd: dbDir, // Muda pro diretório do banco
     env: {
       ...process.env,
-      NVIM_DB_PATH: dbPath // passa o path pro neovim se precisar
+      NVIM_DB_PATH: dbPath
     }
   });
 }
