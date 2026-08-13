@@ -100,8 +100,9 @@ open() {
 # ───────────────────────────────────────────────────────────────────────────────
 # Help & Info (scripts em bin/)
 # ───────────────────────────────────────────────────────────────────────────────
-alias cbhelp='bash ~/Workspaces/cbdotfiles/bin/cbhelp.sh'
-alias nvimtips='bash ~/Workspaces/cbdotfiles/bin/nvimtips.sh'
+alias cbHelp='bash ~/Workspaces/cbdotfiles/bin/cbhelp.sh'
+alias nvimTips='bash ~/Workspaces/cbdotfiles/bin/nvimtips.sh'
+alias sqlpHelp='bash ~/Workspaces/cbdotfiles/bin/sqlpHelp.sh'
 alias cbbrowser='~/Workspaces/cbdotfiles/install.sh --chbrowser'
 _cb_edit_local() {
     local f=~/Workspaces/cbdotfiles/local/$1

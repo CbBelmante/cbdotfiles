@@ -7,7 +7,10 @@ Ferramenta interativa para criar e gerenciar bancos SQLite de prática. Crie ban
 ```bash
 sqlp              # atalho curto
 sqlpractice       # nome completo
+sqlpHelp          # guia passo a passo (como conectar no Neovim)
 ```
+
+> 💡 **Primeira vez?** Rode `sqlpHelp` para ver o passo a passo completo de como conectar o banco no Neovim dadbod!
 
 ## 📋 Menu
 
@@ -259,6 +262,10 @@ export function buildUsersSQL(): string[] {
 
 ## 🐛 Troubleshooting
 
+**Não sabe como conectar no Neovim?**
+- Rode `sqlpHelp` no terminal para ver o passo a passo completo
+- Explica como adicionar conexão no dadbod, executar queries, etc.
+
 **Erro: "banco já existe"**
 - Use "📂 Abrir banco existente" para acessá-lo
 - Ou delete o arquivo `.db` manualmente
@@ -266,10 +273,17 @@ export function buildUsersSQL(): string[] {
 **Neovim não abre o dadbod**
 - Verifique se `vim-dadbod-ui` está instalado: `:checkhealth`
 - Plugin está em: `~/.config/nvim/lua/plugins/dadbod.lua`
+- Rode `sqlpHelp` para ver atalhos e como usar
 
 **Path não salva**
 - Verifique permissões em `~/.sqlpractice.json`
 - Use path absoluto ou `~` (não caminhos relativos)
+
+## 🆘 Ajuda
+
+- `sqlpHelp` — Passo a passo completo (como conectar no Neovim)
+- `cbHelp` — Ajuda geral do cbdotfiles
+- `nvimTips` — Dicas de navegação no Neovim
 
 ## 📝 TODO / Ideias futuras
 
