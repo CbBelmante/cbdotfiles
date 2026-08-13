@@ -139,6 +139,8 @@ run_search() {
 
   selected=$(echo "$items" | fzf \
     --ansi \
+    --layout=reverse \
+    --height=100% \
     --header="🔍 $title - Busca fuzzy (Enter = copiar comando)" \
     --header-first \
     --prompt="❯ " \
