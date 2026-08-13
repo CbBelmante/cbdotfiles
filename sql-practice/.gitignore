@@ -1,0 +1,13 @@
+# Dependências
+node_modules/
+bun.lock
+
+# Bancos SQLite (não commitar bancos de teste)
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Arquivos temporários
+.DS_Store
+*.log
