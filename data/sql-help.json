@@ -184,6 +184,132 @@
       "related": ["COUNT", "HAVING", "SUM", "AVG"]
     },
     {
+      "name": "CREATE TABLE",
+      "command": "CREATE TABLE",
+      "description": "Criar nova tabela no banco",
+      "category": "DDL",
+      "tags": ["sql", "create", "table", "criar", "tabela", "schema", "frequente"],
+      "details": "Cria uma nova tabela no banco de dados.\n\nSintaxe:\n  CREATE TABLE nome (\n    coluna1 TIPO CONSTRAINT,\n    coluna2 TIPO CONSTRAINT,\n    ...\n  );\n\nExemplo completo:\n  CREATE TABLE users (\n    id INTEGER PRIMARY KEY AUTOINCREMENT,\n    name TEXT NOT NULL,\n    email TEXT UNIQUE NOT NULL,\n    age INTEGER DEFAULT 0,\n    created_at TEXT DEFAULT CURRENT_TIMESTAMP\n  );\n\nCom FOREIGN KEY:\n  CREATE TABLE posts (\n    id INTEGER PRIMARY KEY,\n    user_id INTEGER NOT NULL,\n    title TEXT NOT NULL,\n    FOREIGN KEY (user_id) REFERENCES users(id)\n  );\n\n💡 AUTOINCREMENT = auto-incrementa ID\n💡 UNIQUE = não permite duplicados",
+      "related": ["PRIMARY KEY", "FOREIGN KEY", "ALTER TABLE", "DROP TABLE"]
+    },
+    {
+      "name": "PRIMARY KEY",
+      "command": "PRIMARY KEY",
+      "description": "Chave primária (identificador único)",
+      "category": "Constraints",
+      "tags": ["sql", "pk", "primary", "key", "chave", "id", "frequente"],
+      "details": "Define a coluna como identificador único da tabela.\n\nCaracterísticas:\n  - Não pode ser NULL\n  - Deve ser único\n  - Geralmente é INTEGER AUTOINCREMENT\n  - Só 1 PRIMARY KEY por tabela\n\nFormas:\n  -- Inline\n  id INTEGER PRIMARY KEY\n\n  -- Com AUTOINCREMENT (SQLite)\n  id INTEGER PRIMARY KEY AUTOINCREMENT\n\n  -- No final (múltiplas colunas)\n  PRIMARY KEY (col1, col2)\n\nExemplo:\n  CREATE TABLE users (\n    id INTEGER PRIMARY KEY AUTOINCREMENT,\n    name TEXT NOT NULL\n  );\n\n💡 Sempre use PRIMARY KEY!\n💡 INTEGER PRIMARY KEY no SQLite é especial (ROWID)",
+      "related": ["CREATE TABLE", "FOREIGN KEY", "AUTOINCREMENT"]
+    },
+    {
+      "name": "FOREIGN KEY",
+      "command": "FOREIGN KEY",
+      "description": "Chave estrangeira (relacionamento entre tabelas)",
+      "category": "Constraints",
+      "tags": ["sql", "fk", "foreign", "key", "relacionamento", "join"],
+      "details": "Cria relacionamento entre tabelas (integridade referencial).\n\nSintaxe:\n  FOREIGN KEY (coluna_local)\n  REFERENCES tabela_externa(coluna_externa)\n\nExemplo:\n  CREATE TABLE posts (\n    id INTEGER PRIMARY KEY,\n    user_id INTEGER NOT NULL,\n    title TEXT,\n    FOREIGN KEY (user_id) REFERENCES users(id)\n  );\n\nCom ações:\n  FOREIGN KEY (user_id) REFERENCES users(id)\n    ON DELETE CASCADE    -- deleta posts se user deletado\n    ON UPDATE CASCADE    -- atualiza se user.id muda\n\nON DELETE:\n  CASCADE   - deleta registros relacionados\n  SET NULL  - seta NULL\n  RESTRICT  - impede deletar (padrão)\n\n💡 Garante que user_id existe na tabela users!\n⚠️ SQLite: precisa PRAGMA foreign_keys = ON;",
+      "related": ["PRIMARY KEY", "CREATE TABLE", "JOIN", "PRAGMA"]
+    },
+    {
+      "name": "Tipos de dados",
+      "command": "INTEGER, TEXT, REAL, BLOB",
+      "description": "Tipos de dados no SQLite",
+      "category": "DDL",
+      "tags": ["sql", "tipos", "data", "types", "integer", "text", "blob"],
+      "details": "Tipos de dados principais no SQLite.\n\nSQLite (5 tipos):\n  INTEGER  - números inteiros (-9223... a 9223...)\n  REAL     - números decimais (float/double)\n  TEXT     - strings/texto (UTF-8)\n  BLOB     - dados binários (Binary Large OBject)\n  NULL     - valor nulo\n\nComum em outros DBs:\n  VARCHAR(n)   - string com tamanho máximo (n)\n  CHAR(n)      - string fixa tamanho n\n  DATE         - data (YYYY-MM-DD)\n  DATETIME     - data + hora\n  BOOLEAN      - true/false (0/1)\n  DECIMAL(p,s) - decimal preciso\n\nExemplos SQLite:\n  id INTEGER PRIMARY KEY\n  name TEXT NOT NULL\n  price REAL DEFAULT 0.0\n  active INTEGER DEFAULT 1  -- boolean (0/1)\n  photo BLOB\n  created_at TEXT  -- ISO8601: '2024-01-15 10:30:00'\n\n💡 SQLite é \"type flexible\" - aceita qualquer tipo!\n💡 Mas use os corretos pra performance",
+      "related": ["CREATE TABLE", "NOT NULL", "DEFAULT"]
+    },
+    {
+      "name": "NOT NULL",
+      "command": "NOT NULL",
+      "description": "Campo obrigatório (não pode ser vazio)",
+      "category": "Constraints",
+      "tags": ["sql", "not", "null", "obrigatório", "required"],
+      "details": "Força o campo a ter um valor (não pode ser NULL).\n\nExemplos:\n  name TEXT NOT NULL\n  email TEXT NOT NULL UNIQUE\n  age INTEGER NOT NULL DEFAULT 0\n\nSem NOT NULL:\n  -- Permite NULL\n  nickname TEXT\n\nCom NOT NULL:\n  -- Erro se não fornecer valor\n  name TEXT NOT NULL\n\n  INSERT INTO users (email) VALUES ('x@y.com');\n  -- ❌ Erro! 'name' é NOT NULL\n\n💡 Use NOT NULL pra campos obrigatórios!\n💡 Evita bugs com valores vazios",
+      "related": ["DEFAULT", "UNIQUE", "CREATE TABLE"]
+    },
+    {
+      "name": "DEFAULT",
+      "command": "DEFAULT",
+      "description": "Valor padrão se não fornecido",
+      "category": "Constraints",
+      "tags": ["sql", "default", "padrão", "valor"],
+      "details": "Define valor padrão quando INSERT não fornece valor.\n\nExemplos:\n  age INTEGER DEFAULT 0\n  active INTEGER DEFAULT 1\n  created_at TEXT DEFAULT CURRENT_TIMESTAMP\n  country TEXT DEFAULT 'BR'\n\nFunções especiais SQLite:\n  CURRENT_TIMESTAMP  - data/hora atual\n  CURRENT_DATE       - data atual\n  CURRENT_TIME       - hora atual\n\nUso:\n  CREATE TABLE users (\n    id INTEGER PRIMARY KEY,\n    name TEXT NOT NULL,\n    active INTEGER DEFAULT 1,\n    created_at TEXT DEFAULT CURRENT_TIMESTAMP\n  );\n\n  INSERT INTO users (name) VALUES ('Ana');\n  -- active = 1, created_at = hora atual automaticamente!\n\n💡 Reduz código nos INSERTs\n💡 Garante valores sensatos",
+      "related": ["NOT NULL", "CREATE TABLE", "INSERT"]
+    },
+    {
+      "name": "AUTOINCREMENT",
+      "command": "AUTOINCREMENT",
+      "description": "Auto-incrementar ID (1, 2, 3, ...)",
+      "category": "Constraints",
+      "tags": ["sql", "autoincrement", "auto", "id", "increment"],
+      "details": "Auto-incrementa o valor do campo (geralmente ID).\n\nSQLite:\n  id INTEGER PRIMARY KEY AUTOINCREMENT\n\nComportamento:\n  - Começa em 1\n  - Incrementa automaticamente\n  - Nunca reutiliza IDs deletados\n  - Garante único mesmo após DELETE\n\nExemplo:\n  CREATE TABLE users (\n    id INTEGER PRIMARY KEY AUTOINCREMENT,\n    name TEXT NOT NULL\n  );\n\n  INSERT INTO users (name) VALUES ('Ana');\n  INSERT INTO users (name) VALUES ('Bruno');\n  -- IDs: 1, 2 (automático!)\n\nSem AUTOINCREMENT:\n  id INTEGER PRIMARY KEY\n  -- Pode reutilizar IDs deletados\n\n💡 Sempre use em PRIMARY KEY!\n💡 Não precisa inserir o ID manualmente",
+      "related": ["PRIMARY KEY", "CREATE TABLE", "INSERT"]
+    },
+    {
+      "name": "UNIQUE",
+      "command": "UNIQUE",
+      "description": "Valor deve ser único na tabela",
+      "category": "Constraints",
+      "tags": ["sql", "unique", "único", "constraint"],
+      "details": "Garante que o valor não se repete na tabela.\n\nExemplos:\n  email TEXT UNIQUE\n  username TEXT UNIQUE NOT NULL\n  cpf TEXT UNIQUE\n\nMúltiplas colunas (combinação única):\n  UNIQUE (coluna1, coluna2)\n\nExemplo completo:\n  CREATE TABLE users (\n    id INTEGER PRIMARY KEY,\n    email TEXT UNIQUE NOT NULL,\n    username TEXT UNIQUE,\n    name TEXT\n  );\n\n  INSERT INTO users (email, username)\n  VALUES ('ana@x.com', 'ana123');\n\n  INSERT INTO users (email, username)\n  VALUES ('ana@x.com', 'ana456');\n  -- ❌ Erro! email já existe\n\n💡 Use em emails, usernames, CPF, etc\n💡 PRIMARY KEY já é UNIQUE automaticamente",
+      "related": ["NOT NULL", "PRIMARY KEY", "CREATE TABLE"]
+    },
+    {
+      "name": "DISTINCT",
+      "command": "DISTINCT",
+      "description": "Remover duplicados dos resultados",
+      "category": "SQL Básico",
+      "tags": ["sql", "distinct", "único", "duplicados", "útil"],
+      "details": "Remove linhas duplicadas do resultado.\n\nSintaxe:\n  SELECT DISTINCT coluna FROM tabela;\n\nExemplos:\n  -- Cidades únicas\n  SELECT DISTINCT city FROM users;\n\n  -- Combinações únicas\n  SELECT DISTINCT city, state FROM users;\n\n  -- Contar valores únicos\n  SELECT COUNT(DISTINCT city) FROM users;\n\nSem DISTINCT:\n  SELECT city FROM users;\n  -- SP, SP, RJ, SP, RJ (com duplicados)\n\nCom DISTINCT:\n  SELECT DISTINCT city FROM users;\n  -- SP, RJ (sem duplicados)\n\n💡 Útil pra descobrir valores únicos\n💡 Pode deixar query mais lenta em tabelas grandes",
+      "related": ["GROUP BY", "COUNT", "SELECT"]
+    },
+    {
+      "name": "HAVING",
+      "command": "HAVING",
+      "description": "Filtrar resultados APÓS GROUP BY",
+      "category": "SQL Funções",
+      "tags": ["sql", "having", "filtro", "group", "agregação"],
+      "details": "Filtra resultados DEPOIS de agrupar (funciona com funções).\n\nDiferença WHERE vs HAVING:\n  WHERE  - filtra ANTES de agrupar\n  HAVING - filtra DEPOIS de agrupar (nas funções)\n\nExemplo:\n  SELECT city, COUNT(*) as total\n  FROM users\n  GROUP BY city\n  HAVING COUNT(*) > 10;\n  -- Só cidades com mais de 10 usuários\n\n  SELECT company_id, AVG(age) as avg_age\n  FROM users\n  GROUP BY company_id\n  HAVING AVG(age) > 30;\n  -- Só empresas com média de idade > 30\n\nCombinado:\n  SELECT city, COUNT(*) as total\n  FROM users\n  WHERE age > 18        -- filtra ANTES\n  GROUP BY city\n  HAVING COUNT(*) > 5;  -- filtra DEPOIS\n\n💡 HAVING = WHERE pra funções agregadas\n💡 Usa sempre APÓS GROUP BY",
+      "related": ["GROUP BY", "WHERE", "COUNT", "AVG"]
+    },
+    {
+      "name": "SUM / AVG / MIN / MAX",
+      "command": "SUM, AVG, MIN, MAX",
+      "description": "Funções agregadas (soma, média, mín, máx)",
+      "category": "SQL Funções",
+      "tags": ["sql", "sum", "avg", "min", "max", "agregação", "útil"],
+      "details": "Funções pra calcular sobre múltiplas linhas.\n\nFunções:\n  SUM(col)   - soma total\n  AVG(col)   - média\n  MIN(col)   - valor mínimo\n  MAX(col)   - valor máximo\n\nExemplos:\n  -- Soma de todos os salários\n  SELECT SUM(salary) FROM employees;\n\n  -- Média de idade\n  SELECT AVG(age) FROM users;\n\n  -- Menor e maior preço\n  SELECT MIN(price), MAX(price) FROM products;\n\nCom GROUP BY:\n  SELECT company_id,\n         COUNT(*) as employees,\n         AVG(salary) as avg_salary,\n         SUM(salary) as total_cost\n  FROM employees\n  GROUP BY company_id;\n\nCom alias:\n  SELECT\n    AVG(age) as idade_media,\n    MIN(age) as mais_novo,\n    MAX(age) as mais_velho\n  FROM users;\n\n💡 Ignora valores NULL automaticamente\n💡 Use com GROUP BY pra calcular por grupo",
+      "related": ["COUNT", "GROUP BY", "HAVING"]
+    },
+    {
+      "name": "ALTER TABLE",
+      "command": "ALTER TABLE",
+      "description": "Modificar tabela existente",
+      "category": "DDL",
+      "tags": ["sql", "alter", "modificar", "tabela", "coluna"],
+      "details": "Modifica estrutura de uma tabela existente.\n\nOperações:\n  -- Adicionar coluna\n  ALTER TABLE users ADD COLUMN phone TEXT;\n\n  -- Renomear tabela\n  ALTER TABLE users RENAME TO customers;\n\n  -- Renomear coluna (SQLite 3.25+)\n  ALTER TABLE users RENAME COLUMN name TO full_name;\n\n  -- Deletar coluna (SQLite 3.35+)\n  ALTER TABLE users DROP COLUMN age;\n\n⚠️ Limitações SQLite:\n  - Não pode modificar tipo de coluna\n  - Não pode deletar PRIMARY KEY\n  - Não pode adicionar NOT NULL sem DEFAULT\n\nWorkaround (migração):\n  1. CREATE TABLE nova com estrutura correta\n  2. INSERT INTO nova SELECT ... FROM antiga\n  3. DROP TABLE antiga\n  4. ALTER TABLE nova RENAME TO antiga\n\n💡 Teste em backup antes!\n💡 Pode quebrar dados existentes",
+      "related": ["CREATE TABLE", "DROP TABLE"]
+    },
+    {
+      "name": "DROP TABLE",
+      "command": "DROP TABLE",
+      "description": "Deletar tabela do banco",
+      "category": "DDL",
+      "tags": ["sql", "drop", "deletar", "tabela", "cuidado"],
+      "details": "Deleta uma tabela INTEIRA do banco.\n\n⚠️ PERIGO EXTREMO: Não tem UNDO!\n\nSintaxe:\n  DROP TABLE nome;\n\n  -- Só deleta se existir (não dá erro)\n  DROP TABLE IF EXISTS nome;\n\nExemplo:\n  DROP TABLE users;\n  -- Tabela 'users' deletada COMPLETAMENTE\n  -- Todos os dados perdidos!\n\n  DROP TABLE IF EXISTS temp_table;\n  -- Não dá erro se não existir\n\n⚠️ IMPORTANTE:\n  - Deleta TODOS os dados\n  - Deleta a estrutura\n  - NÃO TEM UNDO\n  - Faça BACKUP antes!\n\n💡 Use IF EXISTS pra evitar erros\n💡 Útil pra tabelas temporárias\n⚠️ NUNCA rode em produção sem backup!",
+      "related": ["CREATE TABLE", "ALTER TABLE", "DELETE"]
+    },
+    {
+      "name": "PRAGMA",
+      "command": "PRAGMA",
+      "description": "Configurações e info do SQLite",
+      "category": "SQLite",
+      "tags": ["sqlite", "pragma", "config", "foreign-keys", "info"],
+      "details": "Comandos especiais do SQLite pra configuração e info.\n\nMais usados:\n  -- Habilitar FOREIGN KEY (obrigatório!)\n  PRAGMA foreign_keys = ON;\n\n  -- Ver estrutura da tabela\n  PRAGMA table_info(users);\n\n  -- Listar todas as tabelas\n  PRAGMA table_list;\n\n  -- Ver índices\n  PRAGMA index_list(users);\n\n  -- Integridade do banco\n  PRAGMA integrity_check;\n\n  -- Info do banco\n  PRAGMA database_list;\n\nFOREIGN KEYS:\n  -- ⚠️ IMPORTANTE: Desligado por padrão!\n  PRAGMA foreign_keys = ON;\n  -- Rode SEMPRE no início da conexão!\n\n  -- Verificar status\n  PRAGMA foreign_keys;\n  -- 1 = ligado, 0 = desligado\n\n💡 PRAGMA foreign_keys = ON é ESSENCIAL!\n💡 Sem ele, FOREIGN KEY não funciona!",
+      "related": ["FOREIGN KEY", "CREATE TABLE", "sqlite:///"]
+    },
+    {
       "name": "sqlite:///",
       "command": "sqlite:///path",
       "description": "Connection string SQLite (3 barras!)",

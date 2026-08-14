@@ -39,9 +39,9 @@ cbSearch ~/.config/meu-arquivo.json
 | Arquivo | Comandos | Categorias |
 |---------|----------|------------|
 | `nvim-tips.json` | 48 | Text Objects, Navegação, Edição, Visual Mode, Busca, SQL |
-| `sql-help.json` | 24 | Dadbod, SQL Básico, Funções, Connection, Ferramentas |
+| `sql-help.json` | 40 | Dadbod, SQL Básico, Funções, DDL, Constraints, SQLite, Connection, Ferramentas |
 | `cb-help.json` | 15 | Help, Navegação, Zellij, Git, Ferramentas, cbdotfiles |
-| **TOTAL** | **87** | **17** |
+| **TOTAL** | **103** | **22** |
 
 ## 📦 Estrutura JSON
 
@@ -79,6 +79,9 @@ cbSearch ~/.config/meu-arquivo.json
 - Dadbod
 - SQL Básico
 - SQL Funções
+- DDL (Data Definition Language)
+- Constraints
+- SQLite
 - Connection
 - Ferramentas
 
