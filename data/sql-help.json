@@ -49,6 +49,51 @@
       "related": ["Space+S", "V"]
     },
     {
+      "name": "Ctrl+w w",
+      "command": "<C-w>w",
+      "description": "Alternar entre janelas (sidebar ↔ query ↔ resultado)",
+      "category": "Dadbod",
+      "tags": ["navegação", "janela", "alternar", "window", "frequente"],
+      "details": "Alterna entre as janelas abertas no Neovim.\n\nWorkflow típico:\n  1. Space+db (abre sidebar)\n  2. Abre query\n  3. Space+S (executa, resultado aparece)\n  4. Ctrl+w w (navega: sidebar → query → resultado)\n\n💡 Ctrl+w w = próxima janela (circular)\n💡 SEM MOUSE necessário!\n\nOutras navegações:\n  Ctrl+w h - janela à esquerda\n  Ctrl+w l - janela à direita\n  Ctrl+w j - janela abaixo\n  Ctrl+w k - janela acima",
+      "related": ["Ctrl+w h", "Ctrl+w c", "Ctrl+w v"]
+    },
+    {
+      "name": "Ctrl+w h/j/k/l",
+      "command": "<C-w>hjkl",
+      "description": "Navegar entre janelas direcionalmente",
+      "category": "Dadbod",
+      "tags": ["navegação", "janela", "direcional", "window"],
+      "details": "Navega entre janelas usando direções (vim motion).\n\nComandos:\n  Ctrl+w h - janela à ESQUERDA (sidebar)\n  Ctrl+w l - janela à DIREITA (query/resultado)\n  Ctrl+w j - janela ABAIXO\n  Ctrl+w k - janela ACIMA\n\nExemplos:\n  Resultado → Query:  Ctrl+w k\n  Query → Sidebar:    Ctrl+w h\n  Sidebar → Query:    Ctrl+w l\n\n💡 Mais preciso que Ctrl+w w\n💡 h j k l = vim directions ← ↓ ↑ →",
+      "related": ["Ctrl+w w", "Ctrl+w c"]
+    },
+    {
+      "name": "Ctrl+w c",
+      "command": "<C-w>c",
+      "description": "Fechar janela atual",
+      "category": "Dadbod",
+      "tags": ["janela", "fechar", "close", "window", "útil"],
+      "details": "Fecha a janela atual (não fecha o buffer).\n\nQuando usar:\n  - Fechar resultado de query antiga\n  - Fechar janela de preview\n  - Limpar workspace\n\nExemplo:\n  1. Space+S (executa query)\n  2. Resultado aparece embaixo\n  3. Vê resultado\n  4. Ctrl+w c (fecha resultado)\n\n💡 c = close\n💡 Ctrl+w o = fecha TODAS exceto atual",
+      "related": ["Ctrl+w w", "Ctrl+w o"]
+    },
+    {
+      "name": "o (dadbod)",
+      "command": "o",
+      "description": "Abrir nova query (no sidebar do dadbod)",
+      "category": "Dadbod",
+      "tags": ["query", "nova", "abrir", "sidebar", "frequente"],
+      "details": "Cria nova query no dadbod (atalho rápido).\n\nWorkflow:\n  1. Space+db (abre sidebar)\n  2. Navegue até o banco desejado\n  3. o (abre nova query)\n  4. Escreve SQL\n  5. Space+S (executa)\n\n💡 SEM MOUSE! Sem clicar \"new query\"!\n💡 o = open (vim padrão)\n\nAlternativas:\n  :e query.sql  - abre/cria arquivo\n  :vnew         - nova janela vertical\n  :new          - nova janela horizontal",
+      "related": [":e", ":vnew", "Space+S"]
+    },
+    {
+      "name": ":vnew",
+      "command": ":vnew",
+      "description": "Nova janela vertical (split)",
+      "category": "Dadbod",
+      "tags": ["janela", "split", "vertical", "nova"],
+      "details": "Cria nova janela VERTICAL (lado a lado).\n\nComandos:\n  :vnew          - nova janela vazia\n  :vnew query.sql - nova janela com arquivo\n  :vs query.sql   - atalho (vertical split)\n\nLayout típico:\n  ┌─────────┬──────────┐\n  │ sidebar │  query   │\n  │ (30%)   │  (70%)   │\n  └─────────┴──────────┘\n\n💡 vnew = vertical new\n💡 Útil pra múltiplas queries abertas",
+      "related": [":new", ":e", "o (dadbod)"]
+    },
+    {
       "name": "SELECT",
       "command": "SELECT * FROM",
       "description": "Buscar/listar dados de uma tabela",
