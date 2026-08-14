@@ -38,10 +38,13 @@ cbSearch ~/.config/meu-arquivo.json
 
 | Arquivo | Comandos | Categorias |
 |---------|----------|------------|
-| `nvim-tips.json` | 48 | Text Objects, Navegação, Edição, Visual Mode, Busca, SQL |
-| `sql-help.json` | 42 | Dadbod, SQL Básico, Funções, DDL, Constraints, SQLite, Connection, Ferramentas |
+| `nvim-tips.json` | 56 | **Dúvidas Frequentes**, Dicas/Workflow, Text Objects, Navegação, Edição, Visual Mode, Busca, Comandos, SQL/Dadbod |
+| `sql-help.json` | 49 | **Dúvidas Frequentes**, Dadbod, SQL Básico, Funções, DDL, Constraints, SQLite, Connection, Ferramentas |
 | `cb-help.json` | 15 | Help, Navegação, Zellij, Git, Ferramentas, cbdotfiles |
-| **TOTAL** | **105** | **22** |
+| **TOTAL** | **120** | **25** |
+
+### ✨ Novidade: Categoria "Dúvidas Frequentes"
+Respostas práticas para as dúvidas mais comuns de SQL e Neovim!
 
 ## 📦 Estrutura JSON
 
@@ -67,6 +70,8 @@ cbSearch ~/.config/meu-arquivo.json
 ## 🎨 Categorias sugeridas
 
 ### nvim-tips.json
+- **Dúvidas Frequentes** ⭐ (novo!)
+- **Dicas/Workflow** ⭐ (novo!)
 - Text Objects
 - Navegação
 - Edição
@@ -76,6 +81,7 @@ cbSearch ~/.config/meu-arquivo.json
 - SQL/Dadbod
 
 ### sql-help.json
+- **Dúvidas Frequentes** ⭐ (novo!)
 - Dadbod
 - SQL Básico
 - SQL Funções

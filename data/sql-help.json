@@ -117,8 +117,8 @@
       "description": "Combinar dados de múltiplas tabelas",
       "category": "SQL Básico",
       "tags": ["sql", "join", "relacionamento", "combinar", "frequente"],
-      "details": "Combina dados de duas ou mais tabelas.\n\nTipos:\n  INNER JOIN - só registros que existem em AMBAS\n  LEFT JOIN  - todos da esquerda + matches\n  RIGHT JOIN - todos da direita + matches\n\nExemplo básico:\n  SELECT u.name, c.name AS company\n  FROM users u\n  INNER JOIN company_users cu ON u.id = cu.user_id\n  INNER JOIN companies c ON cu.company_id = c.id;\n\nLEFT JOIN (inclui quem não tem match):\n  SELECT u.name, c.name\n  FROM users u\n  LEFT JOIN company_users cu ON u.id = cu.user_id;\n\n💡 Sempre especifica ON (condição de ligação)",
-      "related": ["INNER JOIN", "LEFT JOIN", "ON"]
+      "details": "Combina dados de duas ou mais tabelas.\n\nDiferença visual:\n  INNER JOIN - só o que existe em AMBAS\n    A ∩ B (intersecção)\n\n  LEFT JOIN - TUDO da esquerda + matches da direita\n    A + (A ∩ B)\n\n  RIGHT JOIN - TUDO da direita + matches da esquerda\n    B + (A ∩ B)\n\nExemplo INNER JOIN:\n  SELECT u.name, c.name AS company\n  FROM users u\n  INNER JOIN companies c ON u.company_id = c.id;\n  -- Só users QUE TEM company\n\nExemplo LEFT JOIN:\n  SELECT u.name, c.name AS company\n  FROM users u\n  LEFT JOIN companies c ON u.company_id = c.id;\n  -- TODOS users, company = NULL se não tiver\n\nMúltiplos JOINs:\n  SELECT u.name, c.name, p.title\n  FROM users u\n  INNER JOIN companies c ON u.company_id = c.id\n  LEFT JOIN posts p ON p.user_id = u.id;\n\n💡 LEFT JOIN é mais comum que RIGHT\n💡 Sempre especifica ON (condição)",
+      "related": ["INNER JOIN", "LEFT JOIN", "WHERE", "IS NULL"]
     },
     {
       "name": "ORDER BY",
@@ -326,6 +326,78 @@
       "tags": ["sqlite", "pragma", "config", "foreign-keys", "info"],
       "details": "Comandos especiais do SQLite pra configuração e info.\n\nMais usados:\n  -- Habilitar FOREIGN KEY (obrigatório!)\n  PRAGMA foreign_keys = ON;\n\n  -- Ver estrutura da tabela\n  PRAGMA table_info(users);\n\n  -- Listar todas as tabelas\n  PRAGMA table_list;\n\n  -- Ver índices\n  PRAGMA index_list(users);\n\n  -- Integridade do banco\n  PRAGMA integrity_check;\n\n  -- Info do banco\n  PRAGMA database_list;\n\nFOREIGN KEYS:\n  -- ⚠️ IMPORTANTE: Desligado por padrão!\n  PRAGMA foreign_keys = ON;\n  -- Rode SEMPRE no início da conexão!\n\n  -- Verificar status\n  PRAGMA foreign_keys;\n  -- 1 = ligado, 0 = desligado\n\n💡 PRAGMA foreign_keys = ON é ESSENCIAL!\n💡 Sem ele, FOREIGN KEY não funciona!",
       "related": ["FOREIGN KEY", "CREATE TABLE", "CREATE INDEX", "sqlite:///"]
+    },
+    {
+      "name": "WHERE vs HAVING",
+      "command": "WHERE vs HAVING",
+      "description": "Quando usar WHERE ou HAVING? (dúvida frequente)",
+      "category": "Dúvidas Frequentes",
+      "tags": ["duvida", "where", "having", "diferenca", "frequente"],
+      "details": "A dúvida mais comum em SQL!\n\n✅ USE WHERE:\n  - Filtrar ANTES de agrupar\n  - Filtrar linhas individuais\n  - NÃO funciona com funções (COUNT, SUM, AVG)\n\n✅ USE HAVING:\n  - Filtrar DEPOIS de agrupar\n  - Filtrar grupos (resultados de funções)\n  - SEMPRE vem após GROUP BY\n\nExemplo ERRADO:\n  SELECT city, COUNT(*) as total\n  FROM users\n  WHERE COUNT(*) > 10  -- ❌ ERRO!\n  GROUP BY city;\n\nExemplo CERTO:\n  SELECT city, COUNT(*) as total\n  FROM users\n  GROUP BY city\n  HAVING COUNT(*) > 10;  -- ✅ Funciona!\n\nCombinados:\n  SELECT city, COUNT(*) as total\n  FROM users\n  WHERE age > 18        -- filtra antes (linhas)\n  GROUP BY city\n  HAVING COUNT(*) > 5;  -- filtra depois (grupos)\n\n💡 WHERE = linhas | HAVING = grupos\n💡 HAVING só funciona com GROUP BY",
+      "related": ["WHERE", "GROUP BY", "HAVING", "COUNT"]
+    },
+    {
+      "name": "INNER vs LEFT JOIN",
+      "command": "INNER vs LEFT JOIN",
+      "description": "Qual JOIN usar? (dúvida frequente)",
+      "category": "Dúvidas Frequentes",
+      "tags": ["duvida", "join", "inner", "left", "diferenca", "frequente"],
+      "details": "Quando usar cada JOIN?\n\n✅ USE INNER JOIN:\n  - Quer SÓ registros que existem em AMBAS tabelas\n  - Quer eliminar quem não tem match\n  - Exemplo: users QUE TEM posts\n\n✅ USE LEFT JOIN:\n  - Quer TODOS da tabela principal\n  - Mesmo se não tiver match na outra\n  - Exemplo: TODOS users, com ou sem posts\n\nExemplo visual:\n  users: Ana, Bruno, Carla\n  posts: Ana (2 posts), Bruno (0 posts)\n\n  INNER JOIN:\n    Ana (tem posts)\n    -- Bruno e Carla NÃO aparecem!\n\n  LEFT JOIN:\n    Ana (2 posts)\n    Bruno (NULL - sem posts)\n    Carla (NULL - sem posts)\n\nCódigo:\n  -- INNER: só quem postou\n  SELECT u.name, COUNT(p.id) as posts\n  FROM users u\n  INNER JOIN posts p ON u.id = p.user_id\n  GROUP BY u.name;\n\n  -- LEFT: todos, mesmo sem postar\n  SELECT u.name, COUNT(p.id) as posts\n  FROM users u\n  LEFT JOIN posts p ON u.id = p.user_id\n  GROUP BY u.name;\n\n💡 LEFT JOIN é mais comum!\n💡 INNER JOIN é mais restritivo",
+      "related": ["JOIN", "INNER JOIN", "LEFT JOIN", "IS NULL"]
+    },
+    {
+      "name": "IS NULL / IS NOT NULL",
+      "command": "IS NULL",
+      "description": "Como lidar com valores vazios/nulos",
+      "category": "Dúvidas Frequentes",
+      "tags": ["duvida", "null", "vazio", "is-null", "frequente"],
+      "details": "Como filtrar valores NULL (vazios)?\n\n⚠️ IMPORTANTE: NULL não é 0 ou ''!\n   NULL = sem valor / desconhecido\n\nFiltrar NULL:\n  -- Só registros SEM email\n  SELECT * FROM users WHERE email IS NULL;\n\n  -- Só registros COM email\n  SELECT * FROM users WHERE email IS NOT NULL;\n\n❌ ERRADO (NÃO funciona!):\n  WHERE email = NULL   -- sempre retorna vazio\n  WHERE email != NULL  -- sempre retorna vazio\n\n✅ CERTO:\n  WHERE email IS NULL\n  WHERE email IS NOT NULL\n\nCom LEFT JOIN (achar quem NÃO tem match):\n  SELECT u.name\n  FROM users u\n  LEFT JOIN posts p ON u.id = p.user_id\n  WHERE p.id IS NULL;\n  -- Users SEM posts!\n\nCOALESCE (valor padrão se NULL):\n  SELECT name, COALESCE(email, 'sem-email') FROM users;\n  -- Se email = NULL, mostra 'sem-email'\n\n💡 Sempre use IS NULL / IS NOT NULL\n❌ NUNCA use = NULL ou != NULL",
+      "related": ["WHERE", "LEFT JOIN", "COALESCE", "NOT NULL"]
+    },
+    {
+      "name": "LIKE com %",
+      "command": "LIKE '%texto%'",
+      "description": "Busca parcial de texto (contains)",
+      "category": "Dúvidas Frequentes",
+      "tags": ["duvida", "like", "busca", "wildcard", "contains", "frequente"],
+      "details": "Como buscar texto parcial (busca 'contains')?\n\nWildcards:\n  %  - qualquer coisa (0+ caracteres)\n  _  - exatamente 1 caractere\n\nExemplos:\n  -- Contém 'Silva' em qualquer lugar\n  WHERE name LIKE '%Silva%'\n    ✅ Ana Silva\n    ✅ Silva Costa\n    ✅ José da Silva\n\n  -- Começa com 'Ana'\n  WHERE name LIKE 'Ana%'\n    ✅ Ana Silva\n    ✅ Anabela\n    ❌ Joana\n\n  -- Termina com 'Silva'\n  WHERE name LIKE '%Silva'\n    ✅ Ana Silva\n    ✅ João Silva\n    ❌ Silva Costa\n\n  -- Email do Gmail\n  WHERE email LIKE '%@gmail.com'\n\n  -- 4 caracteres exatos\n  WHERE code LIKE '____'  -- 4 underscores\n    ✅ ABCD\n    ❌ ABC\n\nCase sensitive?\n  SQLite: case-insensitive por padrão\n  'Ana' = 'ana' = 'ANA'\n\nMúltiplas buscas:\n  WHERE name LIKE '%Silva%'\n     OR name LIKE '%Costa%'\n\n💡 % = qualquer coisa\n💡 LIKE é mais lento que =\n⚠️ Evite LIKE '%...%' em tabelas gigantes",
+      "related": ["WHERE", "SELECT", "OR"]
+    },
+    {
+      "name": "Por que evitar SELECT *",
+      "command": "SELECT * (evitar)",
+      "description": "Por que SELECT * é ruim em produção?",
+      "category": "Dúvidas Frequentes",
+      "tags": ["duvida", "select", "performance", "boas-praticas"],
+      "details": "Por que evitar SELECT * em produção?\n\n❌ Problemas:\n  1. Performance ruim\n     - Busca TODAS as colunas (mesmo as que não usa)\n     - Desperdiça memória e rede\n     - Tabela com 50 colunas = lento!\n\n  2. Código quebra\n     - Alguém adiciona coluna nova\n     - Seu código recebe dados inesperados\n     - Bugs silenciosos\n\n  3. Segurança\n     - Pode expor dados sensíveis\n     - Passwords, tokens, dados privados\n\n✅ Explorar/testar (OK):\n  SELECT * FROM users LIMIT 10;\n  -- Só pra ver a estrutura\n\n❌ Produção (EVITE):\n  SELECT * FROM users;\n  -- Muito lento, inseguro\n\n✅ Produção (CERTO):\n  SELECT id, name, email FROM users;\n  -- Só o que precisa!\n\nExemplo real:\n  ❌ Ruim (busca 20 colunas):\n    SELECT * FROM users WHERE id = 1;\n\n  ✅ Bom (busca 3 colunas):\n    SELECT id, name, email FROM users WHERE id = 1;\n    -- 10x mais rápido!\n\n💡 SELECT * = OK pra testar\n⚠️ SELECT * = RUIM em produção\n✅ Liste as colunas explicitamente",
+      "related": ["SELECT", "LIMIT", "CREATE INDEX"]
+    },
+    {
+      "name": "Ver estrutura da tabela",
+      "command": "PRAGMA table_info",
+      "description": "Como ver colunas/tipos de uma tabela?",
+      "category": "Dúvidas Frequentes",
+      "tags": ["duvida", "estrutura", "schema", "colunas", "pragma", "frequente"],
+      "details": "Como ver a estrutura de uma tabela?\n\nSQLite:\n  PRAGMA table_info(users);\n\n  Retorna:\n    cid  name       type     notnull  dflt_value  pk\n    0    id         INTEGER  0        NULL        1\n    1    name       TEXT     1        NULL        0\n    2    email      TEXT     1        NULL        0\n    3    age        INTEGER  0        0           0\n\nOu use dadbod UI:\n  1. Space+db (abre sidebar)\n  2. R (refresh)\n  3. Expande a tabela\n  4. Vê colunas, tipos, constraints\n\nListar todas as tabelas:\n  -- SQLite\n  SELECT name FROM sqlite_master\n  WHERE type='table';\n\n  -- Ou\n  PRAGMA table_list;\n\nVer CREATE TABLE original:\n  SELECT sql FROM sqlite_master\n  WHERE name='users';\n\n  Retorna:\n    CREATE TABLE users (\n      id INTEGER PRIMARY KEY,\n      name TEXT NOT NULL,\n      ...\n    )\n\n💡 PRAGMA table_info é essencial!\n💡 dadbod UI mostra visual (R pra refresh)",
+      "related": ["PRAGMA", "CREATE TABLE", "Space+db", "R"]
+    },
+    {
+      "name": "DELETE vs DROP",
+      "command": "DELETE vs DROP",
+      "description": "Qual a diferença entre DELETE e DROP?",
+      "category": "Dúvidas Frequentes",
+      "tags": ["duvida", "delete", "drop", "diferenca", "cuidado"],
+      "details": "Diferença entre DELETE e DROP?\n\n✅ DELETE:\n  - Deleta DADOS (linhas)\n  - Tabela continua existindo\n  - Pode usar WHERE (deletar específico)\n  - Reversível com transaction/backup\n\n  DELETE FROM users WHERE age < 18;\n  -- Deleta dados, tabela existe\n\n⚠️ DROP:\n  - Deleta TABELA INTEIRA\n  - Estrutura + dados = TUDO\n  - NÃO tem WHERE\n  - IRREVERSÍVEL (sem UNDO!)\n\n  DROP TABLE users;\n  -- Tabela sumiu completamente!\n\nComparação:\n  DELETE:\n    - Remove linhas\n    - Tabela existe\n    - WHERE funciona\n    - Dados podem voltar (backup)\n\n  DROP:\n    - Remove tabela\n    - Tabela NÃO existe mais\n    - WHERE NÃO funciona\n    - IMPOSSÍVEL recuperar (sem backup)\n\nOutros comandos de deleção:\n  TRUNCATE TABLE users;  -- deleta TODOS dados (rápido)\n                         -- estrutura permanece\n                         -- NÃO tem WHERE\n\n⚠️ Ordem de perigo:\n  1. DROP TABLE (mais perigoso - perde tudo)\n  2. DELETE sem WHERE (perde dados)\n  3. DELETE com WHERE (seguro)\n\n💡 DELETE = dados | DROP = tabela\n⚠️ SEMPRE faça backup antes de DROP!",
+      "related": ["DELETE", "DROP TABLE", "WHERE", "PRAGMA"]
+    },
+    {
+      "name": "COALESCE",
+      "command": "COALESCE(col, default)",
+      "description": "Substituir NULL por valor padrão",
+      "category": "Dúvidas Frequentes",
+      "tags": ["duvida", "null", "coalesce", "default", "substituir"],
+      "details": "Como substituir NULL por um valor padrão?\n\nCOALESCE retorna o primeiro valor NÃO-NULL.\n\nSintaxe:\n  COALESCE(valor1, valor2, valor3, ...)\n\nExemplos:\n  -- Se email = NULL, mostra 'sem-email'\n  SELECT name, COALESCE(email, 'sem-email') as email\n  FROM users;\n\n  -- Se age = NULL, mostra 0\n  SELECT name, COALESCE(age, 0) as age\n  FROM users;\n\n  -- Múltiplos fallbacks\n  COALESCE(phone_mobile, phone_work, phone_home, 'sem-telefone')\n  -- Usa o primeiro que não for NULL\n\nCom cálculos:\n  SELECT name,\n         price * COALESCE(discount, 1.0) as final_price\n  FROM products;\n  -- Se discount = NULL, usa 1.0 (sem desconto)\n\nDiferença de DEFAULT:\n  DEFAULT     - valor ao INSERIR\n  COALESCE    - valor ao BUSCAR (SELECT)\n\n  CREATE TABLE users (\n    age INTEGER DEFAULT 0  -- default no INSERT\n  );\n\n  SELECT COALESCE(age, 0)  -- fallback no SELECT\n  FROM users;\n\n💡 COALESCE = primeiro não-NULL\n💡 Útil em relatórios e cálculos",
+      "related": ["IS NULL", "DEFAULT", "SELECT"]
     },
     {
       "name": "sqlite:///",

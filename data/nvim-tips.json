@@ -335,6 +335,69 @@
       "tags": ["sql", "dadbod", "executar", "query", "database"],
       "details": "Executa a query SQL sob o cursor no vim-dadbod.\n\nPré-requisitos:\n  - Banco conectado no dadbod UI (Space+db)\n  - Cursor na linha da query\n  - Query termina com ;\n\nWorkflow:\n  1. Escreve query\n  2. Esc (sai do INSERT)\n  3. Space+Shift+S\n  4. Resultado aparece embaixo!\n\nVariações:\n  Space+S - executa linha/query\n  Space+W - executa seleção (visual)\n\n💡 Precisa conectar banco antes (Shift+A no dadbod)",
       "related": ["Space+Shift+W", "Space+db", "Shift+A"]
+    },
+    {
+      "name": "Como sair do Vim?",
+      "command": ":q / :wq / ZZ",
+      "description": "Como fechar/sair do Neovim? (dúvida #1)",
+      "category": "Dúvidas Frequentes",
+      "tags": ["duvida", "sair", "quit", "fechar", "frequente"],
+      "details": "A dúvida MAIS famosa do Vim!\n\nFormas de sair:\n  :q      - sai (se salvou)\n  :q!     - sai SEM salvar (força)\n  :wq     - salva E sai\n  :x      - salva (se mudou) e sai\n  ZZ      - salva e sai (atalho)\n  ZQ      - sai sem salvar (atalho)\n\nSe travou:\n  1. Esc (volta pro NORMAL mode)\n  2. :q!\n\nSe deu erro \"No write since last change\":\n  :q!     - abandona mudanças\n  :wq     - salva e sai\n\nMúltiplos arquivos:\n  :qa     - sai de todos\n  :qa!    - sai de todos SEM salvar\n  :wqa    - salva todos e sai\n\n💡 Sempre aperte Esc primeiro!\n💡 ZZ = salvou e saiu rápido\n⚠️ :q! = perde as mudanças!",
+      "related": [":w", ":q", "Esc"]
+    },
+    {
+      "name": "Modos do Vim",
+      "command": "i / Esc / v",
+      "description": "NORMAL vs INSERT vs VISUAL - quando usar?",
+      "category": "Dúvidas Frequentes",
+      "tags": ["duvida", "modos", "normal", "insert", "visual", "frequente"],
+      "details": "Vim tem 3 modos principais:\n\n✅ NORMAL (padrão):\n  - Navegar (hjkl, w, b, gg, G)\n  - Comandos (dd, yy, p, u)\n  - Buscar (/, *, n)\n  - NUNCA escreve texto!\n\n  Entrar: Esc\n\n✅ INSERT (escrever):\n  - Digitar texto normalmente\n  - Como qualquer editor comum\n  - Não pode navegar com comandos\n\n  Entrar:\n    i  - insert (antes do cursor)\n    a  - append (depois do cursor)\n    I  - início da linha\n    A  - final da linha\n    o  - nova linha abaixo\n    O  - nova linha acima\n\n  Sair: Esc\n\n✅ VISUAL (selecionar):\n  - Selecionar texto\n  - Depois: y (copia), d (deleta), c (muda)\n\n  Entrar:\n    v      - seleção por caractere\n    V      - seleção por linha\n    Ctrl+v - seleção em bloco\n\n  Sair: Esc\n\nFluxo típico:\n  NORMAL → i (INSERT) → digita → Esc (NORMAL)\n  NORMAL → v (VISUAL) → seleciona → y (NORMAL)\n\n💡 Esc SEMPRE volta pro NORMAL\n💡 NORMAL = modo de comando\n💡 INSERT = modo de digitação",
+      "related": ["i", "a", "v", "V", "Esc"]
+    },
+    {
+      "name": "Clipboard do sistema",
+      "command": "\"+y / \"+p",
+      "description": "Como copiar/colar pro sistema (Ctrl+C/V)?",
+      "category": "Dúvidas Frequentes",
+      "tags": ["duvida", "clipboard", "copiar", "colar", "sistema", "frequente"],
+      "details": "Como copiar do Vim pro sistema (fora do Vim)?\n\nRegisters:\n  \"\"  - register padrão (só dentro do Vim)\n  \"+  - clipboard do SISTEMA (Ctrl+C/V)\n  \"0  - último yank (não deletes)\n\nCopiar PRO sistema:\n  \"+y   - copia seleção (visual mode)\n  \"+yy  - copia linha inteira\n  \"+yiw - copia palavra\n\n  Exemplo:\n    1. viw (seleciona palavra)\n    2. \"+y (copia pro sistema)\n    3. Ctrl+V em outro app!\n\nColar DO sistema:\n  \"+p   - cola depois\n  \"+P   - cola antes\n\n  Ou em INSERT mode:\n    Ctrl+Shift+V\n\nWorkflow:\n  -- Copiar:\n    V (visual line)\n    seleciona linhas\n    \"+y (copia pro sistema)\n\n  -- Colar:\n    \"+p (cola do sistema)\n\nConfigurações úteis:\n  -- Compartilhar clipboard automaticamente\n  set clipboard=unnamedplus\n  -- Agora y e p usam sistema!\n\n💡 \"+y = copia pro sistema\n💡 \"+p = cola do sistema\n💡 Em INSERT: Ctrl+Shift+V",
+      "related": ["y", "p", "v", "V"]
+    },
+    {
+      "name": "Registers",
+      "command": "\"a / \"0 / \"+",
+      "description": "O que são registers? Como usar?",
+      "category": "Dúvidas Frequentes",
+      "tags": ["duvida", "registers", "clipboard", "avancado"],
+      "details": "Registers = múltiplos clipboards do Vim!\n\nPrincipais:\n  \"\"  - register padrão (unnamed)\n  \"0  - último YANK (não sobrescreve com delete)\n  \"+  - clipboard do sistema\n  \"a até \"z - registers nomeados (você controla)\n\nCopiar pra register:\n  \"ayy  - copia linha pro register 'a'\n  \"byiw - copia palavra pro register 'b'\n\nColar de register:\n  \"ap   - cola do register 'a'\n  \"bp   - cola do register 'b'\n  \"0p   - cola último yank (ignora deletes)\n\nVer todos registers:\n  :reg\n\n  Mostra:\n    \"\"  última operação\n    \"0  último yank\n    \"+  clipboard sistema\n    \"a  seu conteúdo\n    \"b  seu conteúdo\n\nUso prático:\n  1. \"ayy (guarda linha no 'a')\n  2. faz outras coisas\n  3. dd dd dd (deleta várias linhas)\n  4. \"ap (cola a linha salva!)\n\n  Sem register 'a':\n    - dd sobrescreve o clipboard\n    - perde o conteúdo\n\n💡 \"0p = sempre último yank\n💡 \"a\"b\"c = múltiplos clipboards\n💡 :reg = ver tudo",
+      "related": ["\"+y", "y", "p", "\"0p"]
+    },
+    {
+      "name": "Macros",
+      "command": "q<letra> / @<letra>",
+      "description": "Gravar e repetir sequência de comandos",
+      "category": "Dúvidas Frequentes",
+      "tags": ["duvida", "macro", "repetir", "gravar", "avancado", "útil"],
+      "details": "Macros = gravar comandos e repetir!\n\nGravar macro:\n  1. q<letra>  - começa a gravar (ex: qa)\n  2. faz os comandos\n  3. q  - para de gravar\n\nExecutar macro:\n  @<letra>  - executa 1 vez (ex: @a)\n  10@a      - executa 10 vezes\n  @@        - repete último macro\n\nExemplo prático:\n  Tarefa: adicionar ; no final de 10 linhas\n\n  1. qa      (grava no register 'a')\n  2. A;      (vai pro final, adiciona ;)\n  3. Esc     (volta NORMAL)\n  4. j       (próxima linha)\n  5. q       (para de gravar)\n  6. 9@a     (repete 9x nas outras linhas)\n\nOutro exemplo:\n  Comentar várias linhas:\n\n  1. qq      (grava no 'q')\n  2. I//     (adiciona // no início)\n  3. Esc j   (próxima linha)\n  4. q       (para)\n  5. 10@q    (comenta 10 linhas)\n\nEditar macro:\n  Macros ficam em registers!\n  :let @a='...' - edita macro 'a'\n\nVer macros:\n  :reg a  - ver conteúdo do macro 'a'\n\n💡 Macros = automação poderosa\n💡 Use pra tarefas repetitivas\n💡 q<letra> = grava | @<letra> = executa",
+      "related": ["q", ".", "Registers"]
+    },
+    {
+      "name": "gd / gD",
+      "command": "gd",
+      "description": "Go to definition (ir pra definição)",
+      "category": "Navegação",
+      "tags": ["navegacao", "definition", "goto", "lsp", "útil"],
+      "details": "Pula pra definição da variável/função.\n\nComandos:\n  gd  - go to definition (local)\n  gD  - go to definition (global)\n  Ctrl+o - volta (jump back)\n  Ctrl+i - avança (jump forward)\n\nExemplo:\n  function getUserName(userId) {\n    const user = getUser(userId);\n            ↑ cursor aqui\n    ...\n  }\n\n  gd → pula pra linha: const user = ...\n\nCom LSP (LazyVim):\n  gd funciona melhor ainda!\n  - Pula entre arquivos\n  - Entende import/export\n  - Funciona com TypeScript, Go, Python, etc\n\nNavegar jump list:\n  Ctrl+o - volta pro lugar anterior\n  Ctrl+i - vai pro próximo\n  :jumps - ver histórico de pulos\n\nOutros comandos úteis:\n  *  - busca palavra sob cursor\n  #  - busca palavra (pra trás)\n  %  - pula pro par {} () []\n\n💡 gd = go to definition\n💡 Ctrl+o = volta\n💡 LazyVim tem LSP configurado!",
+      "related": ["*", "%", "Ctrl+o", "/"]
+    },
+    {
+      "name": ":vimtutor",
+      "command": ":vimtutor",
+      "description": "Tutorial interativo do Vim (30 min)",
+      "category": "Dicas/Workflow",
+      "tags": ["tutorial", "aprender", "iniciante", "vimtutor"],
+      "details": "Tutorial interativo oficial do Vim!\n\nComo rodar:\n  1. Abre terminal\n  2. vimtutor\n  3. Segue as lições\n\nOu dentro do Vim:\n  :Tutor\n\nO que ensina:\n  - Navegação (hjkl, w, b, e)\n  - Deletar/mudar (d, c, x)\n  - Copiar/colar (y, p)\n  - Buscar (/, ?)\n  - Substituir (:s)\n  - Comandos básicos\n\nTempo: ~30 minutos\n\n💡 Melhor forma de aprender Vim!\n💡 Interativo e prático\n💡 Rode pelo menos 1x!",
+      "related": ["i", "hjkl", "dd", "yy"]
     }
   ]
 }
