@@ -30,9 +30,12 @@ cbSearch ~/.config/meu-arquivo.json
 | Tecla | Ação |
 |-------|------|
 | `↑ ↓` | Navegar |
-| `Enter` | Copiar comando pro clipboard |
-| `Esc` | Sair |
+| `Enter` | **Copiar (mantém aberto)** - copie vários! 🎯 |
+| `Ctrl+Y` | Copiar e fechar |
 | `Ctrl+/` | Toggle preview |
+| `Esc` | Sair |
+
+💡 **Novidade:** Enter agora mantém o help aberto para copiar múltiplos comandos!
 
 ## 📊 Estatísticas
 

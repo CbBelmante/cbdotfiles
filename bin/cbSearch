@@ -37,9 +37,13 @@ BUSCA:
   - Categoria
 
 NAVEGAÇÃO:
-  ↑↓      Navegar
-  Enter   Copiar comando pro clipboard
-  Esc     Sair
+  ↑↓        Navegar
+  Enter     Copiar (mantém aberto - copie vários!)
+  Ctrl+Y    Copiar e fechar
+  Ctrl+/    Toggle preview
+  Esc       Sair
+
+💡 Agora você pode copiar vários comandos sem fechar!
 
 EOF
 }
@@ -134,36 +138,24 @@ run_search() {
   fi
 
   # Roda fzf com preview
-  local selected
   local preview_script="${SCRIPT_DIR}/.cbSearch-preview.sh"
+  local copy_script="${SCRIPT_DIR}/.cbSearch-copy.sh"
 
-  selected=$(echo "$items" | fzf \
+  echo "$items" | fzf \
     --ansi \
     --layout=reverse \
     --height=100% \
-    --header="🔍 $title - Busca fuzzy (Enter = copiar comando)" \
+    --header="🔍 $title | Enter=copiar (mantém aberto) | Ctrl+Y=copiar+fechar | Esc=fechar" \
     --header-first \
     --prompt="❯ " \
     --pointer="▶" \
     --preview="$preview_script '$json_file' {}" \
     --preview-window=right:60%:wrap \
+    --bind="enter:execute-silent($copy_script {1})" \
+    --bind="ctrl-y:execute($copy_script {1})+abort" \
     --bind='ctrl-/:toggle-preview' \
     --color='header:italic:cyan,prompt:bold:cyan,pointer:bold:green' \
-  ) || return 0
-
-  if [[ -n "$selected" ]]; then
-    # Extrai comando
-    local command
-    command=$(echo "$selected" | awk '{print $1}')
-
-    # Copia pro clipboard
-    if copy_to_clipboard "$command"; then
-      echo "✅ Comando copiado: $command"
-    else
-      echo "📋 Comando: $command"
-      echo "⚠️  Clipboard não disponível (instale wl-copy ou xclip)"
-    fi
-  fi
+    || true
 }
 
 # ───────────────────────────────────────────────────────────────────────────────
