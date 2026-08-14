@@ -301,13 +301,31 @@
       "related": ["CREATE TABLE", "ALTER TABLE", "DELETE"]
     },
     {
+      "name": "CREATE TRIGGER",
+      "command": "CREATE TRIGGER",
+      "description": "Automação que roda em INSERT/UPDATE/DELETE",
+      "category": "DDL",
+      "tags": ["sql", "trigger", "automação", "evento", "avançado"],
+      "details": "Cria uma automação que executa automaticamente.\n\nSintaxe:\n  CREATE TRIGGER nome\n  AFTER INSERT ON tabela  -- ou BEFORE, UPDATE, DELETE\n  BEGIN\n    -- comandos SQL\n  END;\n\nExemplo - Atualizar updated_at:\n  CREATE TRIGGER update_timestamp\n  AFTER UPDATE ON users\n  BEGIN\n    UPDATE users\n    SET updated_at = CURRENT_TIMESTAMP\n    WHERE id = NEW.id;\n  END;\n\nExemplo - Log de mudanças:\n  CREATE TRIGGER log_changes\n  AFTER DELETE ON users\n  BEGIN\n    INSERT INTO users_log (user_id, action, timestamp)\n    VALUES (OLD.id, 'DELETE', CURRENT_TIMESTAMP);\n  END;\n\nPalavras especiais:\n  NEW.coluna  - novo valor (INSERT/UPDATE)\n  OLD.coluna  - valor antigo (UPDATE/DELETE)\n\nMomentos:\n  BEFORE  - antes da operação\n  AFTER   - depois da operação\n\nOperações:\n  INSERT, UPDATE, DELETE\n\n💡 Útil pra auditar, validar, atualizar\n⚠️ Pode deixar banco mais lento",
+      "related": ["CREATE TABLE", "INSERT", "UPDATE", "DELETE"]
+    },
+    {
+      "name": "CREATE INDEX",
+      "command": "CREATE INDEX",
+      "description": "Índice pra acelerar buscas",
+      "category": "DDL",
+      "tags": ["sql", "index", "performance", "otimização", "velocidade"],
+      "details": "Cria um índice pra acelerar queries (como índice de livro).\n\nSintaxe:\n  CREATE INDEX nome ON tabela(coluna);\n\n  -- Índice único\n  CREATE UNIQUE INDEX nome ON tabela(coluna);\n\n  -- Múltiplas colunas\n  CREATE INDEX nome ON tabela(col1, col2);\n\nExemplos:\n  -- Acelera WHERE email = '...'\n  CREATE INDEX idx_users_email ON users(email);\n\n  -- Acelera JOIN\n  CREATE INDEX idx_posts_user_id ON posts(user_id);\n\n  -- Busca por nome\n  CREATE INDEX idx_users_name ON users(name);\n\n  -- Múltiplas colunas (ordem importa!)\n  CREATE INDEX idx_users_city_age ON users(city, age);\n\nQuando criar:\n  ✅ Colunas usadas em WHERE\n  ✅ Colunas usadas em JOIN\n  ✅ Colunas usadas em ORDER BY\n  ✅ FOREIGN KEYs\n\nCusto:\n  ⚠️ INSERT/UPDATE/DELETE ficam mais lentos\n  ⚠️ Usa espaço em disco\n\nVer índices:\n  PRAGMA index_list(users);\n\n💡 PRIMARY KEY já tem índice automático!\n💡 Não crie índice em TUDO (só no necessário)",
+      "related": ["CREATE TABLE", "WHERE", "JOIN", "PRAGMA"]
+    },
+    {
       "name": "PRAGMA",
       "command": "PRAGMA",
       "description": "Configurações e info do SQLite",
       "category": "SQLite",
       "tags": ["sqlite", "pragma", "config", "foreign-keys", "info"],
       "details": "Comandos especiais do SQLite pra configuração e info.\n\nMais usados:\n  -- Habilitar FOREIGN KEY (obrigatório!)\n  PRAGMA foreign_keys = ON;\n\n  -- Ver estrutura da tabela\n  PRAGMA table_info(users);\n\n  -- Listar todas as tabelas\n  PRAGMA table_list;\n\n  -- Ver índices\n  PRAGMA index_list(users);\n\n  -- Integridade do banco\n  PRAGMA integrity_check;\n\n  -- Info do banco\n  PRAGMA database_list;\n\nFOREIGN KEYS:\n  -- ⚠️ IMPORTANTE: Desligado por padrão!\n  PRAGMA foreign_keys = ON;\n  -- Rode SEMPRE no início da conexão!\n\n  -- Verificar status\n  PRAGMA foreign_keys;\n  -- 1 = ligado, 0 = desligado\n\n💡 PRAGMA foreign_keys = ON é ESSENCIAL!\n💡 Sem ele, FOREIGN KEY não funciona!",
-      "related": ["FOREIGN KEY", "CREATE TABLE", "sqlite:///"]
+      "related": ["FOREIGN KEY", "CREATE TABLE", "CREATE INDEX", "sqlite:///"]
     },
     {
       "name": "sqlite:///",
