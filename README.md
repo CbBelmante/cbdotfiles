@@ -286,16 +286,17 @@ Ctrl+R                # historico de comandos com busca fuzzy
 | `open` | Abre arquivo/diretorio com app padrao (xdg-open) |
 | `d` | Docker |
 | `sqlp` / `sqlpractice` | Menu interativo para criar/abrir bancos SQLite de pratica |
-| `nvimHelp` / `sqlpHelp` / `cbHelp` | Busca interativa fuzzy de comandos e dicas |
+| `nvimHelp` / `sqlpHelp` / `cbHelp` / `cbkeysHelp` | Busca interativa fuzzy de comandos e dicas |
 
 ## 🔍 cbSearch - Sistema de Help Interativo
 
-Busca fuzzy (fzf) em comandos e dicas. **82 comandos buscáveis** em 3 helps especializados!
+Busca fuzzy (fzf) em comandos e dicas. **152 comandos buscáveis** em 4 helps especializados!
 
 ```bash
-nvimHelp    # 48 comandos Neovim essenciais
-sqlpHelp    # 19 comandos SQL + dadbod
-cbHelp      # 15 aliases + ferramentas cbdotfiles
+nvimHelp      # 48 comandos Neovim essenciais
+sqlpHelp      # 19 comandos SQL + dadbod
+cbHelp        # 15 aliases + ferramentas cbdotfiles
+cbkeysHelp    # 32 atalhos do desktop (alinhado com Omarchy 4)
 ```
 
 **Features:**
@@ -440,32 +441,33 @@ zj-tab cbw1 ~/Workspaces/outro
 | `gp` | `git push` |
 | `gl` | `git log --oneline --graph` |
 
-### 📂 Sistema (eza)
+### 📂 Sistema (eza — com fallback)
 
 | Alias | Comando |
 |-------|---------|
-| `ls` | `eza --icons` |
+| `ls` | `eza --icons` (fallback: `ls` padrao se eza nao instalado) |
 | `ll` | `eza -lah --icons` |
 | `la` | `eza -A --icons` |
 | `tree` | `eza --tree --level=3 --icons` |
 
-### 📦 Arch Linux
+### 📦 Package Management (detecta distro)
 
-| Alias | Comando |
-|-------|---------|
-| `update` | `sudo pacman -Syu` |
-| `install` | `sudo pacman -S` |
-| `search` | `pacman -Ss` |
+| Distro | `update` | `install` | `search` |
+|--------|----------|-----------|----------|
+| Arch | `sudo pacman -Syu` | `sudo pacman -S` | `pacman -Ss` |
+| Debian/Ubuntu | `sudo apt update && sudo apt upgrade` | `sudo apt install` | `apt search` |
+| Fedora | `sudo dnf upgrade` | `sudo dnf install` | `dnf search` |
 
-### 🪟 Hyprland / Omarchy
+### 🪟 Hyprland / Omarchy (condicionais)
 
-| Alias | Comando |
-|-------|---------|
-| `hyprconf` | `cd ~/.config/hypr` |
-| `reload-hypr` | `hyprctl reload` |
-| `omarchy-refresh` | `omarchy-refresh-config` |
-| `omarchy-ver` | `omarchy-version` |
-| `omarchy-theme` | `omarchy-theme-current` |
+Aliases so sao definidos se os comandos existem na maquina:
+
+| Alias | Comando | Requer |
+|-------|---------|--------|
+| `hyprconf` | `cd ~/.config/hypr` | hyprctl |
+| `reload-hypr` | `hyprctl reload` | hyprctl |
+| `omarchy-ver` | `omarchy-version` | Omarchy |
+| `omarchy-theme` | `omarchy-theme-current` | Omarchy |
 
 ## ⌨️ Keybind Generator
 
@@ -500,27 +502,35 @@ COSMIC_BROWSER=vivaldi
 
 ### Atalhos Padronizados
 
+Padrao alinhado com Omarchy 4: `Super+Letra` = acoes do WM, `Super+Shift+Letra` = lancar apps, `Super+Ctrl+Letra` = paineis/utilitarios.
+
 | Atalho | Acao |
 |--------|------|
+| **Apps (Super+Shift)** | |
 | `Super+Enter` | Terminal |
-| `Super+F` | File manager |
-| `Super+B` | Browser padrao do sistema (via open-browser.sh) |
-| `Super+Shift+B` | Browser modo privado (detecta flag correta) |
-| `Super+N` | Editor |
-| `Super+/` | 1Password |
-| `Super+G` | GitHub (webapp) |
-| `Super+Shift+N` | Notion (webapp) |
+| `Super+Shift+B` | Browser padrao do sistema (via open-browser.sh) |
+| `Super+Shift+Alt+B` | Browser modo privado (detecta flag correta) |
+| `Super+Shift+F` | File manager |
+| `Super+Shift+N` | Editor |
+| `Super+Shift+/` | 1Password |
 | `Super+Shift+O` | Obsidian |
 | `Super+Shift+G` | GitKraken |
 | `Super+Shift+M` | Spotify |
-| `Super+Shift+T` | Btop |
-| `Super+C/X/V` | Copy / Cut / Paste |
-| `Super+Ctrl+V` | Clipboard history |
-| `Super+Q` / `Super+W` | Fechar janela |
-| `Super+Escape` | Power menu (lock/suspend/reboot/shutdown) |
+| `Super+Shift+D` | LazyDocker |
+| `Super+Shift+Ctrl+A` | Coding agent |
+| **WM (Super)** | |
+| `Super+W` | Fechar janela |
+| `Super+F` | Full screen |
+| `Super+Escape` | System menu |
 | `Super+K` | Mostrar todos os atalhos |
-| `Super+Shift+S` / `Print` | Screenshot (interativo) |
-| `Shift+Print` | Screenshot (clipboard) |
+| **Utilitarios (Super+Ctrl)** | |
+| `Super+Ctrl+T` | Btop (activity) |
+| `Super+Ctrl+V` | Clipboard history |
+| `Super+C/X/V` | Copy / Cut / Paste |
+| **Midia** | |
+| `Print` | Screenshot (interativo) |
+| `Alt+Print` | Screen recording |
+| `Super+Print` | Color picker |
 
 ### Regenerar
 

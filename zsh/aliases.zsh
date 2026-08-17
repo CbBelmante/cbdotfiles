@@ -18,14 +18,16 @@ alias ...='cd ../..'
 alias ....='cd ../../..'
 
 # ───────────────────────────────────────────────────────────────────────────────
-# Enhanced ls with icons (eza)
+# Enhanced ls with icons (eza, com fallback)
 # ───────────────────────────────────────────────────────────────────────────────
-alias ls='eza --icons'
-alias ls2='eza --tree --level=2 --icons'
-alias ls3='eza --tree --level=3 --icons'
-alias ll='eza -lah --icons'
-alias la='eza -A --icons'
-alias tree='eza --tree --level=3 --icons'
+if command -v eza &> /dev/null; then
+    alias ls='eza --icons'
+    alias ls2='eza --tree --level=2 --icons'
+    alias ls3='eza --tree --level=3 --icons'
+    alias ll='eza -lah --icons'
+    alias la='eza -A --icons'
+    alias tree='eza --tree --level=3 --icons'
+fi
 
 # ───────────────────────────────────────────────────────────────────────────────
 # Git Shortcuts
@@ -37,22 +39,38 @@ alias gp='git push'
 alias gl='git log --oneline --graph'
 
 # ───────────────────────────────────────────────────────────────────────────────
-# Arch Linux / Package Management
+# Package Management (detecta distro)
 # ───────────────────────────────────────────────────────────────────────────────
-alias update='sudo pacman -Syu'
-alias install='sudo pacman -S'
-alias search='pacman -Ss'
+if command -v pacman &> /dev/null; then
+    alias update='sudo pacman -Syu'
+    alias install='sudo pacman -S'
+    alias search='pacman -Ss'
+elif command -v apt &> /dev/null; then
+    alias update='sudo apt update && sudo apt upgrade'
+    alias install='sudo apt install'
+    alias search='apt search'
+elif command -v dnf &> /dev/null; then
+    alias update='sudo dnf upgrade'
+    alias install='sudo dnf install'
+    alias search='dnf search'
+fi
 
 # ───────────────────────────────────────────────────────────────────────────────
-# Omarchy / Hyprland
+# Hyprland (so define se hyprctl existe)
 # ───────────────────────────────────────────────────────────────────────────────
-alias hyprconf='cd ~/.config/hypr'
-alias openthemes='nautilus ~/.local/share/omarchy/themes'
-alias reload-hypr='hyprctl reload'
-alias omarchy-refresh='omarchy-refresh-config'
-alias omarchy-ver='omarchy-version'
-alias omarchy-theme='omarchy-theme-current'
-alias omarchy-sync-gtk='python3 ~/.config/omarchy/generate-gtk-theme.py'
+if command -v hyprctl &> /dev/null; then
+    alias hyprconf='cd ~/.config/hypr'
+    alias reload-hypr='hyprctl reload'
+fi
+
+# ───────────────────────────────────────────────────────────────────────────────
+# Omarchy (so define se omarchy esta instalado)
+# ───────────────────────────────────────────────────────────────────────────────
+if [ -d "$HOME/.config/omarchy" ]; then
+    alias omarchy-ver='omarchy-version'
+    alias omarchy-theme='omarchy-theme-current'
+    command -v omarchy-refresh-config &> /dev/null && alias omarchy-refresh='omarchy-refresh-config'
+fi
 
 # ───────────────────────────────────────────────────────────────────────────────
 # Zoxide (cd inteligente - lembra diretorios visitados)
@@ -106,6 +124,7 @@ alias cbSearch='~/Workspaces/cbdotfiles/bin/cbSearch'
 alias nvimHelp='cbSearch nvim-tips'
 alias cbHelp='cbSearch cb-help'
 alias sqlpHelp='cbSearch sql-help'
+alias cbkeysHelp='cbSearch keys-help'
 alias cbbrowser='~/Workspaces/cbdotfiles/install.sh --chbrowser'
 _cb_edit_local() {
     local f=~/Workspaces/cbdotfiles/local/$1

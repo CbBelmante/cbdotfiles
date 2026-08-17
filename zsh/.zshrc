@@ -152,3 +152,4 @@ export PATH="$HOME/.opencode/bin:$PATH"
 # FlowForge: o `ffkill` agora e um script versionado em bin/ffkill
 # (symlink em ~/.local/bin/ffkill, ja no PATH). Editar la, nao aqui.
 export NPM_GITHUB_TOKEN="$GITHUB_TOKEN"
+. "/home/cbbelmante/.deno/env"

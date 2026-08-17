@@ -125,13 +125,19 @@ HEADER
     }
     [[ -z "$line" ]] && continue
 
+    # Proteger \| escapados antes do split, restaurar depois
+    local safe_line="${line//\\|/__PIPE__}"
+
     # Parse: TIPO | MODS | TECLA | DESC | CMD_HYPR | CMD_COSMIC
     local tipo mods key desc cmd_hypr
-    tipo=$(echo "$line" | cut -d'|' -f1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-    mods=$(echo "$line" | cut -d'|' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-    key=$(echo "$line" | cut -d'|' -f3 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-    desc=$(echo "$line" | cut -d'|' -f4 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-    cmd_hypr=$(echo "$line" | cut -d'|' -f5 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    tipo=$(echo "$safe_line" | cut -d'|' -f1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    mods=$(echo "$safe_line" | cut -d'|' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    key=$(echo "$safe_line" | cut -d'|' -f3 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    desc=$(echo "$safe_line" | cut -d'|' -f4 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    cmd_hypr=$(echo "$safe_line" | cut -d'|' -f5 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+
+    # Restaurar pipes escapados
+    cmd_hypr="${cmd_hypr//__PIPE__/|}"
 
     # Pular se nao e pra Hyprland
     [[ "$tipo" != "BOTH" && "$tipo" != "HYPR" ]] && continue
@@ -176,12 +182,16 @@ HEADER
     [[ "$line" =~ ^[[:space:]]*# ]] && continue
     [[ -z "$line" ]] && continue
 
+    # Proteger \| escapados antes do split
+    local safe_line="${line//\\|/__PIPE__}"
+
     local tipo mods key desc cmd_cosmic
-    tipo=$(echo "$line" | cut -d'|' -f1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-    mods=$(echo "$line" | cut -d'|' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-    key=$(echo "$line" | cut -d'|' -f3 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-    desc=$(echo "$line" | cut -d'|' -f4 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-    cmd_cosmic=$(echo "$line" | cut -d'|' -f6 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    tipo=$(echo "$safe_line" | cut -d'|' -f1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    mods=$(echo "$safe_line" | cut -d'|' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    key=$(echo "$safe_line" | cut -d'|' -f3 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    desc=$(echo "$safe_line" | cut -d'|' -f4 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    cmd_cosmic=$(echo "$safe_line" | cut -d'|' -f6 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    cmd_cosmic="${cmd_cosmic//__PIPE__/|}"
 
     # Pular se nao e pra COSMIC
     [[ "$tipo" != "BOTH" && "$tipo" != "COSM" ]] && continue

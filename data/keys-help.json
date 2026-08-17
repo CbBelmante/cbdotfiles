@@ -1,0 +1,295 @@
+{
+  "title": "Keybinds - Atalhos do Desktop",
+  "version": "1.0",
+  "source": "keyshelp",
+  "items": [
+    {
+      "name": "Super+Enter",
+      "command": "Super+Enter",
+      "description": "Abrir terminal",
+      "category": "Apps",
+      "tags": ["terminal", "kitty", "abrir", "frequente"],
+      "details": "Abre o terminal padrao (Kitty).\n\nNo Omarchy 4 usa: omarchy-launch-terminal\nNo COSMIC usa: Spawn(terminal)\n\nVariacoes:\n  Super+Alt+Enter   - Terminal com tmux (Omarchy 4)\n  Super+Ctrl+Enter  - Terminal com Herdr (Omarchy 4)",
+      "related": ["Super+Shift+N", "Super+Ctrl+T"]
+    },
+    {
+      "name": "Super+Shift+B",
+      "command": "Super+Shift+B",
+      "description": "Abrir browser padrao",
+      "category": "Apps",
+      "tags": ["browser", "vivaldi", "chrome", "abrir", "frequente"],
+      "details": "Abre o browser padrao do sistema (via open-browser.sh).\n\nBrowser padrao: Vivaldi (configuravel em defaults.ts)\n\nVariacoes:\n  Super+Shift+Alt+B  - Browser modo privado\n\nAntes (Omarchy 3): era Super+B\nAgora (Omarchy 4): Super+Shift+B\n\n💡 O padrao Omarchy 4: Super+Shift = lancar apps",
+      "related": ["Super+Shift+Alt+B", "Super+Shift+N"]
+    },
+    {
+      "name": "Super+Shift+Alt+B",
+      "command": "Super+Shift+Alt+B",
+      "description": "Browser modo privado",
+      "category": "Apps",
+      "tags": ["browser", "privado", "incognito"],
+      "details": "Abre o browser em modo privado.\n\nDetecta automaticamente a flag correta:\n  Vivaldi:  --incognito\n  Firefox:  --private-window\n  Chrome:   --incognito\n\nAntes (Omarchy 3): era Super+Shift+B",
+      "related": ["Super+Shift+B"]
+    },
+    {
+      "name": "Super+Shift+F",
+      "command": "Super+Shift+F",
+      "description": "Abrir gerenciador de arquivos",
+      "category": "Apps",
+      "tags": ["files", "nautilus", "gerenciador", "arquivos", "abrir"],
+      "details": "Abre o gerenciador de arquivos.\n\nHyprland: Nautilus\nCOSMIC: cosmic-files\n\nAntes (Omarchy 3): era Super+F\nAgora: Super+F = fullscreen (padrao Omarchy 4)",
+      "related": ["Super+F", "Super+Shift+B"]
+    },
+    {
+      "name": "Super+Shift+N",
+      "command": "Super+Shift+N",
+      "description": "Abrir editor (Neovim)",
+      "category": "Apps",
+      "tags": ["editor", "neovim", "nvim", "abrir", "frequente"],
+      "details": "Abre o editor padrao.\n\nHyprland/Omarchy: omarchy-launch-editor\nCOSMIC: cosmic-edit\n\nAntes (Omarchy 3): era Super+N\nAgora: Super+Shift+N (padrao Omarchy 4)",
+      "related": ["Super+Enter", "Super+Shift+B"]
+    },
+    {
+      "name": "Super+Shift+/",
+      "command": "Super+Shift+/",
+      "description": "1Password (gerenciador de senhas)",
+      "category": "Apps",
+      "tags": ["password", "1password", "senhas", "seguranca"],
+      "details": "Abre o 1Password.\n\nAntes (Omarchy 3): era Super+/\nAgora: Super+Shift+/ (padrao Omarchy 4)",
+      "related": ["Super+Shift+B"]
+    },
+    {
+      "name": "Super+Shift+O",
+      "command": "Super+Shift+O",
+      "description": "Abrir Obsidian",
+      "category": "Apps",
+      "tags": ["obsidian", "notas", "markdown", "abrir"],
+      "details": "Abre o Obsidian (app de notas).\n\nNo Hyprland usa launch-or-focus (se ja aberto, foca).\n\n💡 Mesmo atalho no Omarchy 3 e 4!",
+      "related": ["Super+Shift+N", "Super+Shift+G"]
+    },
+    {
+      "name": "Super+Shift+G",
+      "command": "Super+Shift+G",
+      "description": "Abrir GitKraken",
+      "category": "Apps",
+      "tags": ["gitkraken", "git", "gui", "abrir"],
+      "details": "Abre o GitKraken (Git GUI).\n\nNo Omarchy 4, Super+Shift+G padrao e Signal.\nNos cbdotfiles mantemos como GitKraken.\n\n💡 Customize no keybinds.conf se preferir Signal.",
+      "related": ["Super+Shift+O", "Super+Shift+M"]
+    },
+    {
+      "name": "Super+Shift+M",
+      "command": "Super+Shift+M",
+      "description": "Abrir Spotify (musica)",
+      "category": "Apps",
+      "tags": ["spotify", "musica", "music", "abrir", "frequente"],
+      "details": "Abre o Spotify.\n\nNo Hyprland usa launch-or-focus.\n\n💡 Mesmo atalho no Omarchy 3 e 4!",
+      "related": ["Super+Shift+O", "Super+Shift+G"]
+    },
+    {
+      "name": "Super+Shift+D",
+      "command": "Super+Shift+D",
+      "description": "LazyDocker (Docker TUI)",
+      "category": "Apps",
+      "tags": ["docker", "lazydocker", "container", "tui", "novo"],
+      "details": "Abre o LazyDocker no terminal.\n\nNovo atalho! Alinhado com Omarchy 4.\n\n💡 Precisa ter lazydocker instalado.",
+      "related": ["Super+Ctrl+T", "Super+Enter"]
+    },
+    {
+      "name": "Super+Shift+Ctrl+A",
+      "command": "Super+Shift+Ctrl+A",
+      "description": "Coding agent (Claude Code)",
+      "category": "Apps",
+      "tags": ["claude", "agent", "ia", "codigo", "novo", "frequente"],
+      "details": "Abre o coding agent configurado.\n\nNo Omarchy 4: omarchy-agent --pick\n  - Escolhe entre: Claude Code, Codex, Grok, etc.\n  - Alias no terminal: a\n\nNovo atalho do Omarchy 4!\n\n💡 Tambem disponivel como alias 'a' no terminal.",
+      "related": ["Super+Shift+C", "Super+Enter"]
+    },
+    {
+      "name": "Super+W",
+      "command": "Super+W",
+      "description": "Fechar janela ativa",
+      "category": "Window Management",
+      "tags": ["fechar", "janela", "close", "frequente"],
+      "details": "Fecha a janela ativa (killactive).\n\nAntes (Omarchy 3): Super+Q e Super+W (ambos)\nAgora (Omarchy 4): apenas Super+W\n\n💡 Ctrl+Alt+Delete fecha TODAS as janelas (Omarchy 4).",
+      "related": ["Super+F", "Super+Escape"]
+    },
+    {
+      "name": "Super+F",
+      "command": "Super+F",
+      "description": "Fullscreen (tela cheia)",
+      "category": "Window Management",
+      "tags": ["fullscreen", "tela cheia", "maximizar", "frequente"],
+      "details": "Coloca a janela ativa em tela cheia.\n\nAntes (Omarchy 3): era File manager\nAgora (Omarchy 4): Fullscreen\n\nFile manager mudou pra: Super+Shift+F",
+      "related": ["Super+W", "Super+Shift+F"]
+    },
+    {
+      "name": "Super+Escape",
+      "command": "Super+Escape",
+      "description": "System menu (power/lock/suspend)",
+      "category": "Window Management",
+      "tags": ["power", "desligar", "suspender", "lock", "sistema"],
+      "details": "Abre o menu do sistema.\n\nNo Omarchy 4: omarchy-menu toggle system\nNo COSMIC: power-menu.sh customizado\n\nOpcoes:\n  - Lock (bloquear tela)\n  - Suspend (suspender)\n  - Reboot (reiniciar)\n  - Shutdown (desligar)",
+      "related": ["Super+W", "Super+K"]
+    },
+    {
+      "name": "Super+Space",
+      "command": "Super+Space",
+      "description": "App launcher (abrir programas)",
+      "category": "Window Management",
+      "tags": ["launcher", "busca", "apps", "abrir", "frequente"],
+      "details": "Abre o launcher de aplicativos.\n\nOmarchy 4: omarchy-menu toggle (menu nativo Quickshell)\nOmarchy 3: wofi --show drun\nCOSMIC: launcher nativo\n\nBusca fuzzy por nome do app.\n\n💡 Super+Alt+Space = apps-only (Omarchy 4)",
+      "related": ["Super+K", "Super+Escape"]
+    },
+    {
+      "name": "Super+Ctrl+T",
+      "command": "Super+Ctrl+T",
+      "description": "Activity monitor (btop)",
+      "category": "Sistema",
+      "tags": ["btop", "monitor", "cpu", "memoria", "processo", "frequente"],
+      "details": "Abre o btop (monitor de sistema) no terminal.\n\nAntes (Omarchy 3): era Super+Shift+T\nAgora (Omarchy 4): Super+Ctrl+T\n\nPadrao Omarchy 4: Super+Ctrl = paineis/utilitarios.",
+      "related": ["Super+Enter", "Super+Shift+D"]
+    },
+    {
+      "name": "Super+Ctrl+V",
+      "command": "Super+Ctrl+V",
+      "description": "Clipboard history (historico)",
+      "category": "Sistema",
+      "tags": ["clipboard", "copiar", "colar", "historico", "frequente"],
+      "details": "Abre o historico do clipboard.\n\nOmarchy 4: painel nativo Quickshell\nOmarchy 3: cliphist + wofi\n\n💡 Super+C/X/V continuam sendo Copy/Cut/Paste",
+      "related": ["Super+C", "Super+V", "Super+Ctrl+E"]
+    },
+    {
+      "name": "Super+C",
+      "command": "Super+C",
+      "description": "Copiar (universal copy)",
+      "category": "Sistema",
+      "tags": ["copiar", "copy", "clipboard", "frequente"],
+      "details": "Copia o conteudo selecionado.\n\nNo Omarchy 4 funciona como 'universal copy':\n  - Em apps normais: envia Ctrl+C\n  - Em terminais: envia Ctrl+Insert\n\nVariacoes:\n  Super+X  - Recortar (cut)\n  Super+V  - Colar (paste)",
+      "related": ["Super+X", "Super+V", "Super+Ctrl+V"]
+    },
+    {
+      "name": "Super+K",
+      "command": "Super+K",
+      "description": "Mostrar todos os atalhos",
+      "category": "Ajuda",
+      "tags": ["help", "atalhos", "keybinds", "referencia", "frequente"],
+      "details": "Mostra referencia completa de atalhos.\n\nAbre o show-keybinds.sh no terminal.\n\nNo Omarchy 4 tambem tem:\n  Super+Alt+K    - Atalhos do tmux\n  Super+Ctrl+K   - Atalhos do Herdr\n\n💡 Use cbkeysHelp no terminal pra buscar atalhos!",
+      "related": ["Super+Space", "Super+Escape"]
+    },
+    {
+      "name": "Print",
+      "command": "Print",
+      "description": "Screenshot (captura de tela)",
+      "category": "Midia",
+      "tags": ["screenshot", "captura", "tela", "print", "frequente"],
+      "details": "Captura de tela interativa.\n\nOmarchy 4: omarchy-capture-screenshot\nOmarchy 3: omarchy-cmd-screenshot\nCOSMIC: cosmic-screenshot\n\nAntes: era Super+Shift+S\nAgora: apenas Print (mais simples)\n\nVariacoes:\n  Alt+Print    - Screen recording (gravacao)\n  Super+Print  - Color picker",
+      "related": ["Alt+Print", "Super+Print"]
+    },
+    {
+      "name": "Alt+Print",
+      "command": "Alt+Print",
+      "description": "Screen recording (gravacao de tela)",
+      "category": "Midia",
+      "tags": ["gravacao", "recording", "video", "tela"],
+      "details": "Inicia/para gravacao de tela.\n\nOmarchy 4: omarchy-capture-screenrecording\nPressione de novo pra parar.\n\n💡 Resultado salvo automaticamente.",
+      "related": ["Print", "Super+Print"]
+    },
+    {
+      "name": "Super+Print",
+      "command": "Super+Print",
+      "description": "Color picker (capturar cor)",
+      "category": "Midia",
+      "tags": ["cor", "color", "picker", "design"],
+      "details": "Abre o seletor de cores.\n\nClique em qualquer pixel da tela pra copiar a cor pro clipboard.\n\nUsa hyprpicker.\n\n💡 Util pra design e CSS!",
+      "related": ["Print", "Super+Ctrl+V"]
+    },
+    {
+      "name": "Super+Shift+E",
+      "command": "Super+Shift+E",
+      "description": "Email (Hey webapp)",
+      "category": "Webapps",
+      "tags": ["email", "hey", "webapp"],
+      "details": "Abre o Hey (email) como webapp no browser.\n\nURL: https://app.hey.com\n\n💡 Usa o webappbrowser configurado (Chromium por padrao).",
+      "related": ["Super+Shift+C", "Super+Shift+Y"]
+    },
+    {
+      "name": "Super+Shift+C",
+      "command": "Super+Shift+C",
+      "description": "Claude AI (webapp)",
+      "category": "Webapps",
+      "tags": ["claude", "ia", "webapp", "chat"],
+      "details": "Abre o Claude AI como webapp no browser.\n\nURL: https://claude.ai\n\nPara coding agent (CLI), use:\n  Super+Shift+Ctrl+A  - omarchy-agent\n  'a' no terminal      - alias direto",
+      "related": ["Super+Shift+Ctrl+A", "Super+Shift+E"]
+    },
+    {
+      "name": "Super+Shift+Y",
+      "command": "Super+Shift+Y",
+      "description": "YouTube (webapp)",
+      "category": "Webapps",
+      "tags": ["youtube", "video", "webapp"],
+      "details": "Abre o YouTube como webapp no browser.\n\nURL: https://youtube.com",
+      "related": ["Super+Shift+E", "Super+Shift+C"]
+    },
+    {
+      "name": "Super+Shift+Alt+G",
+      "command": "Super+Shift+Alt+G",
+      "description": "WhatsApp (webapp)",
+      "category": "Webapps",
+      "tags": ["whatsapp", "mensagem", "webapp"],
+      "details": "Abre o WhatsApp Web como webapp.\n\nURL: https://web.whatsapp.com",
+      "related": ["Super+Shift+E", "Super+Shift+C"]
+    },
+    {
+      "name": "Super+Ctrl+E",
+      "command": "Super+Ctrl+E",
+      "description": "Emoji picker (Omarchy 4)",
+      "category": "Omarchy 4",
+      "tags": ["emoji", "picker", "novo"],
+      "details": "Abre o seletor de emojis (Omarchy 4).\n\nPainel nativo do Quickshell.\n\n💡 Novo no Omarchy 4! Nao disponivel fora do Omarchy.",
+      "related": ["Super+Ctrl+V", "Super+Space"]
+    },
+    {
+      "name": "Super+Ctrl+A",
+      "command": "Super+Ctrl+A",
+      "description": "Painel de audio (Omarchy 4)",
+      "category": "Omarchy 4",
+      "tags": ["audio", "volume", "som", "painel", "novo"],
+      "details": "Abre o painel de audio do Quickshell.\n\nControla:\n  - Volume de saida\n  - Dispositivo de saida\n  - Microfone\n\n💡 Novo no Omarchy 4!",
+      "related": ["Super+Ctrl+B", "Super+Ctrl+W"]
+    },
+    {
+      "name": "Super+Ctrl+B",
+      "command": "Super+Ctrl+B",
+      "description": "Painel Bluetooth (Omarchy 4)",
+      "category": "Omarchy 4",
+      "tags": ["bluetooth", "painel", "conectar", "novo"],
+      "details": "Abre o painel Bluetooth do Quickshell.\n\nControla:\n  - Pareamento de dispositivos\n  - Conexao/desconexao\n\n💡 Novo no Omarchy 4!",
+      "related": ["Super+Ctrl+A", "Super+Ctrl+W"]
+    },
+    {
+      "name": "Super+Ctrl+W",
+      "command": "Super+Ctrl+W",
+      "description": "Painel de rede/Wi-Fi (Omarchy 4)",
+      "category": "Omarchy 4",
+      "tags": ["rede", "wifi", "network", "painel", "novo"],
+      "details": "Abre o painel de rede do Quickshell.\n\nInclui:\n  - Wi-Fi (com QR code!)\n  - Speed test\n  - DNS info\n  - 802.1X enterprise\n\n💡 Novo no Omarchy 4! Usa NetworkManager.",
+      "related": ["Super+Ctrl+A", "Super+Ctrl+B"]
+    },
+    {
+      "name": "Super+Ctrl+D",
+      "command": "Super+Ctrl+D",
+      "description": "Painel de display (Omarchy 4)",
+      "category": "Omarchy 4",
+      "tags": ["display", "monitor", "tela", "escala", "novo"],
+      "details": "Abre o painel de display do Quickshell.\n\nControla:\n  - Escala de texto (9-20px)\n  - Unificado: shell + GTK + terminais\n\n💡 Novo no Omarchy 4!",
+      "related": ["Super+Ctrl+A", "Super+Ctrl+P"]
+    },
+    {
+      "name": "Super+Ctrl+L",
+      "command": "Super+Ctrl+L",
+      "description": "Lock screen (bloquear tela, Omarchy 4)",
+      "category": "Omarchy 4",
+      "tags": ["lock", "bloquear", "tela", "seguranca", "novo"],
+      "details": "Bloqueia a tela imediatamente.\n\nOmarchy 4: omarchy-system-lock\n\n💡 Novo no Omarchy 4!",
+      "related": ["Super+Escape", "Super+Ctrl+I"]
+    }
+  ]
+}

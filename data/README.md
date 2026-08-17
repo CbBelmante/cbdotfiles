@@ -6,9 +6,10 @@ Busca fuzzy (fzf) em comandos e dicas, data-driven com JSON.
 
 ```bash
 # Helps específicos
-nvimHelp    # 48 comandos Neovim
-sqlpHelp    # 19 comandos SQL + dadbod  
-cbHelp      # 15 aliases + ferramentas
+nvimHelp      # 48 comandos Neovim
+sqlpHelp      # 19 comandos SQL + dadbod  
+cbHelp        # 15 aliases + ferramentas
+cbkeysHelp    # 32 atalhos do desktop (Omarchy 4)
 
 # Genérico
 cbSearch nvim-tips
@@ -44,7 +45,8 @@ cbSearch ~/.config/meu-arquivo.json
 | `nvim-tips.json` | 56 | **Dúvidas Frequentes**, Dicas/Workflow, Text Objects, Navegação, Edição, Visual Mode, Busca, Comandos, SQL/Dadbod |
 | `sql-help.json` | 49 | **Dúvidas Frequentes**, Dadbod, SQL Básico, Funções, DDL, Constraints, SQLite, Connection, Ferramentas |
 | `cb-help.json` | 15 | Help, Navegação, Zellij, Git, Ferramentas, cbdotfiles |
-| **TOTAL** | **120** | **25** |
+| `keys-help.json` | 32 | Apps, Window Management, Sistema, Midia, Webapps, Ajuda, Omarchy 4 |
+| **TOTAL** | **152** | **32** |
 
 ### ✨ Novidade: Categoria "Dúvidas Frequentes"
 Respostas práticas para as dúvidas mais comuns de SQL e Neovim!
@@ -162,7 +164,8 @@ data/
 ├── README.md           ← Este arquivo
 ├── nvim-tips.json      ← Comandos Neovim (48)
 ├── sql-help.json       ← SQL + dadbod (19)
-└── cb-help.json        ← cbdotfiles (15)
+├── cb-help.json        ← cbdotfiles (15)
+└── keys-help.json      ← Atalhos desktop (32)
 ```
 
 ## 🛠️ Ferramenta
@@ -180,6 +183,7 @@ alias cbSearch='~/Workspaces/cbdotfiles/bin/cbSearch'
 alias nvimHelp='cbSearch nvim-tips'
 alias sqlpHelp='cbSearch sql-help'
 alias cbHelp='cbSearch cb-help'
+alias cbkeysHelp='cbSearch keys-help'
 ```
 
 ## 📖 Mais info
