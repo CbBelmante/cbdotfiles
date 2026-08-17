@@ -114,18 +114,19 @@ Faz automaticamente: `git pull` → `install.sh --update` → `source ~/.zshrc`
 
 | Comando | Alias curto | Descricao |
 |---------|-------------|-----------|
-| `cbdotInstall` | `cbinstall` | Abre o menu de instalacao |
-| `cbdotUpdate` | `cbupdate` | Atualiza (git pull + reinstala modulos salvos) |
-| `cbdotReinstall` | `cbreinstall` | Reinstala do zero (limpa selecao) |
-| `cbdotResymlink` | `cbresymlink` | Refaz todos os symlinks |
-| `cbbrowser` | | Trocar browser padrao |
+| `cbdotInstall` | `cbInstall` | Abre o menu de instalacao |
+| `cbdotUpdate` | `cbUpdate` | Atualiza (git pull + reinstala modulos salvos) |
+| `cbdotReinstall` | `cbReinstall` | Reinstala do zero (limpa selecao) |
+| `cbdotResymlink` | `cbResymlink` | Refaz todos os symlinks |
+| `cbBrowser` | | Trocar browser padrao |
 | `aliases` | | Editar config local do shell (aliases, exports, variaveis) |
-| `cbzshrc` | | Editar .zshrc do repositorio (global) |
-| `cbkitty` | | Editar override local do Kitty |
-| `cblocal` | | Editar variaveis locais (suspend, browser flags) |
-| `pcinfo` | | Info completa do PC (hw, gpu, drivers, rede, software) |
-| `pcinfo gpu` | | Diagnostico GPU (driver, vulkan, VA-API, kernel params) |
-| `cbhelp` | | Referencia completa de comandos e atalhos |
+| `cbZshrc` | | Editar .zshrc do repositorio (global) |
+| `cbKitty` | | Editar override local do Kitty |
+| `cbLocal` | | Editar variaveis locais (suspend, browser flags) |
+| `pcInfo` | | Info completa do PC (hw, gpu, drivers, rede, software) |
+| `pcInfo gpu` | | Diagnostico GPU (driver, vulkan, VA-API, kernel params) |
+| `cbHelp` | | Referencia completa de comandos e atalhos |
+| `cbKeysHelp` | | Busca interativa de atalhos do desktop |
 
 > Todos os comandos `cb*` funcionam em camelCase e lowercase (ex: `cbdotUpdate` = `cbdotupdate` = `cbupdate`)
 
@@ -284,9 +285,9 @@ Ctrl+R                # historico de comandos com busca fuzzy
 | `rg` | Busca rapida em conteudo de arquivos (ripgrep) |
 | `bat` | Cat com syntax highlight |
 | `open` | Abre arquivo/diretorio com app padrao (xdg-open) |
-| `d` | Docker |
-| `sqlp` / `sqlpractice` | Menu interativo para criar/abrir bancos SQLite de pratica |
-| `nvimHelp` / `sqlpHelp` / `cbHelp` / `cbkeysHelp` | Busca interativa fuzzy de comandos e dicas |
+| `d` / `dc` | Docker / Docker Compose |
+| `sqlp` / `sqlPractice` | Menu interativo para criar/abrir bancos SQLite de pratica |
+| `nvimHelp` / `sqlpHelp` / `cbHelp` / `cbKeysHelp` | Busca interativa fuzzy de comandos e dicas |
 
 ## 🔍 cbSearch - Sistema de Help Interativo
 
@@ -296,7 +297,7 @@ Busca fuzzy (fzf) em comandos e dicas. **152 comandos buscáveis** em 4 helps es
 nvimHelp      # 48 comandos Neovim essenciais
 sqlpHelp      # 19 comandos SQL + dadbod
 cbHelp        # 15 aliases + ferramentas cbdotfiles
-cbkeysHelp    # 32 atalhos do desktop (alinhado com Omarchy 4)
+cbKeysHelp    # 32 atalhos do desktop (alinhado com Omarchy 4)
 ```
 
 **Features:**
@@ -661,7 +662,7 @@ O modulo `drivers` detecta o hardware e instala/configura automaticamente:
 ### Diagnostico GPU
 
 ```bash
-pcinfo gpu    # mostra driver ativo, vulkan, VA-API, kernel params, recomendacoes
+pcInfo gpu    # mostra driver ativo, vulkan, VA-API, kernel params, recomendacoes
 ```
 
 Para GPUs AMD antigas (SI/CIK), o installer configura automaticamente:

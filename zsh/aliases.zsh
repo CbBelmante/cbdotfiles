@@ -107,9 +107,11 @@ n() { if [ "$#" -eq 0 ]; then nvim; else nvim "$@"; fi; }
 alias d='docker'
 alias dc='docker compose'
 alias p10kconfig='p10k configure'
-alias pcinfo='bash ~/Workspaces/cbdotfiles/bin/pcinfo.sh'
-alias sqlpractice='bun ~/Workspaces/cbdotfiles/sql-practice/index.ts'
-alias sqlp='bun ~/Workspaces/cbdotfiles/sql-practice/index.ts'
+alias pcInfo='bash ~/Workspaces/cbdotfiles/bin/pcinfo.sh'
+alias pcinfo='pcInfo'
+alias sqlPractice='bun ~/Workspaces/cbdotfiles/sql-practice/index.ts'
+alias sqlpractice='sqlPractice'
+alias sqlp='sqlPractice'
 
 open() {
     xdg-open "$@" >/dev/null 2>&1 &
@@ -124,8 +126,10 @@ alias cbSearch='~/Workspaces/cbdotfiles/bin/cbSearch'
 alias nvimHelp='cbSearch nvim-tips'
 alias cbHelp='cbSearch cb-help'
 alias sqlpHelp='cbSearch sql-help'
-alias cbkeysHelp='cbSearch keys-help'
-alias cbbrowser='~/Workspaces/cbdotfiles/install.sh --chbrowser'
+alias cbKeysHelp='cbSearch keys-help'
+alias cbkeyshelp='cbSearch keys-help'
+cbBrowser() { ~/Workspaces/cbdotfiles/install.sh --chbrowser; }
+alias cbbrowser='cbBrowser'
 _cb_edit_local() {
     local f=~/Workspaces/cbdotfiles/local/$1
     local header="$2"
@@ -140,10 +144,13 @@ _cb_ensure_symlink() {
         ln -sf "$src" "$dst"
     fi
 }
-aliases() { _cb_edit_local "zsh/local.zsh" "# Config local do shell (nao vai pro git)\n# Aliases, exports, variaveis pessoais\n# Para trocar o editor: export EDITOR=nano\n"; _cb_ensure_symlink ~/Workspaces/cbdotfiles/local/zsh/local.zsh ~/.config/cb/local.zsh; source ~/.zshrc; }
-cbzshrc()  { ${EDITOR:-nvim} ~/Workspaces/cbdotfiles/zsh/.zshrc; }
-cbkitty()  { _cb_edit_local "kitty/kitty.conf" "# Override local do Kitty (fonte, tamanho, etc)"; _cb_ensure_symlink ~/Workspaces/cbdotfiles/local/kitty/kitty.conf ~/.config/kitty/local.conf; }
-cblocal()  { _cb_edit_local "local.sh" "# Variaveis locais (CB_SUSPEND, CB_BROWSER_FLAGS, etc)"; }
+aliases()  { _cb_edit_local "zsh/local.zsh" "# Config local do shell (nao vai pro git)\n# Aliases, exports, variaveis pessoais\n# Para trocar o editor: export EDITOR=nano\n"; _cb_ensure_symlink ~/Workspaces/cbdotfiles/local/zsh/local.zsh ~/.config/cb/local.zsh; source ~/.zshrc; }
+cbZshrc()  { ${EDITOR:-nvim} ~/Workspaces/cbdotfiles/zsh/.zshrc; }
+cbKitty()  { _cb_edit_local "kitty/kitty.conf" "# Override local do Kitty (fonte, tamanho, etc)"; _cb_ensure_symlink ~/Workspaces/cbdotfiles/local/kitty/kitty.conf ~/.config/kitty/local.conf; }
+cbLocal()  { _cb_edit_local "local.sh" "# Variaveis locais (CB_SUSPEND, CB_BROWSER_FLAGS, etc)"; }
+alias cbzshrc='cbZshrc'
+alias cbkitty='cbKitty'
+alias cblocal='cbLocal'
 
 # ───────────────────────────────────────────────────────────────────────────────
 # Editor wrappers — intercepta atalhos conhecidos (aliases, .zshrc, kitty, etc)
@@ -151,8 +158,8 @@ cblocal()  { _cb_edit_local "local.sh" "# Variaveis locais (CB_SUSPEND, CB_BROWS
 _cb_editor_intercept() {
     case "$1" in
         aliases|alias|.zshrc|zshrc) aliases; return 0 ;;
-        kitty|kitty.conf)           cbkitty; return 0 ;;
-        local.sh)                   cblocal; return 0 ;;
+        kitty|kitty.conf)           cbKitty; return 0 ;;
+        local.sh)                   cbLocal; return 0 ;;
     esac
     return 1
 }

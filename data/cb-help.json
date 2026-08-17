@@ -1,6 +1,6 @@
 {
   "title": "cbdotfiles - Aliases & Ferramentas",
-  "version": "1.0",
+  "version": "2.0",
   "source": "cbhelp",
   "items": [
     {
@@ -9,8 +9,8 @@
       "description": "Busca interativa de comandos Neovim",
       "category": "Help",
       "tags": ["help", "neovim", "busca", "comandos", "frequente"],
-      "details": "Busca fuzzy em ~48 comandos essenciais do Neovim.\n\nComo usar:\n  nvimHelp\n  → Busca: \"copiar\"\n  → Busca: \"frequente\"\n  → Busca: \"undo\"\n\nBusca em:\n  - Nome do comando\n  - Descrição\n  - Tags\n  - Categoria\n\n💡 Aperta Enter pra copiar o comando!",
-      "related": ["sqlpHelp", "cbHelp", "cbSearch"]
+      "details": "Busca fuzzy em ~56 comandos essenciais do Neovim.\n\nComo usar:\n  nvimHelp\n  → Busca: \"copiar\"\n  → Busca: \"frequente\"\n  → Busca: \"undo\"\n\nBusca em:\n  - Nome do comando\n  - Descrição\n  - Tags\n  - Categoria\n\n💡 Enter copia e mantém aberto!\n💡 Ctrl+Y copia e fecha!",
+      "related": ["sqlpHelp", "cbHelp", "cbKeysHelp", "cbSearch"]
     },
     {
       "name": "sqlpHelp",
@@ -18,17 +18,35 @@
       "description": "Busca interativa de comandos SQL",
       "category": "Help",
       "tags": ["help", "sql", "dadbod", "busca", "frequente"],
-      "details": "Busca fuzzy em comandos SQL + vim-dadbod.\n\nInclui:\n  - Comandos SQL básicos\n  - vim-dadbod atalhos\n  - Connection strings\n  - Troubleshooting\n\n💡 Busca: \"join\", \"conectar\", \"executar\"",
-      "related": ["nvimHelp", "sqlp", "cbSearch"]
+      "details": "Busca fuzzy em ~49 comandos SQL + vim-dadbod.\n\nInclui:\n  - Comandos SQL básicos\n  - vim-dadbod atalhos\n  - Connection strings\n  - Troubleshooting\n\n💡 Busca: \"join\", \"conectar\", \"executar\"",
+      "related": ["nvimHelp", "sqlPractice", "cbSearch"]
     },
     {
       "name": "cbHelp",
       "command": "cbHelp",
       "description": "Busca interativa de aliases cbdotfiles",
       "category": "Help",
-      "tags": ["help", "cbdotfiles", "aliases", "busca"],
-      "details": "Busca fuzzy em aliases e ferramentas do cbdotfiles.\n\nInclui:\n  - Aliases de navegação\n  - Zellij layouts\n  - Git atalhos\n  - Ferramentas instaladas\n\n💡 Sistema de help unificado!",
-      "related": ["nvimHelp", "sqlpHelp"]
+      "tags": ["help", "cbdotfiles", "aliases", "busca", "frequente"],
+      "details": "Busca fuzzy em aliases e ferramentas do cbdotfiles.\n\nInclui:\n  - Aliases de navegação\n  - Zellij/tmux layouts\n  - Git atalhos\n  - Ferramentas instaladas\n  - Comandos cb*\n\n💡 Sistema de help unificado!",
+      "related": ["nvimHelp", "sqlpHelp", "cbKeysHelp"]
+    },
+    {
+      "name": "cbKeysHelp",
+      "command": "cbKeysHelp",
+      "description": "Busca interativa de atalhos do desktop",
+      "category": "Help",
+      "tags": ["help", "keybinds", "atalhos", "desktop", "frequente"],
+      "details": "Busca fuzzy em 32 atalhos do desktop.\n\nInclui:\n  - Apps (Super+Shift)\n  - Window Management (Super)\n  - Painéis (Super+Ctrl)\n  - Screenshots e mídia\n  - Novidades Omarchy 4\n\nAlinhado com padrão Omarchy 4!\n\n💡 Cada atalho mostra o que mudou do Omarchy 3→4",
+      "related": ["nvimHelp", "sqlpHelp", "cbHelp"]
+    },
+    {
+      "name": "cbSearch",
+      "command": "cbSearch <json>",
+      "description": "Busca interativa genérica (data-driven)",
+      "category": "Help",
+      "tags": ["busca", "search", "fzf", "json"],
+      "details": "Ferramenta genérica de busca fuzzy.\n\nUso:\n  cbSearch nvim-tips\n  cbSearch sql-help\n  cbSearch cb-help\n  cbSearch keys-help\n  cbSearch ~/.config/meu-arquivo.json\n\n💡 Data-driven: qualquer JSON funciona!\n💡 Preparado pra migrar pro Charm/bubbletea",
+      "related": ["nvimHelp", "sqlpHelp", "cbHelp", "cbKeysHelp"]
     },
     {
       "name": "ws",
@@ -36,8 +54,8 @@
       "description": "Ir pro diretório Workspaces",
       "category": "Navegação",
       "tags": ["navegação", "workspace", "diretório", "frequente"],
-      "details": "Atalho pra cd ~/Workspaces\n\nUso:\n  ws  → cd ~/Workspaces\n\nVariações:\n  workspaces    - mesmo comando (nome completo)\n  cbdotfiles    - cd ~/Workspaces/cbdotfiles\n\n💡 Combine com zoxide (z) pra navegar rápido!",
-      "related": ["cbdotfiles", "cd", "z"]
+      "details": "Atalho pra cd ~/Workspaces\n\nVariações:\n  ws          - cd ~/Workspaces\n  workspaces  - mesmo (nome completo)\n  cbdotfiles  - cd ~/Workspaces/cbdotfiles\n\n💡 Combine com zoxide pra navegar rápido!",
+      "related": ["cbdotfiles", "ll"]
     },
     {
       "name": "ll",
@@ -45,16 +63,97 @@
       "description": "Listar arquivos (detalhado, com ícones)",
       "category": "Navegação",
       "tags": ["listar", "ls", "eza", "arquivos", "frequente"],
-      "details": "Lista arquivos com detalhes (usa eza com ícones).\n\nVariações:\n  ls     - lista simples\n  ll     - lista detalhada (-lah)\n  ls2    - tree level 2\n  ls3    - tree level 3\n  tree   - tree level 3\n\n💡 Usa eza (ls moderno) com ícones coloridos!",
-      "related": ["ls", "tree", "eza"]
+      "details": "Lista arquivos com detalhes (usa eza com ícones).\n\nVariações:\n  ls     - lista simples\n  ll     - lista detalhada (-lah)\n  ls2    - tree level 2\n  ls3    - tree level 3\n  tree   - tree level 3\n\n💡 Usa eza (ls moderno) com ícones coloridos!\n💡 Se eza não instalado, usa ls padrão",
+      "related": ["ls", "tree"]
+    },
+    {
+      "name": "ff",
+      "command": "ff",
+      "description": "Busca fuzzy de arquivos com preview",
+      "category": "Ferramentas",
+      "tags": ["busca", "fzf", "arquivos", "preview", "frequente"],
+      "details": "Busca fuzzy de arquivos com preview via bat.\n\nUso:\n  ff\n  → Digita parte do nome\n  → Preview com syntax highlight\n  → Enter seleciona\n\nOutros atalhos fzf:\n  Ctrl+R  - histórico de comandos fuzzy\n\n💡 Requer fzf + bat instalados",
+      "related": ["cbSearch", "n"]
+    },
+    {
+      "name": "n",
+      "command": "n [arquivo]",
+      "description": "Abrir Neovim",
+      "category": "Ferramentas",
+      "tags": ["neovim", "editor", "nvim", "frequente"],
+      "details": "Atalho pra nvim.\n\nUso:\n  n           - abre Neovim (diretório atual)\n  n file.js   - abre arquivo\n\n💡 LazyVim com tema Origamid!\n💡 Plugins: dadbod, harpoon, todo-comments, etc",
+      "related": ["nvimHelp", "cbZshrc"]
+    },
+    {
+      "name": "d",
+      "command": "d",
+      "description": "Docker (alias curto)",
+      "category": "Ferramentas",
+      "tags": ["docker", "container", "frequente"],
+      "details": "Alias curto pra docker.\n\nVariações:\n  d      - docker\n  dc     - docker compose\n\nExemplos:\n  d ps             - listar containers\n  d images         - listar imagens\n  dc up -d         - subir serviços\n  dc down          - derrubar serviços\n  dc logs -f       - seguir logs",
+      "related": ["dc"]
+    },
+    {
+      "name": "dc",
+      "command": "dc",
+      "description": "Docker Compose (alias curto)",
+      "category": "Ferramentas",
+      "tags": ["docker", "compose", "container"],
+      "details": "Alias curto pra docker compose.\n\nExemplos:\n  dc up -d     - subir em background\n  dc down      - derrubar\n  dc logs -f   - seguir logs\n  dc ps        - listar serviços\n  dc build     - rebuild imagens",
+      "related": ["d"]
+    },
+    {
+      "name": "open",
+      "command": "open <arquivo>",
+      "description": "Abrir arquivo com app padrão",
+      "category": "Ferramentas",
+      "tags": ["abrir", "xdg", "arquivo"],
+      "details": "Abre arquivo/diretório com o app padrão do sistema.\n\nUsa xdg-open por baixo.\n\nExemplos:\n  open .              - abre file manager\n  open imagem.png     - abre visualizador\n  open documento.pdf  - abre leitor PDF\n  open https://...    - abre no browser",
+      "related": ["n", "ff"]
+    },
+    {
+      "name": "pcInfo",
+      "command": "pcInfo",
+      "description": "Informações do sistema (hardware/software)",
+      "category": "Ferramentas",
+      "tags": ["info", "sistema", "hardware", "cpu", "gpu", "ram"],
+      "details": "Mostra informações completas do sistema.\n\nInclui:\n  - OS e distro\n  - Kernel\n  - CPU e cores\n  - RAM (total/usada)\n  - GPU e driver\n  - Disco\n  - Rede\n\nVariações:\n  pcInfo       - info completa\n  pcInfo gpu   - diagnóstico GPU\n\n💡 Também funciona: pcinfo (lowercase)",
+      "related": ["ff"]
+    },
+    {
+      "name": "sqlPractice",
+      "command": "sqlPractice",
+      "description": "SQL Practice - criar/gerenciar bancos SQLite",
+      "category": "Ferramentas",
+      "tags": ["sql", "sqlite", "practice", "frequente"],
+      "details": "Ferramenta interativa pra treinar SQL.\n\nFeatures:\n  - Nome automático brasileiro\n  - 3 presets (Completo/Estrutura/Vazio)\n  - Auto-copia connection string\n  - Abre Neovim com dadbod\n\nAliases: sqlPractice / sqlp\n\n💡 Connection string JÁ vem copiada!",
+      "related": ["sqlpHelp", "n"]
+    },
+    {
+      "name": "update",
+      "command": "update",
+      "description": "Atualizar pacotes do sistema",
+      "category": "Sistema",
+      "tags": ["pacotes", "atualizar", "pacman", "apt", "dnf"],
+      "details": "Atualiza pacotes do sistema.\n\nDetecta a distro automaticamente:\n  Arch:   sudo pacman -Syu\n  Debian: sudo apt update && sudo apt upgrade\n  Fedora: sudo dnf upgrade\n\nOutros aliases:\n  install  - instalar pacote\n  search   - buscar pacote",
+      "related": ["install", "search"]
+    },
+    {
+      "name": "gs",
+      "command": "gs",
+      "description": "Git status",
+      "category": "Git",
+      "tags": ["git", "status", "frequente"],
+      "details": "Atalho pra git status.\n\nOutros atalhos Git:\n  ga   - git add\n  gc   - git commit -m\n  gp   - git push\n  gl   - git log --oneline --graph\n\n💡 Use LazyGit pra interface completa!",
+      "related": ["ga", "gc", "gp", "gl"]
     },
     {
       "name": "zj",
       "command": "zj <layout> <dir>",
       "description": "Abrir sessão Zellij com layout",
       "category": "Zellij",
-      "tags": ["zellij", "layout", "sessão", "tmux", "frequente"],
-      "details": "Cria ou reconecta sessão Zellij com layout.\n\nLayouts disponíveis:\n  cbw1 - CbWorkTemplate1 (VSCode-like)\n  cbw2 - CbWorkTemplate2\n\nExemplos:\n  zj cbw1 mnesis_frontend\n  zj cbw1 ~/Workspaces/meu-projeto\n  zj cbw2 volan\n\n💡 Se sessão existe, reconecta!\n💡 Nome da sessão = nome do diretório\n\nOutros comandos:\n  zj-l     - listar sessões\n  zj-a     - attach última\n  zj-k     - kill sessão\n  zj-ka    - kill todas\n  zj-tab   - nova tab no Zellij atual",
+      "tags": ["zellij", "layout", "sessão", "frequente"],
+      "details": "Cria ou reconecta sessão Zellij com layout.\n\nLayouts:\n  cbw1 - CbWorkTemplate1 (6 terminais)\n  cbw2 - CbWorkTemplate2 (4 terminais)\n\nExemplos:\n  zj cbw1 meu-projeto\n  zj cbw1 ~/Workspaces/outro\n\n💡 Se sessão existe, reconecta!\n\nOutros:\n  zj-l   - listar sessões\n  zj-a   - attach última\n  zj-k   - kill sessão\n  zj-ka  - kill todas\n  zj-tab - nova tab",
       "related": ["zj-tab", "zj-l", "zj-ka"]
     },
     {
@@ -63,44 +162,17 @@
       "description": "Nova tab no Zellij atual",
       "category": "Zellij",
       "tags": ["zellij", "tab", "layout"],
-      "details": "Abre nova tab no Zellij com layout.\n\nUso (DENTRO do Zellij):\n  zj-tab cbw1 outro-projeto\n\n💡 Útil pra trabalhar em múltiplos projetos\n💡 Cada tab com seu layout!\n\nAtalhos Zellij:\n  Ctrl+t n - nova tab\n  Ctrl+t c - fechar tab\n  Ctrl+t → - próxima tab",
+      "details": "Abre nova tab no Zellij com layout.\n\nUso (DENTRO do Zellij):\n  zj-tab cbw1 outro-projeto\n\n💡 Cada tab com seu layout!",
       "related": ["zj", "zj-l"]
     },
     {
-      "name": "gs",
-      "command": "gs",
-      "description": "Git status",
-      "category": "Git",
-      "tags": ["git", "status", "frequente"],
-      "details": "Atalho pra git status.\n\nMostra:\n  - Arquivos modificados\n  - Arquivos staged\n  - Branch atual\n  - Commits à frente/atrás\n\nOutros atalhos Git:\n  ga   - git add\n  gc   - git commit -m\n  gp   - git push\n  gl   - git log --oneline --graph\n\n💡 Use LazyGit (lg) pra interface completa!",
-      "related": ["ga", "gc", "gp", "lg"]
-    },
-    {
-      "name": "n",
-      "command": "n [arquivo]",
-      "description": "Abrir Neovim",
-      "category": "Ferramentas",
-      "tags": ["neovim", "editor", "nvim", "frequente"],
-      "details": "Atalho pra nvim.\n\nUso:\n  n           - abre Neovim vazio\n  n file.js   - abre arquivo\n  n .         - abre diretório (file explorer)\n\n💡 LazyVim instalado com tema Origamid!\n💡 Plugins: dadbod, LazyGit, fzf, etc",
-      "related": ["nvimHelp", "Space+db"]
-    },
-    {
-      "name": "sqlp",
-      "command": "sqlp",
-      "description": "SQL Practice - criar/gerenciar bancos SQLite",
-      "category": "Ferramentas",
-      "tags": ["sql", "sqlite", "practice", "frequente"],
-      "details": "Ferramenta interativa pra treinar SQL.\n\nFeatures:\n  - Nome automático brasileiro\n  - 3 presets (Completo/Estrutura/Vazio)\n  - Auto-copia connection string\n  - Abre Neovim com dadbod\n  - Limpar bancos antigos\n\nWorkflow:\n  1. sqlp\n  2. Criar novo → Automático\n  3. Completo (4 tabelas + dados)\n  4. Neovim abre automaticamente\n  5. Shift+A → Ctrl+Shift+V → R\n\n💡 Connection string JÁ vem copiada!",
-      "related": ["sqlpHelp", "Space+db"]
-    },
-    {
-      "name": "cbSearch",
-      "command": "cbSearch <json>",
-      "description": "Busca interativa genérica (data-driven)",
-      "category": "Ferramentas",
-      "tags": ["busca", "search", "fzf", "json", "útil"],
-      "details": "Ferramenta genérica de busca fuzzy.\n\nUso:\n  cbSearch nvim-tips\n  cbSearch sql-help\n  cbSearch cb-help\n  cbSearch ~/.config/meu-arquivo.json\n\nBusca em:\n  - Nome\n  - Descrição\n  - Tags\n  - Categoria\n\n💡 Data-driven: qualquer JSON funciona!\n💡 Preparado pra migrar pro Charm/bubbletea",
-      "related": ["nvimHelp", "sqlpHelp", "cbHelp"]
+      "name": "t-new",
+      "command": "t-new <layout> <dir>",
+      "description": "Nova sessão tmux com layout",
+      "category": "tmux",
+      "tags": ["tmux", "layout", "sessão"],
+      "details": "Cria sessão tmux com layout.\n\nLayouts:\n  cbw1 - CbWorkTemplate1\n\nExemplos:\n  t-new cbw1 meu-projeto\n  t-new cbw1 ~/Workspaces/outro\n\nOutros:\n  ta   - tmux attach\n  tl   - tmux list-sessions\n  tk   - tmux kill-session -t",
+      "related": ["ta", "tl", "zj"]
     },
     {
       "name": "cbdotInstall",
@@ -108,35 +180,80 @@
       "description": "Instalar/reinstalar cbdotfiles",
       "category": "cbdotfiles",
       "tags": ["install", "setup", "cbdotfiles"],
-      "details": "Menu interativo de instalação.\n\nModos:\n  - Padrão (módulos recomendados)\n  - Custom (escolhe módulos)\n\nMódulos:\n  - Zsh + aliases\n  - Kitty config\n  - Neovim config\n  - Git config\n  - Zellij layouts\n\nAliases:\n  cbdotInstall / cbinstall\n  cbdotUpdate / cbupdate\n  cbdotReinstall / cbreinstall",
-      "related": ["cbdotUpdate", "cbdotReinstall"]
+      "details": "Menu interativo de instalação.\n\nModos:\n  - Padrão (módulos recomendados)\n  - Custom (escolhe módulos)\n\nAliases: cbdotInstall / cbInstall\n\n💡 Também funciona lowercase: cbdotinstall / cbinstall",
+      "related": ["cbdotUpdate", "cbdotReinstall", "cbdotResymlink"]
     },
     {
       "name": "cbdotUpdate",
       "command": "cbdotUpdate",
       "description": "Atualizar cbdotfiles do GitHub",
       "category": "cbdotfiles",
-      "tags": ["update", "atualizar", "git", "cbdotfiles"],
-      "details": "Atualiza cbdotfiles do repositório.\n\nO que faz:\n  1. git pull (puxa últimas mudanças)\n  2. Reinstala módulos salvos\n  3. source ~/.zshrc (recarrega)\n\nAliases:\n  cbdotUpdate / cbupdate\n\n💡 Mantém suas configurações locais!",
+      "tags": ["update", "atualizar", "git", "cbdotfiles", "frequente"],
+      "details": "Atualiza cbdotfiles do repositório.\n\nO que faz:\n  1. git pull (puxa mudanças)\n  2. Reinstala módulos salvos\n  3. source ~/.zshrc (recarrega)\n\nAliases: cbdotUpdate / cbUpdate\n\n💡 Também funciona lowercase: cbdotupdate / cbupdate",
       "related": ["cbdotInstall", "cbdotReinstall"]
+    },
+    {
+      "name": "cbdotReinstall",
+      "command": "cbdotReinstall",
+      "description": "Reinstalar cbdotfiles do zero",
+      "category": "cbdotfiles",
+      "tags": ["reinstall", "limpar", "cbdotfiles"],
+      "details": "Limpa seleção salva e reabre menu do zero.\n\nApaga local/.modules e abre o instalador.\n\nAliases: cbdotReinstall / cbReinstall\n\n💡 Também funciona lowercase",
+      "related": ["cbdotInstall", "cbdotUpdate"]
+    },
+    {
+      "name": "cbdotResymlink",
+      "command": "cbdotResymlink",
+      "description": "Refazer todos os symlinks",
+      "category": "cbdotfiles",
+      "tags": ["symlink", "refazer", "cbdotfiles"],
+      "details": "Refaz todos os symlinks sem reinstalar nada.\n\nÚtil quando:\n  - Mudou de desktop (Omarchy→COSMIC)\n  - Symlink quebrou\n  - Adicionou config local\n\nAliases: cbdotResymlink / cbResymlink\n\n💡 Também funciona lowercase",
+      "related": ["cbdotInstall", "cbdotUpdate"]
     },
     {
       "name": "aliases",
       "command": "aliases",
       "description": "Editar aliases locais (não vai pro git)",
       "category": "cbdotfiles",
-      "tags": ["aliases", "editar", "local", "config"],
-      "details": "Abre editor pra adicionar aliases pessoais.\n\nArquivo:\n  ~/Workspaces/cbdotfiles/local/zsh/local.zsh\n\n💡 NÃO vai pro git!\n💡 Pra configs pessoais/privadas\n💡 Recarrega .zshrc automaticamente\n\nOutros:\n  cbkitty  - config Kitty local\n  cblocal  - variáveis locais",
-      "related": ["cbkitty", "cblocal", "cbzshrc"]
+      "tags": ["aliases", "editar", "local", "config", "frequente"],
+      "details": "Abre editor pra adicionar aliases pessoais.\n\nArquivo:\n  local/zsh/local.zsh\n\n💡 NÃO vai pro git!\n💡 Recarrega .zshrc automaticamente\n\nOutros editores:\n  cbZshrc  - .zshrc global\n  cbKitty  - config Kitty local\n  cbLocal  - variáveis locais",
+      "related": ["cbZshrc", "cbKitty", "cbLocal"]
     },
     {
-      "name": "pcinfo",
-      "command": "pcinfo",
-      "description": "Informações do sistema (hardware/software)",
-      "category": "Ferramentas",
-      "tags": ["info", "sistema", "hardware", "cpu", "ram"],
-      "details": "Mostra informações completas do sistema.\n\nInclui:\n  - OS e distro\n  - Kernel\n  - CPU e cores\n  - RAM (total/usada)\n  - GPU\n  - Disco\n\n💡 Útil pra troubleshooting!",
-      "related": ["htop", "neofetch"]
+      "name": "cbZshrc",
+      "command": "cbZshrc",
+      "description": "Editar .zshrc do repositório (global)",
+      "category": "cbdotfiles",
+      "tags": ["zshrc", "editar", "config"],
+      "details": "Abre o .zshrc do repositório no editor.\n\nArquivo:\n  zsh/.zshrc\n\n💡 Este VAI pro git!\n💡 Para config local, use: aliases",
+      "related": ["aliases", "cbKitty", "cbLocal"]
+    },
+    {
+      "name": "cbKitty",
+      "command": "cbKitty",
+      "description": "Editar config local do Kitty",
+      "category": "cbdotfiles",
+      "tags": ["kitty", "terminal", "editar", "config"],
+      "details": "Abre override local do Kitty no editor.\n\nArquivo:\n  local/kitty/kitty.conf\n\nPra mudar fonte, tamanho, opacidade local.\n\n💡 NÃO vai pro git!",
+      "related": ["aliases", "cbZshrc", "cbLocal"]
+    },
+    {
+      "name": "cbLocal",
+      "command": "cbLocal",
+      "description": "Editar variáveis locais do instalador",
+      "category": "cbdotfiles",
+      "tags": ["local", "variáveis", "editar", "config"],
+      "details": "Abre variáveis locais do instalador.\n\nArquivo:\n  local/local.sh\n\nExemplos:\n  CB_SUSPEND=off       - desabilitar suspend\n  CB_BROWSER_FLAGS=... - flags do browser\n\n💡 NÃO vai pro git!",
+      "related": ["aliases", "cbZshrc", "cbKitty"]
+    },
+    {
+      "name": "cbBrowser",
+      "command": "cbBrowser",
+      "description": "Trocar browser padrão",
+      "category": "cbdotfiles",
+      "tags": ["browser", "trocar", "padrão", "config"],
+      "details": "Abre menu pra trocar o browser padrão.\n\nRoda: install.sh --chbrowser\n\nBrowsers disponíveis:\n  - Vivaldi\n  - Firefox\n  - Chrome\n  - Opera\n  - Chromium\n\n💡 Também funciona: cbbrowser (lowercase)",
+      "related": ["cbdotInstall", "cbLocal"]
     }
   ]
 }
