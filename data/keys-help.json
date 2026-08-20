@@ -175,31 +175,31 @@
       "related": ["Super+Space", "Super+Escape"]
     },
     {
-      "name": "Print",
-      "command": "Print",
+      "name": "Super+Shift+S",
+      "command": "Super+Shift+S",
       "description": "Screenshot (captura de tela)",
       "category": "Midia",
       "tags": ["screenshot", "captura", "tela", "print", "frequente"],
-      "details": "Captura de tela interativa.\n\nOmarchy 4: omarchy-capture-screenshot\nOmarchy 3: omarchy-cmd-screenshot\nCOSMIC: cosmic-screenshot\n\nAntes: era Super+Shift+S\nAgora: apenas Print (mais simples)\n\nVariacoes:\n  Alt+Print    - Screen recording (gravacao)\n  Super+Print  - Color picker",
-      "related": ["Alt+Print", "Super+Print"]
+      "details": "Captura de tela interativa.\n\nAtalhos:\n  Super+Shift+S  - screenshot (sem tecla Print)\n  Print          - screenshot (se tiver a tecla)\n\nOmarchy 4: omarchy-capture-screenshot\nCOSMIC: cosmic-screenshot",
+      "related": ["Super+Shift+Alt+S", "Super+Shift+Ctrl+S"]
     },
     {
-      "name": "Alt+Print",
-      "command": "Alt+Print",
+      "name": "Super+Shift+Alt+S",
+      "command": "Super+Shift+Alt+S",
       "description": "Screen recording (gravacao de tela)",
       "category": "Midia",
       "tags": ["gravacao", "recording", "video", "tela"],
-      "details": "Inicia/para gravacao de tela.\n\nOmarchy 4: omarchy-capture-screenrecording\nPressione de novo pra parar.\n\n💡 Resultado salvo automaticamente.",
-      "related": ["Print", "Super+Print"]
+      "details": "Inicia/para gravacao de tela.\n\nAtalhos:\n  Super+Shift+Alt+S  - sem tecla Print\n  Alt+Print          - se tiver a tecla\n\nPressione de novo pra parar.\n\n💡 Resultado salvo automaticamente.",
+      "related": ["Super+Shift+S", "Super+Shift+Ctrl+S"]
     },
     {
-      "name": "Super+Print",
-      "command": "Super+Print",
+      "name": "Super+Shift+Ctrl+S",
+      "command": "Super+Shift+Ctrl+S",
       "description": "Color picker (capturar cor)",
       "category": "Midia",
       "tags": ["cor", "color", "picker", "design"],
-      "details": "Abre o seletor de cores.\n\nClique em qualquer pixel da tela pra copiar a cor pro clipboard.\n\nUsa hyprpicker.\n\n💡 Util pra design e CSS!",
-      "related": ["Print", "Super+Ctrl+V"]
+      "details": "Abre o seletor de cores (hyprpicker).\n\nAtalhos:\n  Super+Shift+Ctrl+S  - sem tecla Print\n  Super+Print         - se tiver a tecla\n\nClique em qualquer pixel pra copiar a cor.\n\n💡 Util pra design e CSS!",
+      "related": ["Super+Shift+S", "Super+Shift+Alt+S"]
     },
     {
       "name": "Super+Shift+E",

@@ -529,9 +529,9 @@ Padrao alinhado com Omarchy 4: `Super+Letra` = acoes do WM, `Super+Shift+Letra` 
 | `Super+Ctrl+V` | Clipboard history |
 | `Super+C/X/V` | Copy / Cut / Paste |
 | **Midia** | |
-| `Print` | Screenshot (interativo) |
-| `Alt+Print` | Screen recording |
-| `Super+Print` | Color picker |
+| `Super+Shift+S` / `Print` | Screenshot (interativo) |
+| `Super+Shift+Alt+S` / `Alt+Print` | Screen recording |
+| `Super+Shift+Ctrl+S` / `Super+Print` | Color picker |
 
 ### Regenerar
 
