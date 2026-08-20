@@ -18,6 +18,12 @@ echo ""
 
 # Pre-requisito: git
 if ! command -v git &> /dev/null; then
+  if [[ "$(uname)" == "Darwin" ]]; then
+    echo -e "  ${CYAN}+${NC} Instalando Xcode Command Line Tools (inclui git)..."
+    xcode-select --install 2>/dev/null || true
+    echo -e "  ${RED}x${NC} Aceite a instalacao do Xcode CLT e rode este script de novo."
+    exit 1
+  fi
   echo -e "  ${RED}x${NC} git nao encontrado. Instale o git primeiro."
   exit 1
 fi

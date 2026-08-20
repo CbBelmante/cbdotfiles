@@ -10,6 +10,16 @@ BOLD='\033[1m'
 NC='\033[0m'
 
 # ---------------------------------------------------------------------------
+# macOS: garante que Homebrew esta instalado
+# ---------------------------------------------------------------------------
+if [[ "$(uname)" == "Darwin" ]] && ! command -v brew &> /dev/null; then
+  echo -e "  ${CYAN}+${NC} Instalando Homebrew..."
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+  echo -e "  ${GREEN}+${NC} Homebrew instalado: $(brew --version | head -1)"
+fi
+
+# ---------------------------------------------------------------------------
 # Garante que Bun esta instalado
 # ---------------------------------------------------------------------------
 export BUN_INSTALL="${BUN_INSTALL:-$HOME/.bun}"
