@@ -8,28 +8,29 @@
    ╚═════╝╚═════╝ ╚═════╝  ╚═════╝    ╚═╝   ╚═╝     ╚═╝╚══════╝╚══════╝╚══════╝
 </pre>
 
-⚙️ **DOTFILES PESSOAIS** | 🐧 Arch Linux & Ubuntu/Debian & Fedora
+⚙️ **DOTFILES PESSOAIS** | 🐧 Linux & 🍎 macOS
 🔗 Symlinks Automaticos | 📦 Instalacao Modular | 🔄 Sincronizacao entre Maquinas
 
 </div>
 
 ## 📖 Sobre
 
-Configuracoes pessoais de desenvolvimento. Clone o repositorio em qualquer maquina Linux, rode o instalador e tudo funciona — editor, terminal, shell, aliases e layouts.
+Configuracoes pessoais de desenvolvimento. Clone o repositorio em qualquer maquina, rode o instalador e tudo funciona — editor, terminal, shell, aliases e layouts.
 
-**Compativel com:** Arch Linux (pacman) | Ubuntu/Debian (apt) | Fedora (dnf)
+**Compativel com:** Arch Linux (pacman) | Ubuntu/Debian (apt) | Fedora (dnf) | macOS (brew)
 
 ## 🚀 Instalacao Rapida (Maquina Nova)
 
-### ⚡ One-liner (recomendado)
+### ⚡ One-liner (recomendado — Linux e macOS)
 
 ```bash
 curl -sL https://raw.githubusercontent.com/CbBelmante/cbdotfiles/master/bootstrap.sh | bash
 ```
 
 > Clona o repositorio em `~/Workspaces/cbdotfiles` e roda o instalador automaticamente.
+> No macOS, instala Xcode CLT (git) e Homebrew se necessario.
 
-### 📋 Passo a passo (manual)
+### 📋 Passo a passo — Linux
 
 ```bash
 # 1. Pre-requisito: git
@@ -44,7 +45,24 @@ cd ~/Workspaces/cbdotfiles
 source ~/.zshrc
 ```
 
-> O instalador cuida de tudo: instala Bun (se necessario), dependencias e abre o menu interativo.
+### 🍎 Passo a passo — macOS
+
+```bash
+# 1. Pre-requisito: Xcode Command Line Tools (inclui git)
+xcode-select --install
+
+# 2. Clone e instale
+git clone https://github.com/CbBelmante/cbdotfiles.git ~/Workspaces/cbdotfiles
+cd ~/Workspaces/cbdotfiles
+./install.sh    # instala Homebrew + Bun automaticamente
+
+# 3. Reinicie o terminal
+source ~/.zshrc
+```
+
+> No macOS, o instalador instala o que funciona (shell-tools, dev, fonts, fastfetch, btop) e pula modulos Linux-only (drivers, keybinds, gaming, etc.) com "skip".
+
+> O instalador cuida de tudo: instala Homebrew e Bun (se necessario), dependencias e abre o menu interativo.
 
 > 💡 Na proxima vez que precisar atualizar, basta rodar `cbdotUpdate`
 
@@ -82,21 +100,21 @@ Ao selecionar o modulo `browsers`, o instalador mostra checkbox dos navegadores 
 
 ### 🧩 Modulos Disponiveis
 
-| Modulo | Descricao | Instala software? |
-|--------|-----------|-------------------|
-| 🐚 `shell-tools` | Zsh + Oh My Zsh + NVM + Node LTS + Git + SSH key + Kitty + CLI tools | ✅ Zsh, NVM, Node, Kitty, CLI tools |
-| 🔤 `fonts` | Fontes Nerd Font | ✅ Fontes |
-| 🎮 `drivers` | Drivers GPU (AMD/Intel/NVIDIA) + diagnostico amdgpu/radeon + Bluetooth Mac | ✅ Mesa, VA-API, kernel params |
-| 🌐 `browsers` | Navegadores + flags Wayland (browsers + Electron apps) | ✅ Browsers + electron-flags |
-| 🖥️ `desktop-tools` | Ferramentas de desktop (wofi, clipboard, screenshots, notificacoes) | ✅ Apenas em tiling WMs |
-| 🛠️ `dev` | Neovim + Zellij + tmux + VS Code + GitKraken + GitHub CLI + LazyGit + Delta + LazyDocker + Docker + SQLite + Tauri Dev + Firebase + Supabase + Postman + Insomnia | ✅ Dev tools selecionados |
-| 🖥️ `fastfetch` | Config Fastfetch (system info) | ❌ Apenas symlink |
-| 📊 `btop` | Config Btop (monitor de sistema) | ❌ Apenas symlink |
-| 📦 `apps` | LibreOffice + Sublime + VLC + Obsidian + Kdenlive + PeaZip + qBittorrent | ✅ Apps selecionados |
-| 🎮 `gaming` | Steam + Lutris + ProtonUp-Qt + MangoHud + Gamemode + Wine + Discord | ✅ Gaming tools |
-| 🖥️ `virtualization` | VirtualBox | ✅ VirtualBox + ext-pack |
-| ⌨️ `keybinds` | Gera e aplica keybinds (Hyprland/COSMIC) | ❌ Gera configs |
-| ⚡ `power` | Energia (suspend auto-detecta desktop/laptop) | ❌ Apenas gsettings |
+| Modulo | Descricao | Plataforma |
+|--------|-----------|:----------:|
+| 🐚 `shell-tools` | Zsh + Oh My Zsh + NVM + Node LTS + Git + SSH key + Kitty + CLI tools | 🐧 🍎 |
+| 🔤 `fonts` | Fontes Nerd Font | 🐧 🍎 |
+| 🛠️ `dev` | Neovim + Zellij + tmux + VS Code + GitKraken + GitHub CLI + LazyGit + Delta + LazyDocker + Docker + SQLite + Tauri Dev + Firebase + Supabase + Postman + Insomnia | 🐧 🍎 |
+| 🖥️ `fastfetch` | Config Fastfetch (system info) | 🐧 🍎 |
+| 📊 `btop` | Config Btop (monitor de sistema) | 🐧 🍎 |
+| 🎮 `drivers` | Drivers GPU (AMD/Intel/NVIDIA) + diagnostico amdgpu/radeon + Bluetooth Mac | 🐧 |
+| 🌐 `browsers` | Navegadores + flags Wayland (browsers + Electron apps) | 🐧 |
+| 🖥️ `desktop-tools` | Ferramentas de desktop (wofi, clipboard, screenshots, notificacoes) | 🐧 |
+| 📦 `apps` | LibreOffice + Sublime + VLC + Obsidian + Kdenlive + PeaZip + qBittorrent | 🐧 |
+| 🎮 `gaming` | Steam + Lutris + ProtonUp-Qt + MangoHud + Gamemode + Wine + Discord | 🐧 |
+| 🖥️ `virtualization` | VirtualBox | 🐧 |
+| ⌨️ `keybinds` | Gera e aplica keybinds (Hyprland/COSMIC) | 🐧 |
+| ⚡ `power` | Energia (suspend auto-detecta desktop/laptop) | 🐧 |
 
 ## 🔄 Atualizacao
 
