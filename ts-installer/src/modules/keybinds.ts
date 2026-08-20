@@ -10,6 +10,7 @@ export const keybinds: IModule = {
   emoji: "⌨️",
   description: "Gera e aplica keybinds (Hyprland/COSMIC)",
   installsSoftware: false,
+  platforms: ["linux"],
 
   async run() {
     log.title("keybinds", "Keybinds");

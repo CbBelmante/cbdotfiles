@@ -59,6 +59,7 @@ export const virtualization: IModule = {
   emoji: "🖥️",
   description: "VirtualBox",
   installsSoftware: true,
+  platforms: ["linux"],
 
   async run(ctx: IRunContext) {
     log.title("virtualization", "Virtualization Tools");

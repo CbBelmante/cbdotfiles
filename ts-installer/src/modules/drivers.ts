@@ -170,6 +170,7 @@ export const drivers: IModule = {
   emoji: "🎮",
   description: "Drivers GPU (AMD/Intel/NVIDIA) + Bluetooth Mac",
   installsSoftware: true,
+  platforms: ["linux"],
 
   async run() {
     log.title("drivers", "Drivers & Aceleracao de Video");

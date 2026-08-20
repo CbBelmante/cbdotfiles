@@ -247,6 +247,7 @@ export const apps: IModule = {
   emoji: "📦",
   description: "LibreOffice + Sublime + VLC + Obsidian + Kdenlive + PeaZip + qBittorrent",
   installsSoftware: true,
+  platforms: ["linux"],
 
   async run(ctx: IRunContext) {
     log.title("apps", "Apps do dia a dia");

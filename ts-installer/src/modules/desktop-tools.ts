@@ -91,6 +91,7 @@ export const desktopTools: IModule = {
   emoji: "🖥️",
   description: "Ferramentas de desktop (wofi, clipboard, screenshots, notificacoes)",
   installsSoftware: true,
+  platforms: ["linux"],
 
   async run() {
     log.title("desktop-tools", "Desktop Tools");

@@ -10,6 +10,7 @@ export const power: IModule = {
   emoji: "⚡",
   description: "Energia (suspend auto-detecta desktop/laptop)",
   installsSoftware: false,
+  platforms: ["linux"],
 
   async run(ctx: IRunContext) {
     log.title("power", "Energia");

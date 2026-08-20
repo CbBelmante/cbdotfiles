@@ -216,6 +216,7 @@ export const gaming: IModule = {
   emoji: "🎮",
   description: "Steam + Lutris + ProtonUp-Qt + MangoHud + Gamemode + Wine + Discord",
   installsSoftware: true,
+  platforms: ["linux"],
 
   async run(ctx: IRunContext) {
     log.title("gaming", "Gaming Tools");

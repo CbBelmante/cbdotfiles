@@ -15,9 +15,14 @@ export const HOME = process.env.HOME!;
 // Detecta distro pelo gerenciador de pacotes
 // ---------------------------------------------------------------------------
 
-export type Distro = "arch" | "debian" | "fedora" | "unknown";
+export type Distro = "arch" | "debian" | "fedora" | "macos" | "unknown";
+
+export function isMacos(): boolean {
+  return process.platform === "darwin";
+}
 
 export async function getDistro(): Promise<Distro> {
+  if (isMacos()) return "macos";
   if (await commandExists("pacman")) return "arch";
   if (await commandExists("apt")) return "debian";
   if (await commandExists("dnf")) return "fedora";
@@ -40,6 +45,8 @@ export type Desktop =
   | "unknown";
 
 export async function getDesktop(): Promise<Desktop> {
+  if (isMacos()) return "unknown";
+
   // Omarchy: tem diretorio proprio
   if (existsSync(`${HOME}/.config/omarchy`)) {
     return "omarchy";
@@ -69,6 +76,16 @@ export function hasIntegratedDesktop(desktop: Desktop): boolean {
 // ---------------------------------------------------------------------------
 
 export function isLaptop(): boolean {
+  if (isMacos()) {
+    try {
+      const model = require("child_process")
+        .execSync("sysctl -n hw.model", { encoding: "utf-8" })
+        .trim();
+      return /book/i.test(model);
+    } catch {
+      return false;
+    }
+  }
   try {
     const entries = require("fs").readdirSync("/sys/class/power_supply/");
     return entries.some((e: string) => e.startsWith("BAT"));
@@ -78,6 +95,7 @@ export function isLaptop(): boolean {
 }
 
 export function isApple(): boolean {
+  if (isMacos()) return true;
   try {
     const vendor = require("fs")
       .readFileSync("/sys/class/dmi/id/sys_vendor", "utf-8")
@@ -141,6 +159,9 @@ export async function pkgInstall(...packages: string[]): Promise<boolean> {
         break;
       case "fedora":
         await $`sudo dnf install -y ${packages}`;
+        break;
+      case "macos":
+        await $`brew install ${packages}`;
         break;
       default:
         log.warn(`Gerenciador nao encontrado. Instale manualmente: ${pkgs}`);

@@ -7,6 +7,7 @@ import { changeDefaultBrowser } from "./modules/browsers";
 import {
   DOTFILES_DIR,
   commandExists,
+  isMacos,
   loadLocalOverrides,
   loadSavedModules,
   saveSelectedModules,
@@ -173,8 +174,10 @@ async function main() {
     return;
   }
 
-  // Pede sudo logo no inicio pra nao interromper no meio
-  await acquireSudo();
+  // Pede sudo logo no inicio pra nao interromper no meio (nao precisa no macOS)
+  if (!isMacos()) {
+    await acquireSudo();
+  }
 
   // Configura Git nome/email se ainda nao tem
   await setupGitIdentity();
@@ -227,7 +230,15 @@ async function main() {
   const results: Array<{ name: string; status: IModuleStatus }> = [];
   const ctx: IRunContext = { overrides, isAll: runAll };
 
+  const currentPlatform = isMacos() ? "macos" : "linux";
+
   for (const mod of selectedModules) {
+    if (mod.platforms && !mod.platforms.includes(currentPlatform)) {
+      log.warn(`[${mod.id}] Pulado — nao suportado no ${currentPlatform}`);
+      results.push({ name: mod.id, status: "skipped" });
+      continue;
+    }
+
     tracker.start(mod.id);
     try {
       await mod.run(ctx);

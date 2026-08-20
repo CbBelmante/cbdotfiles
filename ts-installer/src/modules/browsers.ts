@@ -341,6 +341,7 @@ export const browsers: IModule = {
   emoji: "🌐",
   description: "Navegadores (Vivaldi, Opera, Firefox, Chrome, Chromium)",
   installsSoftware: true,
+  platforms: ["linux"],
 
   async run(ctx: IRunContext) {
     log.title("browsers", "Navegadores");

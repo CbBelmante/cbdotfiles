@@ -1,7 +1,7 @@
 import { $ } from "bun";
 import { existsSync } from "fs";
 import type { IModule } from "./index";
-import { DOTFILES_DIR, HOME, commandExists, getDesktop, getDistro, pkgInstall, symlink, versionGte } from "../helpers";
+import { DOTFILES_DIR, HOME, commandExists, getDesktop, getDistro, isMacos, pkgInstall, symlink, versionGte } from "../helpers";
 import { log, tracker } from "../log";
 import { NVM, TERMINAL } from "../defaults";
 
@@ -78,7 +78,11 @@ async function setupZsh() {
   const zshPath = (await $`which zsh`.text()).trim();
   if (currentShell !== zshPath) {
     log.add("Definindo Zsh como shell padrao...");
-    await $`sudo chsh -s ${zshPath} ${process.env.USER}`;
+    if (isMacos()) {
+      await $`chsh -s ${zshPath}`;
+    } else {
+      await $`sudo chsh -s ${zshPath} ${process.env.USER}`;
+    }
     log.ok("Zsh definido como shell padrao (efetivo no proximo login)");
   } else {
     log.ok("Zsh ja e o shell padrao");

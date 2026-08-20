@@ -17,12 +17,15 @@ export interface IRunContext {
   isAll: boolean;
 }
 
+export type Platform = "linux" | "macos";
+
 export interface IModule {
   id: string;
   name: string;
   emoji: string;
   description: string;
   installsSoftware: boolean;
+  platforms?: Platform[];
   run: (ctx: IRunContext) => Promise<void>;
 }
 
