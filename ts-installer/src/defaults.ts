@@ -22,7 +22,7 @@ export const SHELL = {
 // ---------------------------------------------------------------------------
 
 export const TERMINAL = {
-  app: "kitty",
+  app: "ghostty",
   font: "CaskaydiaMono Nerd Font",
   fontSize: 7,
   cursorShape: "block",
