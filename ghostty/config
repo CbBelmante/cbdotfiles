@@ -12,9 +12,6 @@ confirm-close-surface = false
 # Cursor
 cursor-style = block
 
-# Bell
-bell = none
-
 # Environment-specific overrides (symlinked pelo installer)
 config-file = ?~/.config/ghostty/env.conf
 
