@@ -532,6 +532,22 @@ async function setupGhostty() {
         log.add("Instalando Ghostty...");
         await pkgInstall("ghostty");
         break;
+      case "debian":
+        log.add("Instalando Ghostty via apt...");
+        {
+          const tryApt = await $`sudo apt install -y ghostty`.nothrow();
+          if (tryApt.exitCode !== 0) {
+            log.add("Adicionando PPA ghostty-ubuntu...");
+            await $`sudo add-apt-repository -y ppa:mkasberg/ghostty-ubuntu`.nothrow();
+            await $`sudo apt update`.nothrow();
+            await $`sudo apt install -y ghostty`.nothrow();
+          }
+        }
+        break;
+      case "fedora":
+        log.add("Instalando Ghostty...");
+        await pkgInstall("ghostty");
+        break;
       default:
         log.dim("Ghostty: instale manualmente — https://ghostty.org");
         tracker.skipped("Ghostty");
