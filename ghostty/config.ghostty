@@ -1,6 +1,3 @@
-# Ghostty - cbdotfiles config
-# Reload: Cmd+Shift+, (macOS) | Ctrl+Shift+, (Linux)
-
 # Font
 font-family = CaskaydiaMono Nerd Font
 font-size = 13
@@ -15,14 +12,11 @@ confirm-close-surface = false
 # Cursor
 cursor-style = block
 
-# Transparency
-background-opacity = 0.85
-
 # Bell
 audible-bell = false
 
-# Theme (dark:theme-escuro, light:theme-claro)
-# theme = dark:monokai,light:solarized-light
+# Environment-specific overrides (symlinked pelo installer)
+config-file = ?~/.config/ghostty/env.conf
 
-# macOS specific
-macos-option-as-alt = true
+# Local overrides (machine-specific, nao vai pro git)
+config-file = ?~/.config/ghostty/local.conf

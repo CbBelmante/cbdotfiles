@@ -562,12 +562,62 @@ async function setupGhostty() {
     tracker.skipped("Ghostty");
   }
 
+  // Symlink config base
   await symlink(
     `${DOTFILES_DIR}/ghostty/config.ghostty`,
     `${HOME}/.config/ghostty/config.ghostty`
   );
   log.ok("~/.config/ghostty/config.ghostty -> cbdotfiles");
-  tracker.configured("ghostty config");
+
+  // Detecta ambiente e aplica override correto
+  const desktop = await getDesktop();
+  const envConf = `${HOME}/.config/ghostty/env.conf`;
+
+  switch (desktop) {
+    case "omarchy":
+    case "hyprland":
+    case "sway":
+      await symlink(`${DOTFILES_DIR}/ghostty/omarchy.conf`, envConf);
+      log.ok(`env: ${desktop} (opacity 0.65)`);
+      break;
+
+    case "cosmic": {
+      const themeDir = `${HOME}/.config/cosmic/com.system76.CosmicTheme.Dark/v1`;
+      if (existsSync(themeDir)) {
+        log.add("Detectando tema COSMIC...");
+        const result = await $`bash ${DOTFILES_DIR}/ghostty/generate-cosmic-theme.sh`.nothrow();
+        if (result.exitCode === 0) {
+          log.ok("cosmic.conf gerado a partir do tema COSMIC ativo");
+        } else {
+          log.warn("Falha ao gerar tema COSMIC — usando cosmic.conf padrao");
+        }
+      } else {
+        log.dim("Tema COSMIC Dark nao encontrado — usando cosmic.conf padrao");
+      }
+      await symlink(`${DOTFILES_DIR}/ghostty/cosmic.conf`, envConf);
+      log.ok("env: cosmic");
+      break;
+    }
+
+    default:
+      if (isMacos()) {
+        await symlink(`${DOTFILES_DIR}/ghostty/macos.conf`, envConf);
+        log.ok("env: macOS");
+      } else {
+        await symlink(`${DOTFILES_DIR}/ghostty/omarchy.conf`, envConf);
+        log.ok(`env: ${desktop} (usando config padrao)`);
+      }
+      break;
+  }
+
+  // Local override
+  const localGhostty = `${DOTFILES_DIR}/local/ghostty/config.ghostty`;
+  if (existsSync(localGhostty)) {
+    await symlink(localGhostty, `${HOME}/.config/ghostty/local.conf`);
+    log.ok("~/.config/ghostty/local.conf -> local override");
+  }
+
+  tracker.configured("ghostty configs");
 }
 
 // ---------------------------------------------------------------------------
