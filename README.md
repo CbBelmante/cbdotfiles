@@ -92,11 +92,12 @@ Tambem aceita argumentos diretos:
 ./install.sh --custom        # vai direto pra selecao de modulos
 ./install.sh --all           # instala tudo (sem menu)
 ./install.sh --chbrowser     # altera o browser padrao (sem instalar nada)
+./install.sh --chterminal    # altera o terminal padrao (sem instalar nada)
 ./install.sh shell-tools dev # instala so esses
 ./install.sh --help          # lista todos os modulos
 ```
 
-Ao selecionar o modulo `browsers`, o instalador mostra checkbox dos navegadores e pergunta qual definir como padrao. Use `--chbrowser` a qualquer momento para alterar o browser padrao.
+Ao selecionar o modulo `browsers`, o instalador mostra checkbox dos navegadores e pergunta qual definir como padrao. Use `--chbrowser` a qualquer momento para alterar o browser padrao e `--chterminal` para alterar o terminal padrao (kitty/ghostty).
 
 ### 🧩 Modulos Disponiveis
 
@@ -137,6 +138,7 @@ Faz automaticamente: `git pull` → `install.sh --update` → `source ~/.zshrc`
 | `cbdotReinstall` | `cbReinstall` | Reinstala do zero (limpa selecao) |
 | `cbdotResymlink` | `cbResymlink` | Refaz todos os symlinks |
 | `cbBrowser` | | Trocar browser padrao |
+| `cbTerminal` | | Trocar terminal padrao (kitty/ghostty) |
 | `aliases` | | Editar config local do shell (aliases, exports, variaveis) |
 | `cbZshrc` | | Editar .zshrc do repositorio (global) |
 | `cbKitty` | | Editar override local do Kitty |
@@ -231,7 +233,7 @@ cbdotfiles/
 │       ├── log.ts                 # 🎨 Log colorido + header + summary
 │       └── modules/               # 📦 Um arquivo por modulo
 │           ├── index.ts           # Registry (IModule[])
-│           ├── shell-tools.ts     # 🐚 Zsh + NVM + Git + Kitty + CLI tools
+│           ├── shell-tools.ts     # 🐚 Zsh + NVM + Git + Kitty + Ghostty + CLI tools
 │           ├── fonts.ts           # 🔤 Nerd Fonts
 │           ├── drivers.ts         # 🎮 GPU + Bluetooth (detecta hardware)
 │           ├── browsers.ts        # 🌐 Vivaldi, Opera, Firefox, Chrome, Chromium
@@ -266,7 +268,11 @@ cbdotfiles/
 │   ├── lua/
 │   └── ...
 ├── ghostty/
-│   └── config.ghostty             # 👻 Config Ghostty (cross-platform)
+│   ├── config                     # 👻 Config base Ghostty
+│   ├── macos.conf                 # 🍎 Override macOS (font 13pt)
+│   ├── omarchy.conf               # 🔧 Override Omarchy (opacity 0.65)
+│   ├── cosmic.conf                # 🔧 Override COSMIC (opacity 0.85 + cores)
+│   └── generate-cosmic-theme.sh   # 🔄 Gera cosmic.conf do tema COSMIC ativo
 ├── kitty/
 │   ├── kitty.conf                 # 🐱 Config base Kitty
 │   ├── macos.conf                 # 🍎 Override macOS (titlebar-only, font 13pt)
@@ -300,7 +306,9 @@ cbdotfiles/
 ~/.config/kitty/kitty.conf            → cbdotfiles/kitty/kitty.conf
 ~/.config/kitty/env.conf              → cbdotfiles/kitty/{macos,omarchy,cosmic}.conf
 ~/.config/kitty/local.conf            → cbdotfiles/local/kitty/kitty.conf (se existir)
-~/.config/ghostty/config.ghostty      → cbdotfiles/ghostty/config.ghostty
+~/.config/ghostty/config              → cbdotfiles/ghostty/config
+~/.config/ghostty/env.conf            → cbdotfiles/ghostty/{macos,omarchy,cosmic}.conf
+~/.config/ghostty/local.conf          → cbdotfiles/local/ghostty/config.ghostty (se existir)
 ~/.config/lazygit/config.yml          → cbdotfiles/lazygit/config.yml
 ~/.tmux.conf                          → cbdotfiles/tmux/tmux.conf
 ~/.markdownlint-cli2.yaml             → cbdotfiles/nvim/.markdownlint-cli2.yaml
@@ -543,11 +551,11 @@ Mude o browser, terminal ou app em **um lugar so**:
 
 ```bash
 # Hyprland
-HYPR_TERMINAL=uwsm app -- kitty
+HYPR_TERMINAL=uwsm app -- ghostty
 HYPR_BROWSER=uwsm app -- vivaldi
 
 # COSMIC
-COSMIC_TERMINAL=kitty
+COSMIC_TERMINAL=ghostty
 COSMIC_BROWSER=vivaldi
 ```
 
@@ -613,7 +621,7 @@ Todos os defaults do projeto ficam em **dois arquivos**:
 |---------|-------|-----------|
 | `SHELL.default` | `zsh` | Shell padrao |
 | `SHELL.theme` | `powerlevel10k` | Tema do Zsh |
-| `TERMINAL.app` | `kitty` | Terminal padrao |
+| `TERMINAL.app` | `ghostty` | Terminal padrao |
 | `TERMINAL.font` | `CaskaydiaMono Nerd Font` | Fonte do terminal |
 | `TERMINAL.fontSize` | `7` | Tamanho da fonte |
 | `EDITOR.default` | `nvim` | Editor padrao |
@@ -648,15 +656,16 @@ Cada modulo tem uma lista de tools com `active: true/false` no `defaults.ts`:
 
 ```bash
 # Hyprland
-HYPR_TERMINAL=uwsm app -- kitty
+HYPR_TERMINAL=uwsm app -- ghostty
 HYPR_BROWSER=uwsm app -- vivaldi
 
 # COSMIC
-COSMIC_TERMINAL=kitty
+COSMIC_TERMINAL=ghostty
 COSMIC_BROWSER=vivaldi
 ```
 
-> Quer mudar o browser padrao? Mude `BROWSER.default` no `defaults.ts` e `COSMIC_BROWSER`/`HYPR_BROWSER` no `vars.conf`.
+> Quer mudar o browser padrao? Use `cbBrowser` ou mude `BROWSER.default` no `defaults.ts` e `COSMIC_BROWSER`/`HYPR_BROWSER` no `vars.conf`.
+> Quer mudar o terminal padrao? Use `cbTerminal` ou mude `TERMINAL.app` no `defaults.ts` e `COSMIC_TERMINAL`/`HYPR_TERMINAL` no `vars.conf`.
 
 ### Git
 
@@ -673,7 +682,8 @@ cp -r local.example/ local/
 # Edite o que quiser
 nvim local/local.sh              # variaveis pro instalador
 nvim local/zsh/aliases.zsh       # aliases so dessa maquina
-nvim local/kitty/kitty.conf      # fonte/tamanho diferente
+nvim local/kitty/kitty.conf      # fonte/tamanho diferente (Kitty)
+nvim local/ghostty/config.ghostty # fonte/tamanho diferente (Ghostty)
 ```
 
 ### Exemplos
@@ -699,11 +709,11 @@ alias vpn='sudo openvpn ~/configs/trabalho.ovpn'
 
 ### Como funciona
 
-| Camada | Arquivo | Vai pro git? |
-|--------|---------|:------------:|
-| Base | `kitty/kitty.conf` | ✅ |
-| Ambiente | `kitty/env.conf` (omarchy/cosmic) | ✅ |
-| Local | `local/kitty/kitty.conf` | ❌ |
+| Camada | Kitty | Ghostty | Vai pro git? |
+|--------|-------|---------|:------------:|
+| Base | `kitty/kitty.conf` | `ghostty/config` | ✅ |
+| Ambiente | `kitty/env.conf` | `ghostty/env.conf` | ✅ |
+| Local | `local/kitty/kitty.conf` | `local/ghostty/config.ghostty` | ❌ |
 
 O instalador detecta automaticamente se `local/` tem overrides e cria os symlinks. O modulo `power` auto-detecta desktop (sem bateria) vs laptop e configura suspend — sem precisar de override manual.
 
@@ -862,7 +872,7 @@ Overrides pra evitar conflito com Zellij e melhorar produtividade:
 - **🪟 tmux** - Multiplexador alternativo (catppuccin, vim nav, TPM)
 - **✏️ Neovim** - Editor (LazyVim + cb-headscale.nvim)
 - **🐱 Kitty** >= 0.40 - Terminal emulator (site oficial no Linux, brew no macOS)
-- **👻 Ghostty** - Terminal emulator (brew no macOS, pacman no Arch)
+- **👻 Ghostty** - Terminal emulator (apt/PPA no Ubuntu, pacman no Arch, brew no macOS)
 - **🌐 Vivaldi** / **Firefox** / **Chrome** - Browsers
 - **💻 VS Code** - Editor GUI
 - **🐙 GitKraken** - Git GUI
