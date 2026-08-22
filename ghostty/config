@@ -13,7 +13,7 @@ confirm-close-surface = false
 cursor-style = block
 
 # Bell
-audible-bell = false
+bell = none
 
 # Environment-specific overrides (symlinked pelo installer)
 config-file = ?~/.config/ghostty/env.conf
