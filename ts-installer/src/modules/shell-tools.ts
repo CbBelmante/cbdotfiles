@@ -1,5 +1,6 @@
 import { $ } from "bun";
-import { existsSync, lstatSync } from "fs";
+import { existsSync, lstatSync, readFileSync, writeFileSync } from "fs";
+import { select } from "@inquirer/prompts";
 import type { IModule } from "./index";
 import { DOTFILES_DIR, HOME, commandExists, getDesktop, getDistro, isMacos, pkgInstall, symlink, versionGte } from "../helpers";
 import { log, tracker } from "../log";
@@ -618,6 +619,79 @@ async function setupGhostty() {
   }
 
   tracker.configured("ghostty configs");
+}
+
+// ---------------------------------------------------------------------------
+// Standalone: alterar terminal padrao (--chterminal)
+// ---------------------------------------------------------------------------
+
+const TERMINALS = [
+  { id: "kitty", name: "Kitty", emoji: "🐱" },
+  { id: "ghostty", name: "Ghostty", emoji: "👻" },
+];
+
+export async function changeDefaultTerminal() {
+  log.title("terminal", "Alterar terminal padrao");
+
+  const installed: typeof TERMINALS = [];
+  for (const t of TERMINALS) {
+    if (await commandExists(t.id)) {
+      installed.push(t);
+    }
+  }
+
+  if (installed.length === 0) {
+    log.warn("Nenhum terminal suportado instalado (kitty/ghostty)");
+    return;
+  }
+
+  const varsFile = `${DOTFILES_DIR}/keybinds/vars.conf`;
+  const content = readFileSync(varsFile, "utf-8");
+  const currentMatch = content.match(/^COSMIC_TERMINAL=(.+)$/m);
+  if (currentMatch) log.dim(`Atual: ${currentMatch[1]}`);
+
+  const choices = installed.map((t) => ({
+    name: `${t.emoji} ${t.name}`,
+    value: t.id,
+  }));
+  choices.push({ name: "Cancelar (manter o atual)", value: "none" });
+
+  const chosen = await select({
+    message: "Qual terminal definir como padrao?",
+    choices,
+  });
+
+  if (chosen === "none") return;
+
+  let updated = content
+    .replace(/^(HYPR_TERMINAL=).*$/m, `$1uwsm app -- ${chosen}`)
+    .replace(/^(COSMIC_TERMINAL=).*$/m, `$1${chosen}`);
+  writeFileSync(varsFile, updated);
+  log.ok(`vars.conf atualizado: ${chosen}`);
+
+  log.add("Regenerando keybinds...");
+  await $`bash ${DOTFILES_DIR}/keybinds/generate.sh`;
+  log.ok("Keybinds regeneradas");
+
+  const desktop = await getDesktop();
+  const generated = `${DOTFILES_DIR}/keybinds/generated`;
+
+  if (desktop === "cosmic") {
+    const cosmicCustom = `${generated}/cosmic-custom.ron`;
+    const cosmicDest = `${HOME}/.config/cosmic/com.system76.CosmicComp/v1/Shortcuts/v1/custom`;
+    if (existsSync(cosmicCustom)) {
+      await symlink(cosmicCustom, cosmicDest);
+      log.ok("Keybinds COSMIC aplicadas");
+    }
+  } else if (["omarchy", "hyprland", "sway"].includes(desktop)) {
+    const hyprBindings = `${generated}/hyprland-bindings.conf`;
+    if (existsSync(hyprBindings)) {
+      await symlink(hyprBindings, `${HOME}/.config/hypr/bindings.conf`);
+      log.ok("Keybinds Hyprland aplicadas");
+    }
+  }
+
+  log.ok(`Terminal padrao: ${chosen}`);
 }
 
 // ---------------------------------------------------------------------------

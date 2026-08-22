@@ -4,6 +4,7 @@ import { $ } from "bun";
 import { checkbox, select } from "@inquirer/prompts";
 import { ALL_MODULES, getModuleById, type IModule, type IRunContext } from "./modules/index";
 import { changeDefaultBrowser } from "./modules/browsers";
+import { changeDefaultTerminal } from "./modules/shell-tools";
 import {
   DOTFILES_DIR,
   askInput,
@@ -25,6 +26,7 @@ const isAll = args.includes("--all");
 const isCustom = args.includes("--custom");
 const isUpdate = args.includes("--update");
 const isChBrowser = args.includes("--chbrowser");
+const isChTerminal = args.includes("--chterminal");
 const cliModules = args.filter((a) => !a.startsWith("-"));
 
 // ---------------------------------------------------------------------------
@@ -39,7 +41,8 @@ if (isHelp) {
   console.log("    --all       Instala todos os modulos (sem perguntar)");
   console.log("    --custom    Vai direto pra selecao de modulos");
   console.log("    --update    Reinstala os modulos da ultima selecao");
-  console.log("    --chbrowser Altera o browser padrao (sem instalar)");
+  console.log("    --chbrowser  Altera o browser padrao (sem instalar)");
+  console.log("    --chterminal Altera o terminal padrao (sem instalar)");
   console.log("    --help      Mostra esta ajuda");
   console.log();
   console.log("  Modulos disponiveis:");
@@ -166,6 +169,12 @@ async function main() {
   // --chbrowser: apenas altera o browser padrao
   if (isChBrowser) {
     await changeDefaultBrowser();
+    return;
+  }
+
+  // --chterminal: apenas altera o terminal padrao
+  if (isChTerminal) {
+    await changeDefaultTerminal();
     return;
   }
 

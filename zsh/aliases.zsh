@@ -136,6 +136,8 @@ alias cbKeysHelp='cbSearch keys-help'
 alias cbkeyshelp='cbSearch keys-help'
 cbBrowser() { ~/Workspaces/cbdotfiles/install.sh --chbrowser; }
 alias cbbrowser='cbBrowser'
+cbTerminal() { ~/Workspaces/cbdotfiles/install.sh --chterminal; }
+alias cbterminal='cbTerminal'
 _cb_edit_local() {
     local f=~/Workspaces/cbdotfiles/local/$1
     local header="$2"
