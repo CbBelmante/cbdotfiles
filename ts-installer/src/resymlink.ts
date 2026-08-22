@@ -29,8 +29,7 @@ function entries(): ISymlinkEntry[] {
       condition: () => existsSync(`${DOTFILES_DIR}/local/zsh/aliases.zsh`),
     },
 
-    // Git
-    { source: `${DOTFILES_DIR}/git/.gitconfig`, target: `${HOME}/.gitconfig` },
+    // Git — NAO symlinkar .gitconfig (usa include.path, nome/email ficam no arquivo real)
 
     // Kitty
     { source: `${DOTFILES_DIR}/kitty/kitty.conf`, target: `${HOME}/.config/kitty/kitty.conf` },
