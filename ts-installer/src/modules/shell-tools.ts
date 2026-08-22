@@ -564,10 +564,10 @@ async function setupGhostty() {
 
   // Symlink config base
   await symlink(
-    `${DOTFILES_DIR}/ghostty/config.ghostty`,
-    `${HOME}/.config/ghostty/config.ghostty`
+    `${DOTFILES_DIR}/ghostty/config`,
+    `${HOME}/.config/ghostty/config`
   );
-  log.ok("~/.config/ghostty/config.ghostty -> cbdotfiles");
+  log.ok("~/.config/ghostty/config -> cbdotfiles");
 
   // Detecta ambiente e aplica override correto
   const desktop = await getDesktop();
