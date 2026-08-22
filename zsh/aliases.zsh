@@ -312,9 +312,24 @@ alias tk='tmux kill-session -t'
 # ───────────────────────────────────────────────────────────────────────────────
 # CbDotfiles
 # ───────────────────────────────────────────────────────────────────────────────
-# Instalar dotfiles: abre o menu interativo (Padrao / Custom)
+# Instalar dotfiles: puxa do git e abre o menu interativo
 cbdotInstall() {
     local dotdir="$HOME/Workspaces/cbdotfiles"
+
+    local stashed=false
+    if ! git -C "$dotdir" diff --quiet 2>/dev/null || ! git -C "$dotdir" diff --cached --quiet 2>/dev/null; then
+        echo "Stashing mudancas locais..."
+        git -C "$dotdir" stash -u -m "cbdotInstall auto-stash" && stashed=true
+    fi
+
+    if ! git -C "$dotdir" pull --rebase; then
+        echo "ERRO: git pull falhou. Verifique manualmente em $dotdir"
+        $stashed && git -C "$dotdir" stash pop
+        return 1
+    fi
+
+    $stashed && git -C "$dotdir" stash pop
+
     "$dotdir/install.sh" && source ~/.zshrc
 }
 alias cbdotinstall='cbdotInstall'
@@ -324,7 +339,22 @@ alias cbinstall='cbdotInstall'
 cbdotUpdate() {
     local dotdir="$HOME/Workspaces/cbdotfiles"
     echo "=== Atualizando cbdotfiles ==="
-    git -C "$dotdir" pull && "$dotdir/install.sh" --update && source ~/.zshrc
+
+    local stashed=false
+    if ! git -C "$dotdir" diff --quiet 2>/dev/null || ! git -C "$dotdir" diff --cached --quiet 2>/dev/null; then
+        echo "Stashing mudancas locais..."
+        git -C "$dotdir" stash -u -m "cbdotUpdate auto-stash" && stashed=true
+    fi
+
+    if ! git -C "$dotdir" pull --rebase; then
+        echo "ERRO: git pull falhou. Verifique manualmente em $dotdir"
+        $stashed && git -C "$dotdir" stash pop
+        return 1
+    fi
+
+    $stashed && git -C "$dotdir" stash pop
+
+    "$dotdir/install.sh" --update && source ~/.zshrc
     echo "=== cbdotfiles atualizado! ==="
     echo ""
 
@@ -337,7 +367,6 @@ cbdotUpdate() {
         echo "⚠️  Dependências faltando para cbSearch: ${missing_deps[*]}"
         echo ""
 
-        # Detecta gerenciador de pacotes
         local install_cmd=""
         if command -v apt &> /dev/null; then
             install_cmd="sudo apt install ${missing_deps[*]}"
