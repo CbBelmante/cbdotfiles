@@ -73,6 +73,14 @@ function entries(): ISymlinkEntry[] {
       condition: () => existsSync(`${DOTFILES_DIR}/lazygit/config.yml`),
     },
 
+    // Ghostty
+    { source: `${DOTFILES_DIR}/ghostty/config`, target: `${HOME}/.config/ghostty/config` },
+    {
+      source: `${DOTFILES_DIR}/local/ghostty/config.ghostty`,
+      target: `${HOME}/.config/ghostty/local.conf`,
+      condition: () => existsSync(`${DOTFILES_DIR}/local/ghostty/config.ghostty`),
+    },
+
     // Btop
     {
       source: `${DOTFILES_DIR}/btop/btop.conf`,
@@ -120,28 +128,40 @@ async function main() {
     count++;
   }
 
-  // Kitty env.conf (depende do desktop)
+  // env.conf por desktop (Kitty + Ghostty)
   const desktop = await getDesktop();
-  const envConf = `${HOME}/.config/kitty/env.conf`;
+  const kittyEnv = `${HOME}/.config/kitty/env.conf`;
+  const ghosttyEnv = `${HOME}/.config/ghostty/env.conf`;
 
   switch (desktop) {
     case "omarchy":
     case "hyprland":
     case "sway":
-      await symlink(`${DOTFILES_DIR}/kitty/omarchy.conf`, envConf);
-      log.ok(`~/.config/kitty/env.conf -> ${desktop}`);
-      count++;
+      await symlink(`${DOTFILES_DIR}/kitty/omarchy.conf`, kittyEnv);
+      await symlink(`${DOTFILES_DIR}/ghostty/omarchy.conf`, ghosttyEnv);
+      log.ok(`env.conf -> ${desktop} (kitty + ghostty)`);
+      count += 2;
       break;
     case "cosmic":
-      await symlink(`${DOTFILES_DIR}/kitty/cosmic.conf`, envConf);
-      log.ok("~/.config/kitty/env.conf -> cosmic");
-      count++;
+      await symlink(`${DOTFILES_DIR}/kitty/cosmic.conf`, kittyEnv);
+      await symlink(`${DOTFILES_DIR}/ghostty/cosmic.conf`, ghosttyEnv);
+      log.ok("env.conf -> cosmic (kitty + ghostty)");
+      count += 2;
       break;
-    default:
-      await symlink(`${DOTFILES_DIR}/kitty/omarchy.conf`, envConf);
-      log.ok(`~/.config/kitty/env.conf -> ${desktop} (padrao)`);
-      count++;
+    default: {
+      const isMac = (await import("./helpers")).isMacos();
+      if (isMac) {
+        await symlink(`${DOTFILES_DIR}/kitty/macos.conf`, kittyEnv);
+        await symlink(`${DOTFILES_DIR}/ghostty/macos.conf`, ghosttyEnv);
+        log.ok("env.conf -> macOS (kitty + ghostty)");
+      } else {
+        await symlink(`${DOTFILES_DIR}/kitty/omarchy.conf`, kittyEnv);
+        await symlink(`${DOTFILES_DIR}/ghostty/omarchy.conf`, ghosttyEnv);
+        log.ok(`env.conf -> ${desktop} padrao (kitty + ghostty)`);
+      }
+      count += 2;
       break;
+    }
   }
 
   // Zellij layouts
