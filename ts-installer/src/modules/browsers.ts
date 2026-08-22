@@ -2,7 +2,7 @@ import { $ } from "bun";
 import { existsSync } from "fs";
 import { select } from "@inquirer/prompts";
 import type { IModule, IRunContext } from "./index";
-import { checkboxWithAll, commandExists, getDistro, HOME, pkgInstall } from "../helpers";
+import { checkboxWithAll, commandExists, getDistro, HOME, isMacos, pkgInstall } from "../helpers";
 import { log, tracker } from "../log";
 import { BROWSER, BROWSERS_ENABLED } from "../defaults";
 
@@ -28,6 +28,9 @@ const BROWSERS: IBrowser[] = [
     desktopFile: "vivaldi",
     async install(distro) {
       switch (distro) {
+        case "macos":
+          await $`brew install --cask vivaldi`;
+          break;
         case "arch":
           await pkgInstall("vivaldi");
           break;
@@ -54,6 +57,9 @@ const BROWSERS: IBrowser[] = [
     desktopFile: "opera",
     async install(distro) {
       switch (distro) {
+        case "macos":
+          await $`brew install --cask opera`;
+          break;
         case "arch":
           await pkgInstall("opera");
           break;
@@ -81,6 +87,9 @@ const BROWSERS: IBrowser[] = [
     desktopFile: "firefox",
     async install(distro) {
       switch (distro) {
+        case "macos":
+          await $`brew install --cask firefox`;
+          break;
         case "arch":
           await pkgInstall("firefox");
           break;
@@ -101,6 +110,9 @@ const BROWSERS: IBrowser[] = [
     desktopFile: "google-chrome",
     async install(distro) {
       switch (distro) {
+        case "macos":
+          await $`brew install --cask google-chrome`;
+          break;
         case "arch":
           if (await commandExists("yay")) {
             await $`yay -S --noconfirm google-chrome`;
@@ -132,6 +144,9 @@ const BROWSERS: IBrowser[] = [
     desktopFile: "chromium",
     async install(distro) {
       switch (distro) {
+        case "macos":
+          await $`brew install --cask chromium`;
+          break;
         case "arch":
           await pkgInstall("chromium");
           break;
@@ -154,9 +169,20 @@ const BROWSERS: IBrowser[] = [
 // Helpers
 // ---------------------------------------------------------------------------
 
+const MAC_APP_NAMES: Record<string, string> = {
+  vivaldi: "Vivaldi",
+  opera: "Opera",
+  firefox: "Firefox",
+  chrome: "Google Chrome",
+  chromium: "Chromium",
+};
+
 async function isInstalled(browser: IBrowser): Promise<boolean> {
+  if (isMacos()) {
+    const appName = MAC_APP_NAMES[browser.id];
+    if (appName && existsSync(`/Applications/${appName}.app`)) return true;
+  }
   if (await commandExists(browser.command)) return true;
-  // Chromium pode ser chromium-browser em algumas distros
   if (browser.id === "chromium") return commandExists("chromium-browser");
   return false;
 }
@@ -341,7 +367,6 @@ export const browsers: IModule = {
   emoji: "🌐",
   description: "Navegadores (Vivaldi, Opera, Firefox, Chrome, Chromium)",
   installsSoftware: true,
-  platforms: ["linux"],
 
   async run(ctx: IRunContext) {
     log.title("browsers", "Navegadores");
@@ -399,8 +424,8 @@ export const browsers: IModule = {
       }
     }
 
-    // Browser padrao
-    if (installed.length > 0) {
+    // Browser padrao (Linux only — macOS usa Preferencias do Sistema)
+    if (installed.length > 0 && !isMacos()) {
       if (ctx.isAll) {
         // --all/--update: so define se nenhum browser padrao esta configurado
         let currentDefault = "";

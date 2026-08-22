@@ -1,5 +1,5 @@
 import { $ } from "bun";
-import { existsSync } from "fs";
+import { existsSync, lstatSync } from "fs";
 import type { IModule } from "./index";
 import { DOTFILES_DIR, HOME, commandExists, getDesktop, getDistro, isMacos, pkgInstall, symlink, versionGte } from "../helpers";
 import { log, tracker } from "../log";
@@ -92,6 +92,18 @@ async function setupZsh() {
   await symlink(`${DOTFILES_DIR}/zsh/.zshrc`, `${HOME}/.zshrc`);
   log.ok("~/.zshrc -> cbdotfiles");
 
+  // p10k config (local override tem prioridade)
+  const p10kLocal = `${DOTFILES_DIR}/local/zsh/.p10k.zsh`;
+  const p10kRepo = `${DOTFILES_DIR}/zsh/.p10k.zsh`;
+  const p10kHome = `${HOME}/.p10k.zsh`;
+  if (existsSync(p10kLocal)) {
+    await symlink(p10kLocal, p10kHome);
+    log.ok("~/.p10k.zsh -> local override");
+  } else if (existsSync(p10kRepo)) {
+    await symlink(p10kRepo, p10kHome);
+    log.ok("~/.p10k.zsh -> cbdotfiles");
+  }
+
   await $`mkdir -p ${HOME}/.config/cb`;
   await symlink(`${DOTFILES_DIR}/zsh/aliases.zsh`, `${HOME}/.config/cb/aliases.zsh`);
   log.ok("~/.config/cb/aliases.zsh -> cbdotfiles");
@@ -173,7 +185,7 @@ async function setupGit() {
   // Remove symlink se existir (evita loop circular de include)
   const globalGitconfig = `${HOME}/.gitconfig`;
   try {
-    const stats = require("fs").lstatSync(globalGitconfig);
+    const stats = lstatSync(globalGitconfig);
     if (stats.isSymbolicLink()) {
       await $`rm ${globalGitconfig}`.nothrow();
       log.dim("Removido symlink ~/.gitconfig (usando include.path)");
@@ -384,9 +396,11 @@ async function setupKitty() {
   log.title("kitty", "Kitty");
 
   const KITTY_MIN_VERSION = TERMINAL.minVersion;
-  const kittyApp = `${HOME}/.local/kitty.app/bin/kitty`;
+  const kittyApp = isMacos()
+    ? "/Applications/kitty.app/Contents/MacOS/kitty"
+    : `${HOME}/.local/kitty.app/bin/kitty`;
 
-  // Checa se ja tem kitty >= 0.40 (instalado via site oficial)
+  // Checa se ja tem kitty >= 0.40
   let needsInstall = true;
   if (existsSync(kittyApp)) {
     const ver = (await $`${kittyApp} --version`.text().catch(() => "")).match(/\d+\.\d+\.\d+/)?.[0];
@@ -409,12 +423,18 @@ async function setupKitty() {
   }
 
   if (needsInstall) {
-    log.add("Instalando Kitty do site oficial (latest)...");
-    await $`curl -sSL https://sw.kovidgoyal.net/kitty/installer.sh -o /tmp/kitty-installer.sh`.nothrow();
-    await $`sh /tmp/kitty-installer.sh launch=n`.nothrow();
-    await $`rm -f /tmp/kitty-installer.sh`.nothrow();
-    if (existsSync(kittyApp)) {
-      const ver = (await $`${kittyApp} --version`.text().catch(() => "")).match(/\d+\.\d+\.\d+/)?.[0];
+    if (isMacos()) {
+      log.add("Instalando Kitty via Homebrew...");
+      await $`brew install --cask kitty`.nothrow();
+    } else {
+      log.add("Instalando Kitty do site oficial (latest)...");
+      await $`curl -sSL https://sw.kovidgoyal.net/kitty/installer.sh -o /tmp/kitty-installer.sh`.nothrow();
+      await $`sh /tmp/kitty-installer.sh launch=n`.nothrow();
+      await $`rm -f /tmp/kitty-installer.sh`.nothrow();
+    }
+    if (existsSync(kittyApp) || (await commandExists("kitty"))) {
+      const bin = existsSync(kittyApp) ? kittyApp : "kitty";
+      const ver = (await $`${bin} --version`.text().catch(() => "")).match(/\d+\.\d+\.\d+/)?.[0];
       log.ok(`Kitty v${ver} instalado`);
       tracker.installed("Kitty");
     } else {
@@ -423,12 +443,14 @@ async function setupKitty() {
     }
   }
 
-  // Symlinks pra ~/.local/bin (garante que 'kitty' aponta pro novo)
-  await $`mkdir -p ${HOME}/.local/bin`.nothrow();
-  if (existsSync(kittyApp)) {
-    await $`ln -sf ${kittyApp} ${HOME}/.local/bin/kitty`.nothrow();
-    await $`ln -sf ${HOME}/.local/kitty.app/bin/kitten ${HOME}/.local/bin/kitten`.nothrow();
-    log.ok("~/.local/bin/kitty -> kitty.app (latest)");
+  // Symlinks pra ~/.local/bin (Linux: garante que 'kitty' aponta pro novo)
+  if (!isMacos()) {
+    await $`mkdir -p ${HOME}/.local/bin`.nothrow();
+    if (existsSync(kittyApp)) {
+      await $`ln -sf ${kittyApp} ${HOME}/.local/bin/kitty`.nothrow();
+      await $`ln -sf ${HOME}/.local/kitty.app/bin/kitten ${HOME}/.local/bin/kitten`.nothrow();
+      log.ok("~/.local/bin/kitty -> kitty.app (latest)");
+    }
   }
 
   // Symlink config base
@@ -470,9 +492,13 @@ async function setupKitty() {
     }
 
     default:
-      // GNOME, KDE, Cinnamon, XFCE, etc. — usa config padrao
-      await symlink(`${DOTFILES_DIR}/kitty/omarchy.conf`, envConf);
-      log.ok(`env: ${desktop} (usando config padrao)`);
+      if (isMacos()) {
+        await symlink(`${DOTFILES_DIR}/kitty/macos.conf`, envConf);
+        log.ok("env: macOS (titlebar-only, opacity 0.85)");
+      } else {
+        await symlink(`${DOTFILES_DIR}/kitty/omarchy.conf`, envConf);
+        log.ok(`env: ${desktop} (usando config padrao)`);
+      }
       break;
   }
 
@@ -487,6 +513,48 @@ async function setupKitty() {
 }
 
 // ---------------------------------------------------------------------------
+// Ghostty terminal
+// ---------------------------------------------------------------------------
+
+async function setupGhostty() {
+  log.title("ghostty", "Ghostty");
+
+  const ghosttyInstalled = (await commandExists("ghostty")) || existsSync("/Applications/Ghostty.app");
+
+  if (!ghosttyInstalled) {
+    const distro = await getDistro();
+    switch (distro) {
+      case "macos":
+        log.add("Instalando Ghostty via Homebrew...");
+        await $`brew install --cask ghostty`.nothrow();
+        break;
+      case "arch":
+        log.add("Instalando Ghostty...");
+        await pkgInstall("ghostty");
+        break;
+      default:
+        log.dim("Ghostty: instale manualmente — https://ghostty.org");
+        tracker.skipped("Ghostty");
+    }
+
+    if ((await commandExists("ghostty")) || existsSync("/Applications/Ghostty.app")) {
+      log.ok("Ghostty instalado");
+      tracker.installed("Ghostty");
+    }
+  } else {
+    log.ok("Ghostty ja instalado");
+    tracker.skipped("Ghostty");
+  }
+
+  await symlink(
+    `${DOTFILES_DIR}/ghostty/config.ghostty`,
+    `${HOME}/.config/ghostty/config.ghostty`
+  );
+  log.ok("~/.config/ghostty/config.ghostty -> cbdotfiles");
+  tracker.configured("ghostty config");
+}
+
+// ---------------------------------------------------------------------------
 // Module
 // ---------------------------------------------------------------------------
 
@@ -494,7 +562,7 @@ export const shellTools: IModule = {
   id: "shell-tools",
   name: "Shell Tools",
   emoji: "🐚",
-  description: "Zsh + Oh My Zsh + NVM + Git + Kitty + Zoxide + fzf + ripgrep + bat + eza",
+  description: "Zsh + Oh My Zsh + NVM + Git + Kitty + Ghostty + CLI tools",
   installsSoftware: true,
 
   async run() {
@@ -503,6 +571,7 @@ export const shellTools: IModule = {
     await setupGit();
     await setupSSH();
     await setupKitty();
+    await setupGhostty();
     await setupCliTools();
   },
 };

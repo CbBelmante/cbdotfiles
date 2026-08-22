@@ -60,7 +60,7 @@ cd ~/Workspaces/cbdotfiles
 source ~/.zshrc
 ```
 
-> No macOS, o instalador instala o que funciona (shell-tools, dev, fonts, fastfetch, btop) e pula modulos Linux-only (drivers, keybinds, gaming, etc.) com "skip".
+> No macOS, o instalador usa Homebrew para tudo. Apenas modulos genuinamente Linux-only (drivers, desktop-tools, keybinds, power) sao pulados com "skip".
 
 > O instalador cuida de tudo: instala Homebrew e Bun (se necessario), dependencias e abre o menu interativo.
 
@@ -102,17 +102,17 @@ Ao selecionar o modulo `browsers`, o instalador mostra checkbox dos navegadores 
 
 | Modulo | Descricao | Plataforma |
 |--------|-----------|:----------:|
-| 🐚 `shell-tools` | Zsh + Oh My Zsh + NVM + Node LTS + Git + SSH key + Kitty + CLI tools | 🐧 🍎 |
+| 🐚 `shell-tools` | Zsh + Oh My Zsh + NVM + Node LTS + Git + SSH key + Kitty + Ghostty + CLI tools | 🐧 🍎 |
 | 🔤 `fonts` | Fontes Nerd Font | 🐧 🍎 |
-| 🛠️ `dev` | Neovim + Zellij + tmux + VS Code + GitKraken + GitHub CLI + LazyGit + Delta + LazyDocker + Docker + SQLite + Tauri Dev + Firebase + Supabase + Postman + Insomnia | 🐧 🍎 |
+| 🛠️ `dev` | Neovim + Zellij + tmux + VS Code + GitKraken + GitHub CLI + LazyGit + Delta + LazyDocker + Docker + SQLite + Firebase + Supabase + Postman | 🐧 🍎 |
 | 🖥️ `fastfetch` | Config Fastfetch (system info) | 🐧 🍎 |
 | 📊 `btop` | Config Btop (monitor de sistema) | 🐧 🍎 |
 | 🎮 `drivers` | Drivers GPU (AMD/Intel/NVIDIA) + diagnostico amdgpu/radeon + Bluetooth Mac | 🐧 |
-| 🌐 `browsers` | Navegadores + flags Wayland (browsers + Electron apps) | 🐧 |
+| 🌐 `browsers` | Navegadores (Vivaldi, Firefox, Chrome, Opera, Chromium) + flags Wayland no Linux | 🐧 🍎 |
 | 🖥️ `desktop-tools` | Ferramentas de desktop (wofi, clipboard, screenshots, notificacoes) | 🐧 |
-| 📦 `apps` | LibreOffice + Sublime + VLC + Obsidian + Kdenlive + PeaZip + qBittorrent | 🐧 |
-| 🎮 `gaming` | Steam + Lutris + ProtonUp-Qt + MangoHud + Gamemode + Wine + Discord | 🐧 |
-| 🖥️ `virtualization` | VirtualBox | 🐧 |
+| 📦 `apps` | LibreOffice + Sublime + VLC + Obsidian + Kdenlive + qBittorrent/Transmission + KeepingYouAwake | 🐧 🍎 |
+| 🎮 `gaming` | Steam + Discord (+ Lutris + ProtonUp-Qt + MangoHud + Gamemode + Wine no Linux) | 🐧 🍎 |
+| 🖥️ `virtualization` | UTM (macOS) / VirtualBox (Linux) | 🐧 🍎 |
 | ⌨️ `keybinds` | Gera e aplica keybinds (Hyprland/COSMIC) | 🐧 |
 | ⚡ `power` | Energia (suspend auto-detecta desktop/laptop) | 🐧 |
 
@@ -148,14 +148,49 @@ Faz automaticamente: `git pull` → `install.sh --update` → `source ~/.zshrc`
 
 > Todos os comandos `cb*` funcionam em camelCase e lowercase (ex: `cbdotUpdate` = `cbdotupdate` = `cbupdate`)
 
-## 🔑 SSH
+## 🔑 SSH + GitHub (pos-install)
 
-O instalador gera automaticamente uma chave SSH `ed25519` com o email do Git. Se ja existe, mostra a chave publica. Depois do install:
+O instalador gera automaticamente uma chave SSH `ed25519` com o email do Git e instala o GitHub CLI (`gh`). Depois do install, configure o acesso ao GitHub:
+
+### ⚡ Setup rapido (recomendado)
 
 ```bash
-cat ~/.ssh/id_ed25519.pub     # ver a chave
+# 1. Login no GitHub CLI (abre o browser)
+gh auth login
+
+# 2. Dar permissao pra adicionar SSH key
+gh auth refresh -h github.com -s admin:public_key
+
+# 3. Adicionar a chave SSH no GitHub (nome da maquina)
+gh ssh-key add ~/.ssh/id_ed25519.pub --title "Meu Mac Mini"
+
+# 4. Registrar GitHub como host confiavel
+ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+# 5. Pronto! Clone qualquer repo
+git clone git@github.com:usuario/repo.git
+```
+
+> Cada maquina gera sua propria chave SSH. Repita os passos 1-4 em cada maquina nova.
+> O titulo da chave (ex: "Meu Mac Mini", "Arch Desktop") identifica qual maquina no GitHub Settings.
+
+### 📋 Setup manual (alternativa)
+
+```bash
+# Ver a chave publica
+cat ~/.ssh/id_ed25519.pub
+
 # Cole em: https://github.com/settings/ssh/new
 ```
+
+### 🔗 HTTPS vs SSH
+
+| Protocolo | Clone | Quando usar |
+|-----------|-------|-------------|
+| SSH | `git clone git@github.com:user/repo.git` | Padrao (apos setup acima) |
+| HTTPS | `git clone https://github.com/user/repo.git` | Funciona direto apos `gh auth login` |
+
+> Apos o `gh auth login`, ambos os protocolos funcionam. SSH e o padrao recomendado — nao pede senha em push/pull.
 
 ## 🌐 Flags Wayland (browsers + Electron)
 
@@ -200,7 +235,7 @@ cbdotfiles/
 │           ├── drivers.ts         # 🎮 GPU + Bluetooth (detecta hardware)
 │           ├── browsers.ts        # 🌐 Vivaldi, Opera, Firefox, Chrome, Chromium
 │           ├── desktop-tools.ts   # 🖥️ Wofi, clipboard, screenshots (tiling WMs)
-│           ├── dev.ts             # 🛠️ Neovim, Zellij, VS Code, GitKraken, GitHub CLI, LazyGit, LazyDocker, Docker, SQLite, Tauri Dev, Firebase, Supabase, Postman, Insomnia
+│           ├── dev.ts             # 🛠️ Neovim, Zellij, VS Code, GitKraken, GitHub CLI, LazyGit, LazyDocker, Docker, SQLite, Tauri Dev, Firebase, Supabase, Postman, Insomnia, Claude, Gemini, Kimi, Codex, FlowForge
 │           ├── fastfetch.ts       # 🖥️ System info
 │           ├── btop.ts            # 📊 Monitor de sistema
 │           ├── apps.ts            # 📦 LibreOffice, Sublime, VLC, Obsidian...
@@ -229,8 +264,11 @@ cbdotfiles/
 │   ├── init.lua
 │   ├── lua/
 │   └── ...
+├── ghostty/
+│   └── config.ghostty             # 👻 Config Ghostty (cross-platform)
 ├── kitty/
 │   ├── kitty.conf                 # 🐱 Config base Kitty
+│   ├── macos.conf                 # 🍎 Override macOS (titlebar-only, font 13pt)
 │   ├── omarchy.conf               # 🔧 Override Omarchy (opacity 0.65)
 │   └── cosmic.conf                # 🔧 Override COSMIC (opacity 0.85)
 ├── lazygit/
@@ -259,8 +297,9 @@ cbdotfiles/
 ~/.config/zellij/layouts/*.kdl        → cbdotfiles/zellij/*.kdl
 ~/.config/nvim/                       → cbdotfiles/nvim/
 ~/.config/kitty/kitty.conf            → cbdotfiles/kitty/kitty.conf
-~/.config/kitty/env.conf              → cbdotfiles/kitty/{omarchy,cosmic}.conf
+~/.config/kitty/env.conf              → cbdotfiles/kitty/{macos,omarchy,cosmic}.conf
 ~/.config/kitty/local.conf            → cbdotfiles/local/kitty/kitty.conf (se existir)
+~/.config/ghostty/config.ghostty      → cbdotfiles/ghostty/config.ghostty
 ~/.config/lazygit/config.yml          → cbdotfiles/lazygit/config.yml
 ~/.tmux.conf                          → cbdotfiles/tmux/tmux.conf
 ~/.markdownlint-cli2.yaml             → cbdotfiles/nvim/.markdownlint-cli2.yaml
@@ -594,13 +633,15 @@ Cada modulo tem uma lista de tools com `active: true/false` no `defaults.ts`:
 
 | Lista | Tools `false` (apenas Custom) |
 |-------|-------------------------------|
-| `DEV_TOOLS_ENABLED` | Tauri, Insomnia |
+| `DEV_TOOLS_ENABLED` | Tauri, Insomnia, Claude Config, Claude Desktop, Claude Code, Gemini CLI, Kimi Code, Codex CLI, FlowForge |
 | `BROWSERS_ENABLED` | Opera, Chromium |
-| `APPS_ENABLED` | Kdenlive |
+| `APPS_ENABLED` | Kdenlive, KeepingYouAwake |
 | `GAMING_ENABLED` | (todos defaultInstall) |
-| `VIRTUALIZATION_ENABLED` | VirtualBox |
+| `VIRTUALIZATION_ENABLED` | VirtualBox/UTM |
 
 > Quer que o Docker nao instale por padrao? Mude `{ id: "docker", defaultInstall: false }` no `defaults.ts`. No modo Custom ele ainda aparece pra selecionar.
+
+> No macOS, ferramentas Linux-only (PavuControl, PeaZip, Lutris, ProtonUp-Qt, MangoHud, Gamemode, Wine) sao filtradas automaticamente e nao aparecem no menu. Apps com equivalente macOS sao instalados via `brew install --cask` (ex: qBittorrent → Transmission, VirtualBox → UTM).
 
 ### `vars.conf` (keybinds por desktop)
 
@@ -819,8 +860,9 @@ Overrides pra evitar conflito com Zellij e melhorar produtividade:
 - **🖥️ Zellij** - Multiplexador de terminal (Rust)
 - **🪟 tmux** - Multiplexador alternativo (catppuccin, vim nav, TPM)
 - **✏️ Neovim** - Editor (LazyVim + cb-headscale.nvim)
-- **🐱 Kitty** >= 0.40 - Terminal emulator (instalado do site oficial)
-- **🌐 Vivaldi** / **Opera** - Browsers
+- **🐱 Kitty** >= 0.40 - Terminal emulator (site oficial no Linux, brew no macOS)
+- **👻 Ghostty** - Terminal emulator (brew no macOS, pacman no Arch)
+- **🌐 Vivaldi** / **Firefox** / **Chrome** - Browsers
 - **💻 VS Code** - Editor GUI
 - **🐙 GitKraken** - Git GUI
 - **🦥 LazyGit** - Git TUI
@@ -829,4 +871,4 @@ Overrides pra evitar conflito com Zellij e melhorar produtividade:
 - **🖥️ Fastfetch** - System info
 - **📦 NVM** - Node Version Manager
 - **🔍 Zoxide** + **fzf** + **ripgrep** + **bat** - Shell tools
-- **🐧 Arch Linux** / **Ubuntu/Debian** / **Fedora** - Distros suportadas
+- **🐧 Arch Linux** / **Ubuntu/Debian** / **Fedora** / **🍎 macOS** - Plataformas suportadas

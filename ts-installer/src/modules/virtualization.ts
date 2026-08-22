@@ -1,6 +1,7 @@
 import { $ } from "bun";
+import { existsSync } from "fs";
 import type { IModule, IRunContext } from "./index";
-import { checkboxWithAll, commandExists, getDistro, pkgInstall } from "../helpers";
+import { checkboxWithAll, commandExists, getDistro, isMacos, pkgInstall } from "../helpers";
 import { log, tracker } from "../log";
 import { VIRTUALIZATION_ENABLED } from "../defaults";
 
@@ -22,10 +23,14 @@ const VIRT_TOOLS: IVirtTool[] = [
     name: "VirtualBox",
     emoji: "🖥️",
     async isInstalled() {
+      if (isMacos()) return existsSync("/Applications/UTM.app") || existsSync("/Applications/VirtualBox.app");
       return commandExists("virtualbox");
     },
     async install(distro) {
       switch (distro) {
+        case "macos":
+          await $`brew install --cask utm`;
+          break;
         case "arch":
           await pkgInstall("virtualbox", "virtualbox-host-modules-arch");
           break;
@@ -37,13 +42,14 @@ const VIRT_TOOLS: IVirtTool[] = [
           break;
       }
 
-      // Adiciona usuario ao grupo vboxusers
-      try {
-        await $`sudo usermod -aG vboxusers ${process.env.USER}`;
-        log.ok("Usuario adicionado ao grupo vboxusers");
-        log.warn("Reinicie o PC para aplicar o grupo");
-      } catch {
-        log.warn("Nao foi possivel adicionar ao grupo vboxusers");
+      if (!isMacos()) {
+        try {
+          await $`sudo usermod -aG vboxusers ${process.env.USER}`;
+          log.ok("Usuario adicionado ao grupo vboxusers");
+          log.warn("Reinicie o PC para aplicar o grupo");
+        } catch {
+          log.warn("Nao foi possivel adicionar ao grupo vboxusers");
+        }
       }
     },
   },
@@ -59,7 +65,6 @@ export const virtualization: IModule = {
   emoji: "🖥️",
   description: "VirtualBox",
   installsSoftware: true,
-  platforms: ["linux"],
 
   async run(ctx: IRunContext) {
     log.title("virtualization", "Virtualization Tools");

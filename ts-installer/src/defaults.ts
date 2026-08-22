@@ -159,6 +159,13 @@ export const DEV_TOOLS_ENABLED: IToolToggle[] = [
   { id: "supabase", defaultInstall: true },
   { id: "postman", defaultInstall: true },
   { id: "insomnia", defaultInstall: false },
+  { id: "claude-config", defaultInstall: false },
+  { id: "claude-desktop", defaultInstall: false },
+  { id: "claude-code", defaultInstall: false },
+  { id: "gemini-cli", defaultInstall: false },
+  { id: "kimi-cli", defaultInstall: false },
+  { id: "codex-cli", defaultInstall: false },
+  { id: "flowforge", defaultInstall: false },
 ];
 
 export const APPS_ENABLED: IToolToggle[] = [
@@ -170,6 +177,7 @@ export const APPS_ENABLED: IToolToggle[] = [
   { id: "kdenlive", defaultInstall: false },
   { id: "peazip", defaultInstall: true },
   { id: "qbittorrent", defaultInstall: true },
+  { id: "keepingyouawake", defaultInstall: true },
 ];
 
 export const GAMING_ENABLED: IToolToggle[] = [

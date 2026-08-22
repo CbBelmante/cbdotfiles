@@ -7,6 +7,7 @@ import {
   checkboxWithAll,
   commandExists,
   getDistro,
+  isMacos,
   pkgInstall,
   symlink,
   versionGte,
@@ -50,7 +51,7 @@ const DEV_TOOLS: IDevTool[] = [
       }
 
       log.add(`Instalando Neovim >= ${NVIM_MIN_VERSION}...`);
-      if (distro === "arch") {
+      if (distro === "arch" || distro === "macos") {
         await pkgInstall("neovim");
       } else {
         await $`mkdir -p ${HOME}/.local/bin ${HOME}/.local/nvim`;
@@ -104,7 +105,7 @@ const DEV_TOOLS: IDevTool[] = [
         log.ok("ImageMagick 7 (magick) ja instalado");
       } else {
         const distro = await getDistro();
-        if (distro === "arch") {
+        if (distro === "arch" || distro === "macos") {
           log.add("Instalando ImageMagick...");
           await pkgInstall("imagemagick");
         } else {
@@ -237,7 +238,7 @@ const DEV_TOOLS: IDevTool[] = [
       }
 
       log.add("Instalando Zellij...");
-      if (distro === "arch") {
+      if (distro === "arch" || distro === "macos") {
         await pkgInstall("zellij");
       } else {
         await $`mkdir -p ${HOME}/.local/bin`;
@@ -275,6 +276,7 @@ const DEV_TOOLS: IDevTool[] = [
     name: "VS Code",
     emoji: "💻",
     async isInstalled() {
+      if (isMacos() && existsSync("/Applications/Visual Studio Code.app")) return true;
       return commandExists("code");
     },
     async install(distro) {
@@ -288,6 +290,9 @@ const DEV_TOOLS: IDevTool[] = [
       switch (distro) {
         case "arch":
           await pkgInstall("code");
+          break;
+        case "macos":
+          await $`brew install --cask visual-studio-code`;
           break;
         case "debian":
           await $`curl -fsSL https://packages.microsoft.com/keys/microsoft.asc -o /tmp/microsoft-key.asc`;
@@ -312,6 +317,7 @@ const DEV_TOOLS: IDevTool[] = [
     emoji: "🐙",
     async isInstalled() {
       if (await commandExists("gitkraken")) return true;
+      if (isMacos()) return existsSync("/Applications/GitKraken.app");
       try {
         const flatpakList = await $`flatpak list 2>/dev/null`.text();
         return flatpakList.includes("gitkraken");
@@ -324,6 +330,9 @@ const DEV_TOOLS: IDevTool[] = [
       switch (distro) {
         case "arch":
           await pkgInstall("gitkraken");
+          break;
+        case "macos":
+          await $`brew install --cask gitkraken`;
           break;
         case "debian": {
           log.add("Baixando GitKraken .deb...");
@@ -361,7 +370,7 @@ const DEV_TOOLS: IDevTool[] = [
       }
 
       log.add("Instalando LazyGit...");
-      if (distro === "arch") {
+      if (distro === "arch" || distro === "macos") {
         await pkgInstall("lazygit");
       } else {
         try {
@@ -404,7 +413,7 @@ const DEV_TOOLS: IDevTool[] = [
       }
 
       log.add("Instalando Delta (git pager)...");
-      if (distro === "arch") {
+      if (distro === "arch" || distro === "macos") {
         await pkgInstall("git-delta");
       } else if (await commandExists("cargo")) {
         await $`cargo install git-delta`;
@@ -449,6 +458,9 @@ const DEV_TOOLS: IDevTool[] = [
         case "arch":
           await pkgInstall("github-cli");
           break;
+        case "macos":
+          await pkgInstall("gh");
+          break;
         case "debian": {
           await $`curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg -o /tmp/gh-keyring.gpg`;
           await $`sudo install -o root -g root -m 644 /tmp/gh-keyring.gpg /etc/apt/keyrings/githubcli-archive-keyring.gpg`;
@@ -481,7 +493,7 @@ const DEV_TOOLS: IDevTool[] = [
       }
 
       log.add("Instalando LazyDocker...");
-      if (distro === "arch") {
+      if (distro === "arch" || distro === "macos") {
         await pkgInstall("lazydocker");
       } else {
         try {
@@ -529,32 +541,36 @@ const DEV_TOOLS: IDevTool[] = [
       }
 
       // 2. Libs de sistema pra Tauri (WebView nativo)
-      log.add("Instalando dependencias de sistema do Tauri...");
-      switch (distro) {
-        case "arch":
-          await pkgInstall(
-            "webkit2gtk-4.1", "base-devel", "curl", "wget", "file",
-            "openssl", "appmenu-gtk-module", "gtk3",
-            "libappindicator-gtk3", "librsvg", "patchelf"
-          );
-          break;
-        case "debian":
-          await pkgInstall(
-            "libwebkit2gtk-4.1-dev", "build-essential", "curl", "wget",
-            "file", "libxdo-dev", "libssl-dev", "libgtk-3-dev",
-            "libsoup-3.0-dev", "libayatana-appindicator3-dev",
-            "librsvg2-dev", "patchelf"
-          );
-          break;
-        case "fedora":
-          await pkgInstall(
-            "webkit2gtk4.1-devel", "openssl-devel", "curl", "wget",
-            "file", "libappindicator-gtk3-devel", "librsvg2-devel",
-            "gtk3-devel", "libsoup3-devel", "patchelf"
-          );
-          break;
+      if (distro === "macos") {
+        log.ok("macOS: Xcode CLT fornece WebView nativo (WKWebView)");
+      } else {
+        log.add("Instalando dependencias de sistema do Tauri...");
+        switch (distro) {
+          case "arch":
+            await pkgInstall(
+              "webkit2gtk-4.1", "base-devel", "curl", "wget", "file",
+              "openssl", "appmenu-gtk-module", "gtk3",
+              "libappindicator-gtk3", "librsvg", "patchelf"
+            );
+            break;
+          case "debian":
+            await pkgInstall(
+              "libwebkit2gtk-4.1-dev", "build-essential", "curl", "wget",
+              "file", "libxdo-dev", "libssl-dev", "libgtk-3-dev",
+              "libsoup-3.0-dev", "libayatana-appindicator3-dev",
+              "librsvg2-dev", "patchelf"
+            );
+            break;
+          case "fedora":
+            await pkgInstall(
+              "webkit2gtk4.1-devel", "openssl-devel", "curl", "wget",
+              "file", "libappindicator-gtk3-devel", "librsvg2-devel",
+              "gtk3-devel", "libsoup3-devel", "patchelf"
+            );
+            break;
+        }
+        log.ok("Dependencias de sistema do Tauri instaladas");
       }
-      log.ok("Dependencias de sistema do Tauri instaladas");
 
       // 3. Tauri CLI
       if (await commandExists("cargo-tauri")) {
@@ -589,6 +605,9 @@ const DEV_TOOLS: IDevTool[] = [
         case "arch":
           await pkgInstall("sqlite");
           break;
+        case "macos":
+          await pkgInstall("sqlite3");
+          break;
         case "debian":
           await pkgInstall("sqlite3", "libsqlite3-dev");
           break;
@@ -621,6 +640,10 @@ const DEV_TOOLS: IDevTool[] = [
         case "arch":
           await pkgInstall("docker", "docker-compose");
           break;
+        case "macos":
+          await $`brew install --cask docker`;
+          log.ok("Docker Desktop instalado — abra o app para iniciar o daemon");
+          break;
         case "debian": {
           // Dependencias
           await $`sudo apt install -y ca-certificates curl`;
@@ -650,20 +673,22 @@ const DEV_TOOLS: IDevTool[] = [
           break;
       }
 
-      // Adiciona usuario ao grupo docker (sem precisar sudo)
-      try {
-        await $`sudo groupadd docker`.nothrow();
-        await $`sudo usermod -aG docker ${process.env.USER}`;
-        log.ok("Usuario adicionado ao grupo docker (efetivo no proximo login)");
-      } catch {}
+      if (!isMacos()) {
+        // Adiciona usuario ao grupo docker (sem precisar sudo)
+        try {
+          await $`sudo groupadd docker`.nothrow();
+          await $`sudo usermod -aG docker ${process.env.USER}`;
+          log.ok("Usuario adicionado ao grupo docker (efetivo no proximo login)");
+        } catch {}
 
-      // Habilita e inicia o servico
-      try {
-        await $`sudo systemctl enable docker`;
-        await $`sudo systemctl start docker`;
-        log.ok("Docker servico habilitado e iniciado");
-      } catch {
-        log.warn("Falha ao iniciar servico Docker — inicie manualmente: sudo systemctl start docker");
+        // Habilita e inicia o servico
+        try {
+          await $`sudo systemctl enable docker`;
+          await $`sudo systemctl start docker`;
+          log.ok("Docker servico habilitado e iniciado");
+        } catch {
+          log.warn("Falha ao iniciar servico Docker — inicie manualmente: sudo systemctl start docker");
+        }
       }
 
       if (await commandExists("docker")) {
@@ -689,6 +714,8 @@ const DEV_TOOLS: IDevTool[] = [
       log.add("Instalando Firebase CLI...");
       if (await commandExists("npm")) {
         await $`npm install -g firebase-tools`;
+      } else if (isMacos()) {
+        await pkgInstall("firebase-cli");
       } else {
         await $`curl -sL https://firebase.tools -o /tmp/firebase-install.sh`;
         await $`bash /tmp/firebase-install.sh`;
@@ -746,6 +773,7 @@ const DEV_TOOLS: IDevTool[] = [
     emoji: "📮",
     async isInstalled() {
       if (await commandExists("postman")) return true;
+      if (isMacos()) return existsSync("/Applications/Postman.app");
       try {
         const list = await $`flatpak list --app 2>/dev/null`.text();
         return list.includes("com.getpostman.Postman");
@@ -764,6 +792,9 @@ const DEV_TOOLS: IDevTool[] = [
           } else {
             log.warn("Instale postman via AUR (yay -S postman-bin)");
           }
+          break;
+        case "macos":
+          await $`brew install --cask postman`;
           break;
         case "debian":
         case "fedora":
@@ -784,6 +815,7 @@ const DEV_TOOLS: IDevTool[] = [
     name: "Insomnia",
     emoji: "🌙",
     async isInstalled() {
+      if (isMacos()) return existsSync("/Applications/Insomnia.app");
       return commandExists("insomnia");
     },
     async install(distro) {
@@ -797,6 +829,9 @@ const DEV_TOOLS: IDevTool[] = [
           } else {
             log.warn("Instale insomnia via AUR (yay -S insomnia-bin)");
           }
+          break;
+        case "macos":
+          await $`brew install --cask insomnia`;
           break;
         case "debian":
           await $`curl -fsSL https://updates.insomnia.rest/downloads/ubuntu/latest -o /tmp/insomnia.deb`;
@@ -812,6 +847,162 @@ const DEV_TOOLS: IDevTool[] = [
       if (await commandExists("insomnia")) log.ok("Insomnia instalado");
     },
   },
+  {
+    id: "claude-config",
+    name: "Claude Config",
+    emoji: "⚙️",
+    async isInstalled() {
+      const configRepo = `${HOME}/Workspaces/cbClaudeConfig`;
+      if (!existsSync(configRepo)) return false;
+      try {
+        const agentsLink = await $`readlink ${HOME}/.claude/agents 2>/dev/null`.text();
+        return agentsLink.trim().includes("cbClaudeConfig");
+      } catch {
+        return false;
+      }
+    },
+    async install() {
+      const configRepo = `${HOME}/Workspaces/cbClaudeConfig`;
+      if (!existsSync(configRepo)) {
+        log.warn("cbClaudeConfig nao encontrado em ~/Workspaces — clone primeiro: git clone git@github.com:CbBelmante/cbClaudeConfig.git ~/Workspaces/cbClaudeConfig");
+        return;
+      }
+
+      log.add("Linkando Claude Config...");
+      const dirs = ["agents", "skills"];
+      for (const dir of dirs) {
+        const source = `${configRepo}/${dir}`;
+        const target = `${HOME}/.claude/${dir}`;
+        if (existsSync(source)) {
+          await $`rm -rf ${target}`.nothrow();
+          await $`ln -sfn ${source} ${target}`;
+          log.ok(`~/.claude/${dir} -> cbClaudeConfig`);
+        }
+      }
+    },
+  },
+  {
+    id: "claude-desktop",
+    name: "Claude Desktop",
+    emoji: "🤖",
+    async isInstalled() {
+      if (isMacos()) return existsSync("/Applications/Claude.app");
+      return commandExists("claude-desktop");
+    },
+    async install(distro) {
+      log.add("Instalando Claude Desktop...");
+      switch (distro) {
+        case "macos":
+          await $`brew install --cask claude`;
+          break;
+        case "arch":
+          if (await commandExists("yay")) {
+            await $`yay -S --noconfirm claude-desktop`;
+          } else if (await commandExists("paru")) {
+            await $`paru -S --noconfirm claude-desktop`;
+          } else {
+            log.warn("Instale claude-desktop via AUR (yay -S claude-desktop)");
+          }
+          break;
+        case "debian":
+          await $`curl -fsSL https://storage.googleapis.com/anthropic-public/claude-desktop/claude-desktop-debian.gpg -o /tmp/claude.gpg`;
+          await $`sudo install -o root -g root -m 644 /tmp/claude.gpg /etc/apt/keyrings/claude-desktop.gpg`;
+          await $`rm -f /tmp/claude.gpg`;
+          await $`sudo bash -c 'echo "deb [signed-by=/etc/apt/keyrings/claude-desktop.gpg] https://storage.googleapis.com/anthropic-public/claude-desktop/debian stable main" > /etc/apt/sources.list.d/claude-desktop.list'`;
+          await $`sudo apt update -qq`.quiet();
+          await $`sudo apt install -y claude-desktop`;
+          break;
+      }
+      if (isMacos() ? existsSync("/Applications/Claude.app") : await commandExists("claude-desktop")) {
+        log.ok("Claude Desktop instalado");
+      }
+    },
+  },
+  {
+    id: "claude-code",
+    name: "Claude Code",
+    emoji: "🧠",
+    async isInstalled() {
+      return commandExists("claude");
+    },
+    async install() {
+      log.add("Instalando Claude Code...");
+      await $`npm install -g @anthropic-ai/claude-code`.nothrow();
+      if (await commandExists("claude")) {
+        log.ok("Claude Code instalado");
+      } else {
+        log.warn("Falha ao instalar Claude Code");
+      }
+    },
+  },
+  {
+    id: "gemini-cli",
+    name: "Gemini CLI",
+    emoji: "💎",
+    async isInstalled() {
+      return commandExists("gemini");
+    },
+    async install() {
+      log.add("Instalando Gemini CLI...");
+      await $`npm install -g @google/gemini-cli`.nothrow();
+      if (await commandExists("gemini")) {
+        log.ok("Gemini CLI instalado");
+      } else {
+        log.warn("Falha ao instalar Gemini CLI");
+      }
+    },
+  },
+  {
+    id: "kimi-cli",
+    name: "Kimi Code",
+    emoji: "🌙",
+    async isInstalled() {
+      return commandExists("kimi");
+    },
+    async install() {
+      log.add("Instalando Kimi Code...");
+      await $`npm install -g @moonshot-ai/kimi-code`.nothrow();
+      if (await commandExists("kimi")) {
+        log.ok("Kimi Code instalado");
+      } else {
+        log.warn("Falha ao instalar Kimi Code");
+      }
+    },
+  },
+  {
+    id: "codex-cli",
+    name: "Codex CLI",
+    emoji: "🧪",
+    async isInstalled() {
+      return commandExists("codex");
+    },
+    async install() {
+      log.add("Instalando Codex CLI...");
+      await $`npm install -g @openai/codex`.nothrow();
+      if (await commandExists("codex")) {
+        log.ok("Codex CLI instalado");
+      } else {
+        log.warn("Falha ao instalar Codex CLI");
+      }
+    },
+  },
+  {
+    id: "flowforge",
+    name: "FlowForge",
+    emoji: "⚒️",
+    async isInstalled() {
+      return commandExists("flowforge");
+    },
+    async install() {
+      log.add("Instalando FlowForge...");
+      await $`curl -fsSL https://get.flowforgesoft.com/install.sh | sh`.nothrow();
+      if (await commandExists("flowforge")) {
+        log.ok("FlowForge instalado");
+      } else {
+        log.warn("Falha ao instalar FlowForge");
+      }
+    },
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -822,7 +1013,7 @@ export const dev: IModule = {
   id: "dev",
   name: "Dev Tools",
   emoji: "🛠️",
-  description: "Neovim + Zellij + VS Code + GitKraken + GitHub CLI + LazyGit + Delta + Tauri Dev + LazyDocker + Docker",
+  description: "Neovim + Zellij + tmux + VS Code + GitKraken + LazyGit + Delta + Docker + Firebase + Supabase + Postman...",
   installsSoftware: true,
 
   async run(ctx: IRunContext) {

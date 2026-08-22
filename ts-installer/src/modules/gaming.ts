@@ -1,6 +1,7 @@
 import { $ } from "bun";
-import type { IModule, IRunContext } from "./index";
-import { checkboxWithAll, commandExists, getDistro, pkgInstall } from "../helpers";
+import { existsSync } from "fs";
+import type { IModule, IRunContext, Platform } from "./index";
+import { checkboxWithAll, commandExists, getDistro, isMacos, pkgInstall } from "../helpers";
 import { log, tracker } from "../log";
 import { GAMING_ENABLED } from "../defaults";
 
@@ -12,6 +13,7 @@ interface IGamingTool {
   id: string;
   name: string;
   emoji: string;
+  platforms?: Platform[];
   isInstalled: () => Promise<boolean>;
   install: (distro: string) => Promise<void>;
 }
@@ -22,10 +24,14 @@ const GAMING_TOOLS: IGamingTool[] = [
     name: "Steam",
     emoji: "🎮",
     async isInstalled() {
+      if (isMacos()) return existsSync("/Applications/Steam.app");
       return commandExists("steam");
     },
     async install(distro) {
       switch (distro) {
+        case "macos":
+          await $`brew install --cask steam`;
+          break;
         case "arch":
           await pkgInstall("steam");
           break;
@@ -56,6 +62,7 @@ const GAMING_TOOLS: IGamingTool[] = [
     id: "lutris",
     name: "Lutris",
     emoji: "🐧",
+    platforms: ["linux"],
     async isInstalled() {
       return commandExists("lutris");
     },
@@ -77,6 +84,7 @@ const GAMING_TOOLS: IGamingTool[] = [
     id: "protonup-qt",
     name: "ProtonUp-Qt",
     emoji: "🍷",
+    platforms: ["linux"],
     async isInstalled() {
       try {
         const list = await $`flatpak list --app 2>/dev/null`.text();
@@ -107,6 +115,7 @@ const GAMING_TOOLS: IGamingTool[] = [
     id: "mangohud",
     name: "MangoHud",
     emoji: "📊",
+    platforms: ["linux"],
     async isInstalled() {
       return commandExists("mangohud");
     },
@@ -128,6 +137,7 @@ const GAMING_TOOLS: IGamingTool[] = [
     id: "gamemode",
     name: "Gamemode",
     emoji: "⚡",
+    platforms: ["linux"],
     async isInstalled() {
       return commandExists("gamemoderun");
     },
@@ -149,6 +159,7 @@ const GAMING_TOOLS: IGamingTool[] = [
     id: "wine",
     name: "Wine + Winetricks",
     emoji: "🍷",
+    platforms: ["linux"],
     async isInstalled() {
       return commandExists("wine");
     },
@@ -173,6 +184,7 @@ const GAMING_TOOLS: IGamingTool[] = [
     name: "Discord",
     emoji: "💬",
     async isInstalled() {
+      if (isMacos()) return existsSync("/Applications/Discord.app");
       if (await commandExists("discord")) return true;
       if (await commandExists("Discord")) return true;
       try {
@@ -184,6 +196,9 @@ const GAMING_TOOLS: IGamingTool[] = [
     },
     async install(distro) {
       switch (distro) {
+        case "macos":
+          await $`brew install --cask discord`;
+          break;
         case "arch":
           await pkgInstall("discord");
           break;
@@ -216,10 +231,11 @@ export const gaming: IModule = {
   emoji: "🎮",
   description: "Steam + Lutris + ProtonUp-Qt + MangoHud + Gamemode + Wine + Discord",
   installsSoftware: true,
-  platforms: ["linux"],
 
   async run(ctx: IRunContext) {
     log.title("gaming", "Gaming Tools");
+
+    const currentPlatform: Platform = isMacos() ? "macos" : "linux";
 
     // Mostra status atual
     const installed: IGamingTool[] = [];
@@ -227,7 +243,8 @@ export const gaming: IModule = {
 
     const enabledIds = GAMING_ENABLED.map((t) => t.id);
     const defaultIds = GAMING_ENABLED.filter((t) => t.defaultInstall).map((t) => t.id);
-    const enabledTools = GAMING_TOOLS.filter((t) => enabledIds.includes(t.id));
+    const enabledTools = GAMING_TOOLS.filter((t) => enabledIds.includes(t.id))
+      .filter((t) => !t.platforms || t.platforms.includes(currentPlatform));
 
     for (const tool of enabledTools) {
       if (await tool.isInstalled()) {

@@ -1,6 +1,7 @@
 import { $ } from "bun";
-import type { IModule, IRunContext } from "./index";
-import { checkboxWithAll, commandExists, getDistro, pkgInstall } from "../helpers";
+import { existsSync } from "fs";
+import type { IModule, IRunContext, Platform } from "./index";
+import { checkboxWithAll, commandExists, getDistro, isMacos, pkgInstall } from "../helpers";
 import { log, tracker } from "../log";
 import { APPS_ENABLED } from "../defaults";
 
@@ -12,6 +13,7 @@ interface IApp {
   id: string;
   name: string;
   emoji: string;
+  platforms?: Platform[];
   isInstalled: () => Promise<boolean>;
   install: (distro: string) => Promise<void>;
 }
@@ -22,12 +24,16 @@ const APPS: IApp[] = [
     name: "LibreOffice",
     emoji: "📄",
     async isInstalled() {
+      if (isMacos()) return existsSync("/Applications/LibreOffice.app");
       return commandExists("libreoffice");
     },
     async install(distro) {
       switch (distro) {
         case "arch":
           await pkgInstall("libreoffice-fresh");
+          break;
+        case "macos":
+          await $`brew install --cask libreoffice`;
           break;
         case "debian":
           await $`sudo apt install -y libreoffice`;
@@ -43,10 +49,14 @@ const APPS: IApp[] = [
     name: "Sublime Text",
     emoji: "📝",
     async isInstalled() {
+      if (isMacos()) return existsSync("/Applications/Sublime Text.app");
       return commandExists("subl");
     },
     async install(distro) {
       switch (distro) {
+        case "macos":
+          await $`brew install --cask sublime-text`;
+          break;
         case "arch":
           // AUR
           if (await commandExists("yay")) {
@@ -77,6 +87,7 @@ const APPS: IApp[] = [
     id: "pavucontrol",
     name: "PavuControl",
     emoji: "🔊",
+    platforms: ["linux"],
     async isInstalled() {
       return commandExists("pavucontrol");
     },
@@ -99,10 +110,14 @@ const APPS: IApp[] = [
     name: "VLC",
     emoji: "🎬",
     async isInstalled() {
+      if (isMacos()) return existsSync("/Applications/VLC.app");
       return commandExists("vlc");
     },
     async install(distro) {
       switch (distro) {
+        case "macos":
+          await $`brew install --cask vlc`;
+          break;
         case "arch":
           await pkgInstall("vlc");
           break;
@@ -127,6 +142,7 @@ const APPS: IApp[] = [
     name: "Obsidian",
     emoji: "🗒️",
     async isInstalled() {
+      if (isMacos()) return existsSync("/Applications/Obsidian.app");
       if (await commandExists("obsidian")) return true;
       try {
         const list = await $`flatpak list --app 2>/dev/null`.text();
@@ -137,6 +153,9 @@ const APPS: IApp[] = [
     },
     async install(distro) {
       switch (distro) {
+        case "macos":
+          await $`brew install --cask obsidian`;
+          break;
         case "arch":
           if (await commandExists("yay")) {
             await $`yay -S --noconfirm obsidian`;
@@ -163,10 +182,14 @@ const APPS: IApp[] = [
     name: "Kdenlive",
     emoji: "🎥",
     async isInstalled() {
+      if (isMacos()) return existsSync("/Applications/kdenlive.app");
       return commandExists("kdenlive");
     },
     async install(distro) {
       switch (distro) {
+        case "macos":
+          await $`brew install --cask kdenlive`;
+          break;
         case "arch":
           await pkgInstall("kdenlive");
           break;
@@ -183,6 +206,7 @@ const APPS: IApp[] = [
     id: "peazip",
     name: "PeaZip",
     emoji: "🗜️",
+    platforms: ["linux"],
     async isInstalled() {
       if (await commandExists("peazip")) return true;
       try {
@@ -216,13 +240,17 @@ const APPS: IApp[] = [
   },
   {
     id: "qbittorrent",
-    name: "qBittorrent",
+    name: isMacos() ? "Transmission" : "qBittorrent",
     emoji: "📥",
     async isInstalled() {
+      if (isMacos()) return existsSync("/Applications/Transmission.app");
       return commandExists("qbittorrent");
     },
     async install(distro) {
       switch (distro) {
+        case "macos":
+          await $`brew install --cask transmission`;
+          break;
         case "arch":
           await pkgInstall("qbittorrent");
           break;
@@ -235,6 +263,18 @@ const APPS: IApp[] = [
       }
     },
   },
+  {
+    id: "keepingyouawake",
+    name: "KeepingYouAwake",
+    emoji: "☕",
+    platforms: ["macos"],
+    async isInstalled() {
+      return existsSync("/Applications/KeepingYouAwake.app");
+    },
+    async install() {
+      await $`brew install --cask keepingyouawake`;
+    },
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -245,12 +285,13 @@ export const apps: IModule = {
   id: "apps",
   name: "Apps",
   emoji: "📦",
-  description: "LibreOffice + Sublime + VLC + Obsidian + Kdenlive + PeaZip + qBittorrent",
+  description: "LibreOffice + Sublime + VLC + Obsidian + qBittorrent/Transmission + KeepingYouAwake...",
   installsSoftware: true,
-  platforms: ["linux"],
 
   async run(ctx: IRunContext) {
     log.title("apps", "Apps do dia a dia");
+
+    const currentPlatform: Platform = isMacos() ? "macos" : "linux";
 
     // Mostra status atual
     const installed: IApp[] = [];
@@ -258,7 +299,8 @@ export const apps: IModule = {
 
     const enabledIds = APPS_ENABLED.map((a) => a.id);
     const defaultIds = APPS_ENABLED.filter((a) => a.defaultInstall).map((a) => a.id);
-    const enabledApps = APPS.filter((a) => enabledIds.includes(a.id));
+    const enabledApps = APPS.filter((a) => enabledIds.includes(a.id))
+      .filter((a) => !a.platforms || a.platforms.includes(currentPlatform));
 
     for (const app of enabledApps) {
       if (await app.isInstalled()) {

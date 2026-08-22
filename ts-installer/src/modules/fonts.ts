@@ -1,6 +1,7 @@
 import { $ } from "bun";
+import { readdirSync } from "fs";
 import type { IModule } from "./index";
-import { HOME, getDistro, pkgInstall } from "../helpers";
+import { HOME, getDistro, isMacos, pkgInstall } from "../helpers";
 import { log, tracker } from "../log";
 import { FONTS as FONT_DEFAULTS } from "../defaults";
 
@@ -28,16 +29,30 @@ export const fonts: IModule = {
 
     const distro = await getDistro();
 
+    const fontDir = isMacos()
+      ? `${HOME}/Library/Fonts`
+      : `${HOME}/.local/share/fonts`;
+
     for (const font of FONTS) {
       // Checa se ja esta instalada
-      try {
-        const fcList = await $`fc-list`.text();
-        if (fcList.toLowerCase().includes(font.fcName.toLowerCase())) {
-          log.ok(`${font.fcName} Nerd Font ja instalada`);
-          tracker.skipped(font.fcName);
-          continue;
-        }
-      } catch {}
+      let installed = false;
+      if (isMacos()) {
+        try {
+          const files = readdirSync(fontDir);
+          installed = files.some((f) => f.toLowerCase().includes(font.fcName.toLowerCase()));
+        } catch {}
+      } else {
+        try {
+          const fcList = await $`fc-list`.text();
+          installed = fcList.toLowerCase().includes(font.fcName.toLowerCase());
+        } catch {}
+      }
+
+      if (installed) {
+        log.ok(`${font.fcName} Nerd Font ja instalada`);
+        tracker.skipped(font.fcName);
+        continue;
+      }
 
       log.add(`Instalando ${font.name} Nerd Font...`);
 
@@ -47,8 +62,6 @@ export const fonts: IModule = {
           tracker.installed(font.fcName);
         }
       } else {
-        // Debian/Fedora: baixa do GitHub
-        const fontDir = `${HOME}/.local/share/fonts`;
         const url = `https://github.com/ryanoasis/nerd-fonts/releases/latest/download/${font.name}.tar.xz`;
         const tmp = `/tmp/${font.name}-nerd.tar.xz`;
 
@@ -66,8 +79,8 @@ export const fonts: IModule = {
       }
     }
 
-    // Atualiza cache de fontes
-    if (distro !== "arch") {
+    // Atualiza cache de fontes (Linux only)
+    if (distro !== "arch" && !isMacos()) {
       await $`fc-cache -f`.quiet().nothrow();
     }
   },

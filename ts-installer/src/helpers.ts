@@ -1,5 +1,6 @@
 import { $ } from "bun";
 import { checkbox } from "@inquirer/prompts";
+import { createInterface } from "readline";
 import { log } from "./log";
 import { existsSync } from "fs";
 import { resolve } from "path";
@@ -133,6 +134,26 @@ export async function commandExists(cmd: string): Promise<boolean> {
   } catch {
     return false;
   }
+}
+
+// ---------------------------------------------------------------------------
+// Input de texto cross-platform (Inquirer input() nao funciona com Bun no macOS)
+// ---------------------------------------------------------------------------
+
+export async function askInput(message: string, defaultValue?: string): Promise<string> {
+  if (isMacos()) {
+    const rl = createInterface({ input: process.stdin, output: process.stdout });
+    const hint = defaultValue ? `(${defaultValue}) ` : "";
+    return new Promise((resolve) => {
+      rl.question(`? ${message} ${hint}`, (answer) => {
+        rl.close();
+        resolve(answer.trim() || defaultValue || "");
+      });
+    });
+  }
+
+  const { input } = await import("@inquirer/prompts");
+  return input({ message, default: defaultValue });
 }
 
 // ---------------------------------------------------------------------------

@@ -1,11 +1,12 @@
 #!/usr/bin/env bun
 
 import { $ } from "bun";
-import { checkbox, input, select } from "@inquirer/prompts";
+import { checkbox, select } from "@inquirer/prompts";
 import { ALL_MODULES, getModuleById, type IModule, type IRunContext } from "./modules/index";
 import { changeDefaultBrowser } from "./modules/browsers";
 import {
   DOTFILES_DIR,
+  askInput,
   commandExists,
   isMacos,
   loadLocalOverrides,
@@ -51,7 +52,7 @@ if (isHelp) {
   console.log("    ./install.sh                   # interativo (Padrao / Custom)");
   console.log("    ./install.sh --all             # instala tudo");
   console.log("    ./install.sh --custom          # seleciona modulos");
-  console.log("    ./install.sh zsh nvim git      # instala so esses");
+  console.log("    ./install.sh shell-tools dev   # instala so esses");
   console.log();
   process.exit(0);
 }
@@ -148,14 +149,8 @@ async function setupGitIdentity() {
     return;
   }
 
-  const name = await input({
-    message: "Seu nome para commits Git:",
-    default: currentName || undefined,
-  });
-  const email = await input({
-    message: "Seu email para commits Git:",
-    default: currentEmail || undefined,
-  });
+  const name = await askInput("Seu nome para commits Git:", currentName || undefined);
+  const email = await askInput("Seu email para commits Git:", currentEmail || undefined);
 
   await $`git config --global user.name ${name}`;
   await $`git config --global user.email ${email}`;
@@ -255,16 +250,6 @@ async function main() {
   // Salva selecao pra --update futuro
   const moduleIds = selectedModules.map((m) => m.id);
   await saveSelectedModules(moduleIds);
-
-  // ---------------------------------------------------------------------------
-  // PATH check
-  // ---------------------------------------------------------------------------
-
-  if (!process.env.PATH?.includes(".local/bin")) {
-    console.log();
-    console.log('  ! Adicione ~/.local/bin ao PATH no seu .zshrc:');
-    console.log('      export PATH="$HOME/.local/bin:$PATH"');
-  }
 
   // ---------------------------------------------------------------------------
   // Summary
