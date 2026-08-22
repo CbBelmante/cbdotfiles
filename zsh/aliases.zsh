@@ -113,9 +113,11 @@ alias sqlPractice='bun ~/Workspaces/cbdotfiles/sql-practice/index.ts'
 alias sqlpractice='sqlPractice'
 alias sqlp='sqlPractice'
 
-open() {
+if [[ "$(uname)" != "Darwin" ]]; then
+  open() {
     xdg-open "$@" >/dev/null 2>&1 &
-}
+  }
+fi
 
 # ───────────────────────────────────────────────────────────────────────────────
 # Help & Info - cbSearch (busca interativa com fzf + JSON)
