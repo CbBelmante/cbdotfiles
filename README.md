@@ -145,6 +145,7 @@ Faz automaticamente: `git pull` → `install.sh --update` → `source ~/.zshrc`
 | `pcInfo gpu` | | Diagnostico GPU (driver, vulkan, VA-API, kernel params) |
 | `cbHelp` | | Referencia completa de comandos e atalhos |
 | `cbKeysHelp` | | Busca interativa de atalhos do desktop |
+| `claudeRoot` | | Abre a pasta ~/.claude no file manager |
 
 > Todos os comandos `cb*` funcionam em camelCase e lowercase (ex: `cbdotUpdate` = `cbdotupdate` = `cbupdate`)
 

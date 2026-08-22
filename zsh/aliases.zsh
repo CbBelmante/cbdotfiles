@@ -119,6 +119,9 @@ if [[ "$(uname)" != "Darwin" ]]; then
   }
 fi
 
+alias claudeRoot='open ~/.claude'
+alias clauderoot='claudeRoot'
+
 # ───────────────────────────────────────────────────────────────────────────────
 # Help & Info - cbSearch (busca interativa com fzf + JSON)
 # ───────────────────────────────────────────────────────────────────────────────
