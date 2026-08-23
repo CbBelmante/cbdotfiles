@@ -940,12 +940,12 @@ const DEV_TOOLS: IDevTool[] = [
     name: "Antigravity CLI",
     emoji: "🚀",
     async isInstalled() {
-      return commandExists("antigravity");
+      return commandExists("agy");
     },
     async install() {
       log.add("Instalando Antigravity CLI...");
       await $`curl -fsSL https://antigravity.google/cli/install.sh | bash`.nothrow();
-      if (await commandExists("antigravity")) {
+      if (await commandExists("agy")) {
         log.ok("Antigravity CLI instalado");
       } else {
         log.warn("Falha ao instalar Antigravity CLI");
