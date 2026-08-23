@@ -238,7 +238,7 @@ cbdotfiles/
 │           ├── drivers.ts         # 🎮 GPU + Bluetooth (detecta hardware)
 │           ├── browsers.ts        # 🌐 Vivaldi, Opera, Firefox, Chrome, Chromium
 │           ├── desktop-tools.ts   # 🖥️ Wofi, clipboard, screenshots (tiling WMs)
-│           ├── dev.ts             # 🛠️ Neovim, Zellij, VS Code, GitKraken, GitHub CLI, LazyGit, LazyDocker, Docker, SQLite, Tauri Dev, Firebase, Supabase, Postman, Insomnia, Claude, Gemini, Kimi, Codex, FlowForge
+│           ├── dev.ts             # 🛠️ Neovim, Zellij, VS Code, GitKraken, GitHub CLI, LazyGit, LazyDocker, Docker, SQLite, Tauri Dev, Firebase, Supabase, Postman, Insomnia, Claude, Antigravity, Kimi, Codex, FlowForge
 │           ├── fastfetch.ts       # 🖥️ System info
 │           ├── btop.ts            # 📊 Monitor de sistema
 │           ├── apps.ts            # 📦 LibreOffice, Sublime, VLC, Obsidian...
@@ -642,7 +642,7 @@ Cada modulo tem uma lista de tools com `active: true/false` no `defaults.ts`:
 
 | Lista | Tools `false` (apenas Custom) |
 |-------|-------------------------------|
-| `DEV_TOOLS_ENABLED` | Tauri, Insomnia, Claude Config, Claude Desktop, Claude Code, Gemini CLI, Kimi Code, Codex CLI, FlowForge |
+| `DEV_TOOLS_ENABLED` | Tauri, Insomnia, Claude Config, Claude Desktop, Claude Code, Antigravity CLI, Kimi Code, Codex CLI, FlowForge |
 | `BROWSERS_ENABLED` | Opera, Chromium |
 | `APPS_ENABLED` | Kdenlive, KeepingYouAwake |
 | `GAMING_ENABLED` | (todos defaultInstall) |

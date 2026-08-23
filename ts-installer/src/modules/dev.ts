@@ -936,19 +936,19 @@ const DEV_TOOLS: IDevTool[] = [
     },
   },
   {
-    id: "gemini-cli",
-    name: "Gemini CLI",
-    emoji: "💎",
+    id: "antigravity-cli",
+    name: "Antigravity CLI",
+    emoji: "🚀",
     async isInstalled() {
-      return commandExists("gemini");
+      return commandExists("antigravity");
     },
     async install() {
-      log.add("Instalando Gemini CLI...");
-      await $`npm install -g @google/gemini-cli`.nothrow();
-      if (await commandExists("gemini")) {
-        log.ok("Gemini CLI instalado");
+      log.add("Instalando Antigravity CLI...");
+      await $`curl -fsSL https://antigravity.google/cli/install.sh | bash`.nothrow();
+      if (await commandExists("antigravity")) {
+        log.ok("Antigravity CLI instalado");
       } else {
-        log.warn("Falha ao instalar Gemini CLI");
+        log.warn("Falha ao instalar Antigravity CLI");
       }
     },
   },

@@ -162,7 +162,7 @@ export const DEV_TOOLS_ENABLED: IToolToggle[] = [
   { id: "claude-config", defaultInstall: false },
   { id: "claude-desktop", defaultInstall: false },
   { id: "claude-code", defaultInstall: false },
-  { id: "gemini-cli", defaultInstall: false },
+  { id: "antigravity-cli", defaultInstall: false },
   { id: "kimi-cli", defaultInstall: false },
   { id: "codex-cli", defaultInstall: false },
   { id: "flowforge", defaultInstall: false },

@@ -242,6 +242,7 @@ const LEGACY_MODULE_MAP: Record<string, string> = {
   nvm: "shell-tools",
   git: "shell-tools",
   kitty: "shell-tools",
+  "gemini-cli": "antigravity-cli",
 };
 
 export function loadSavedModules(): string[] | null {
