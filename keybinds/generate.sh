@@ -116,11 +116,12 @@ key_to_cosmic() {
 
 mods_to_aerospace() {
   local result="$1"
-  result="${result//Super/alt}"
+  result="${result//Super/cmd}"
   result="${result//Ctrl/ctrl}"
   result="${result//Shift/shift}"
   result="${result//Alt/alt}"
-  echo "$result" | tr '+' '-' | tr '[:upper:]' '[:lower:]'
+  result=$(echo "$result" | tr '+' '-' | tr '[:upper:]' '[:lower:]')
+  echo "$result"
 }
 
 key_to_aerospace() {
@@ -266,6 +267,8 @@ generate_aerospace() {
 #
 # Docs: https://nikitabobko.github.io/AeroSpace/guide
 # ═══════════════════════════════════════════════════════════════════════════════
+
+config-version = 2
 
 start-at-login = true
 

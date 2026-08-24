@@ -23,6 +23,7 @@ import { log, showHeader, showSummary, tracker, type IModuleStatus } from "./log
 const args = process.argv.slice(2);
 const isHelp = args.includes("--help") || args.includes("-h");
 const isAll = args.includes("--all");
+const isMinimal = args.includes("--minimal");
 const isCustom = args.includes("--custom");
 const isUpdate = args.includes("--update");
 const isChBrowser = args.includes("--chbrowser");
@@ -39,6 +40,7 @@ if (isHelp) {
   console.log();
   console.log("  Opcoes:");
   console.log("    --all       Instala todos os modulos (sem perguntar)");
+  console.log("    --minimal   Instala uso diario (sem infra dev pesada)");
   console.log("    --custom    Vai direto pra selecao de modulos");
   console.log("    --update    Reinstala os modulos da ultima selecao");
   console.log("    --chbrowser  Altera o browser padrao (sem instalar)");
@@ -84,10 +86,15 @@ async function pickModules(): Promise<IModule[]> {
 // Menu interativo: Padrao / Custom
 // ---------------------------------------------------------------------------
 
-async function interactiveMenu(): Promise<{ modules: IModule[]; isAll: boolean }> {
+async function interactiveMenu(): Promise<{ modules: IModule[]; isAll: boolean; isMinimal?: boolean }> {
   const mode = await select({
     message: "Como deseja instalar?",
     choices: [
+      {
+        name: "Minimal (shell + terminal + apps — sem infra dev)",
+        value: "minimal" as const,
+        description: "Uso diario completo sem Docker, NVM, Firebase, etc.",
+      },
       {
         name: "Padrao (todos os modulos)",
         value: "default" as const,
@@ -101,6 +108,9 @@ async function interactiveMenu(): Promise<{ modules: IModule[]; isAll: boolean }
     ],
   });
 
+  if (mode === "minimal") {
+    return { modules: ALL_MODULES, isAll: true, isMinimal: true };
+  }
   if (mode === "default") {
     return { modules: ALL_MODULES, isAll: true };
   }
@@ -183,12 +193,24 @@ async function main() {
     await acquireSudo();
   }
 
-  // Configura Git nome/email se ainda nao tem
-  await setupGitIdentity();
+  // Configura Git nome/email (pula no minimal — usa existente sem perguntar)
+  let minimal = isMinimal;
+  if (!minimal) {
+    await setupGitIdentity();
+  } else {
+    try {
+      const name = (await $`git config --global user.name`.text()).trim();
+      const email = (await $`git config --global user.email`.text()).trim();
+      if (name && email) log.ok(`Git: ${name} <${email}> (existente)`);
+      else log.dim("Git: nome/email nao configurado (use cbdotInstall pra configurar depois)");
+    } catch {
+      log.dim("Git: nome/email nao configurado (use cbdotInstall pra configurar depois)");
+    }
+  }
 
   // Determina quais modulos instalar
   let selectedModules: IModule[];
-  let runAll = isAll;
+  let runAll = isAll || isMinimal;
 
   if (isUpdate) {
     // --update: reinstala os modulos da ultima selecao (sem prompts internos)
@@ -206,6 +228,10 @@ async function main() {
       selectedModules = result.modules;
       runAll = result.isAll;
     }
+  } else if (isMinimal) {
+    selectedModules = ALL_MODULES;
+    minimal = true;
+    console.log("  Instalando modo minimal...\n");
   } else if (isAll) {
     selectedModules = ALL_MODULES;
     console.log("  Instalando todos os modulos...\n");
@@ -225,6 +251,7 @@ async function main() {
     const result = await interactiveMenu();
     selectedModules = result.modules;
     runAll = result.isAll;
+    if (result.isMinimal) minimal = true;
   }
 
   // ---------------------------------------------------------------------------
@@ -232,13 +259,20 @@ async function main() {
   // ---------------------------------------------------------------------------
 
   const results: Array<{ name: string; status: IModuleStatus }> = [];
-  const ctx: IRunContext = { overrides, isAll: runAll };
+  const ctx: IRunContext = { overrides, isAll: runAll, isMinimal: minimal };
 
   const currentPlatform = isMacos() ? "macos" : "linux";
+  const minimalSkipModules = new Set(["gaming", "virtualization"]);
 
   for (const mod of selectedModules) {
     if (mod.platforms && !mod.platforms.includes(currentPlatform)) {
       log.warn(`[${mod.id}] Pulado — nao suportado no ${currentPlatform}`);
+      results.push({ name: mod.id, status: "skipped" });
+      continue;
+    }
+
+    if (minimal && minimalSkipModules.has(mod.id)) {
+      log.warn(`[${mod.id}] Pulado — modo minimal`);
       results.push({ name: mod.id, status: "skipped" });
       continue;
     }

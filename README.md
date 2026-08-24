@@ -72,7 +72,8 @@ O instalador abre um menu interativo com duas opcoes:
 
 ```
 ? Como deseja instalar?
-❯ Padrao (todos os modulos)
+❯ Minimal (shell + terminal + apps — sem infra dev)
+  Padrao (todos os modulos)
   Custom (selecionar modulos)
 ```
 

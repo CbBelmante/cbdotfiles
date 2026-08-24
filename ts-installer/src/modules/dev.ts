@@ -1088,13 +1088,24 @@ export const dev: IModule = {
   async run(ctx: IRunContext) {
     log.title("dev", "Dev Tools");
 
+    const MINIMAL_SKIP = new Set([
+      "docker", "firebase", "supabase", "gitkraken", "postman",
+      "insomnia", "lazydocker", "tauri", "phonto",
+      "claude-config", "claude-desktop", "claude-code",
+      "antigravity-cli", "kimi-cli", "codex-cli", "flowforge",
+    ]);
+
     // Mostra status atual
     const installed: IDevTool[] = [];
     const available: IDevTool[] = [];
 
     const enabledIds = DEV_TOOLS_ENABLED.map((t) => t.id);
     const defaultIds = DEV_TOOLS_ENABLED.filter((t) => t.defaultInstall).map((t) => t.id);
-    const enabledTools = DEV_TOOLS.filter((t) => enabledIds.includes(t.id));
+    let enabledTools = DEV_TOOLS.filter((t) => enabledIds.includes(t.id));
+
+    if (ctx.isMinimal) {
+      enabledTools = enabledTools.filter((t) => !MINIMAL_SKIP.has(t.id));
+    }
 
     for (const tool of enabledTools) {
       if (await tool.isInstalled()) {

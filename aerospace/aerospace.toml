@@ -8,6 +8,8 @@
 # Docs: https://nikitabobko.github.io/AeroSpace/guide
 # ═══════════════════════════════════════════════════════════════════════════════
 
+config-version = 2
+
 start-at-login = true
 
 enable-normalization-flatten-containers = true
@@ -29,140 +31,143 @@ outer.right = 10
 
 [mode.main.binding]
 # Focus left
-alt-h = 'focus left'
+cmd-h = 'focus left'
 
 # Focus down
-alt-j = 'focus down'
+cmd-j = 'focus down'
 
 # Focus right
-alt-l = 'focus right'
+cmd-l = 'focus right'
 
 # Focus left
-alt-left = 'focus left'
+cmd-left = 'focus left'
 
 # Focus down
-alt-down = 'focus down'
+cmd-down = 'focus down'
 
 # Focus up
-alt-up = 'focus up'
+cmd-up = 'focus up'
 
 # Focus right
-alt-right = 'focus right'
+cmd-right = 'focus right'
 
 # Move window left
-alt-shift-h = 'move left'
+cmd-shift-h = 'move left'
 
 # Move window down
-alt-shift-j = 'move down'
+cmd-shift-j = 'move down'
 
 # Move window up
-alt-shift-k = 'move up'
+cmd-shift-k = 'move up'
 
 # Move window right
-alt-shift-l = 'move right'
+cmd-shift-l = 'move right'
 
 # Workspace 1
-alt-1 = 'workspace 1'
+cmd-1 = 'workspace 1'
 
 # Workspace 2
-alt-2 = 'workspace 2'
+cmd-2 = 'workspace 2'
 
 # Workspace 3
-alt-3 = 'workspace 3'
+cmd-3 = 'workspace 3'
 
 # Workspace 4
-alt-4 = 'workspace 4'
+cmd-4 = 'workspace 4'
 
 # Workspace 5
-alt-5 = 'workspace 5'
+cmd-5 = 'workspace 5'
 
 # Workspace 6
-alt-6 = 'workspace 6'
+cmd-6 = 'workspace 6'
 
 # Workspace 7
-alt-7 = 'workspace 7'
+cmd-7 = 'workspace 7'
 
 # Workspace 8
-alt-8 = 'workspace 8'
+cmd-8 = 'workspace 8'
 
 # Workspace 9
-alt-9 = 'workspace 9'
+cmd-9 = 'workspace 9'
 
 # Move to workspace 1
-alt-shift-1 = 'move-node-to-workspace 1'
+cmd-shift-1 = 'move-node-to-workspace 1'
 
 # Move to workspace 2
-alt-shift-2 = 'move-node-to-workspace 2'
+cmd-shift-2 = 'move-node-to-workspace 2'
 
 # Move to workspace 3
-alt-shift-3 = 'move-node-to-workspace 3'
+cmd-shift-3 = 'move-node-to-workspace 3'
 
 # Move to workspace 4
-alt-shift-4 = 'move-node-to-workspace 4'
+cmd-shift-4 = 'move-node-to-workspace 4'
 
 # Move to workspace 5
-alt-shift-5 = 'move-node-to-workspace 5'
+cmd-shift-5 = 'move-node-to-workspace 5'
 
 # Move to workspace 6
-alt-shift-6 = 'move-node-to-workspace 6'
+cmd-shift-6 = 'move-node-to-workspace 6'
 
 # Move to workspace 7
-alt-shift-7 = 'move-node-to-workspace 7'
+cmd-shift-7 = 'move-node-to-workspace 7'
 
 # Move to workspace 8
-alt-shift-8 = 'move-node-to-workspace 8'
+cmd-shift-8 = 'move-node-to-workspace 8'
 
 # Move to workspace 9
-alt-shift-9 = 'move-node-to-workspace 9'
+cmd-shift-9 = 'move-node-to-workspace 9'
 
 # Toggle float
-alt-t = 'layout floating tiling'
+cmd-t = 'layout floating tiling'
 
 # Split horizontal
-alt-comma = 'resize smart -50'
+cmd-comma = 'resize smart -50'
 
 # Split vertical
-alt-period = 'resize smart +50'
+cmd-period = 'resize smart +50'
+
+# App launcher (macOS)
+alt-space = 'exec-and-forget open -a 'Raycast''
 
 # Terminal
-alt-enter = 'exec-and-forget open -na "Ghostty"'
+cmd-enter = 'exec-and-forget open -na "Ghostty"'
 
 # Browser (default)
-alt-shift-b = 'exec-and-forget open -na "Vivaldi"'
+cmd-shift-b = 'exec-and-forget open -na "Vivaldi"'
 
 # Browser (private)
-alt-shift-alt-b = 'exec-and-forget open -na "Vivaldi" --args --incognito'
+cmd-shift-alt-b = 'exec-and-forget open -na "Vivaldi" --args --private-window'
 
 # File manager
-alt-shift-f = 'exec-and-forget open -na "Finder"'
+cmd-shift-f = 'exec-and-forget open -na "Finder"'
 
 # Editor
-alt-shift-n = 'exec-and-forget open -na "Visual Studio Code"'
+cmd-shift-n = 'exec-and-forget open -na "Visual Studio Code"'
 
 # Passwords (1Password)
-alt-shift-slash = 'exec-and-forget open -na "1Password"'
+cmd-shift-slash = 'exec-and-forget open -na "1Password"'
 
 # Close window
-alt-w = 'close'
+cmd-w = 'close'
 
 # Full screen
-alt-f = 'fullscreen'
+cmd-f = 'fullscreen'
 
 # Obsidian
-alt-shift-o = 'exec-and-forget open -na "Obsidian"'
+cmd-shift-o = 'exec-and-forget open -na "Obsidian"'
 
 # GitKraken
-alt-shift-g = 'exec-and-forget open -na "GitKraken"'
+cmd-shift-g = 'exec-and-forget open -na "GitKraken"'
 
 # Music (Spotify)
-alt-shift-m = 'exec-and-forget open -na "Spotify"'
+cmd-shift-m = 'exec-and-forget open -na "Spotify"'
 
 # Docker (LazyDocker)
-alt-shift-d = 'exec-and-forget open -na "Ghostty" --args -e lazydocker'
+cmd-shift-d = 'exec-and-forget open -na "Ghostty" --args -e lazydocker'
 
 # Activity (btop)
-alt-ctrl-t = 'exec-and-forget open -na "Ghostty" --args -e btop'
+cmd-ctrl-t = 'exec-and-forget open -na "Ghostty" --args -e btop'
 
 # Screenshot (interactive)
-alt-shift-s = 'exec-and-forget screencapture -i ~/Desktop/screenshot.png'
+cmd-shift-s = 'exec-and-forget screencapture -i ~/Desktop/screenshot.png'
 

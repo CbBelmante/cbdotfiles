@@ -15,6 +15,7 @@ import { virtualization } from "./virtualization";
 export interface IRunContext {
   overrides: Record<string, string>;
   isAll: boolean;
+  isMinimal?: boolean;
 }
 
 export type Platform = "linux" | "macos";

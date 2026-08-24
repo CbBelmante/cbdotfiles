@@ -1,7 +1,7 @@
 import { $ } from "bun";
 import { existsSync, lstatSync, readFileSync, writeFileSync } from "fs";
 import { select } from "@inquirer/prompts";
-import type { IModule } from "./index";
+import type { IModule, IRunContext } from "./index";
 import { DOTFILES_DIR, HOME, commandExists, getDesktop, getDistro, isMacos, pkgInstall, symlink, versionGte } from "../helpers";
 import { log, tracker } from "../log";
 import { NVM, TERMINAL } from "../defaults";
@@ -745,11 +745,13 @@ export const shellTools: IModule = {
   description: "Zsh + Oh My Zsh + NVM + Git + Kitty + Ghostty + AeroSpace + CLI tools",
   installsSoftware: true,
 
-  async run() {
+  async run(ctx: IRunContext) {
     await setupZsh();
-    await setupNvm();
-    await setupGit();
-    await setupSSH();
+    if (!ctx.isMinimal) {
+      await setupNvm();
+      await setupGit();
+      await setupSSH();
+    }
     await setupKitty();
     await setupGhostty();
     await setupAeroSpace();
