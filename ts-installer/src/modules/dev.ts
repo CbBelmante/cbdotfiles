@@ -848,6 +848,75 @@ const DEV_TOOLS: IDevTool[] = [
     },
   },
   {
+    id: "stochos",
+    name: "Stochos",
+    emoji: "🎯",
+    async isInstalled() {
+      return commandExists("stochos");
+    },
+    async install() {
+      if (!(await commandExists("cargo"))) {
+        log.add("Instalando Rust via rustup...");
+        await $`curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y`.nothrow();
+        process.env.PATH = `${HOME}/.cargo/bin:${process.env.PATH}`;
+      }
+      if (await commandExists("cargo")) {
+        log.add("Instalando Stochos via cargo...");
+        await $`cargo install stochos`.nothrow();
+      }
+      if (await commandExists("stochos")) {
+        log.ok("Stochos instalado");
+      } else {
+        log.warn("Falha ao instalar Stochos");
+      }
+    },
+    async configure() {
+      const configSrc = `${DOTFILES_DIR}/stochos/config.toml`;
+      if (existsSync(configSrc)) {
+        await symlink(configSrc, `${HOME}/.config/stochos/config.toml`);
+        log.ok("~/.config/stochos/config.toml -> cbdotfiles");
+      }
+    },
+  },
+  {
+    id: "phonto",
+    name: "Phonto",
+    emoji: "🎬",
+    async isInstalled() {
+      return commandExists("phonto");
+    },
+    async install(distro) {
+      log.add("Instalando Phonto (video wallpaper)...");
+      switch (distro) {
+        case "macos":
+          await $`brew tap museslabs/phonto`.nothrow();
+          await $`brew install phonto`.nothrow();
+          break;
+        case "arch":
+          if (await commandExists("yay")) {
+            await $`yay -S --noconfirm phonto`.nothrow();
+          } else if (await commandExists("paru")) {
+            await $`paru -S --noconfirm phonto`.nothrow();
+          } else if (await commandExists("cargo")) {
+            await $`cargo install phonto`.nothrow();
+          }
+          break;
+        default:
+          if (await commandExists("cargo")) {
+            await $`cargo install phonto`.nothrow();
+          } else {
+            log.warn("Rust nao encontrado — instale via: cargo install phonto");
+            return;
+          }
+      }
+      if (await commandExists("phonto")) {
+        log.ok("Phonto instalado");
+      } else {
+        log.warn("Falha ao instalar Phonto");
+      }
+    },
+  },
+  {
     id: "claude-config",
     name: "Claude Config",
     emoji: "⚙️",

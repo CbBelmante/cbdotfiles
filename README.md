@@ -103,9 +103,9 @@ Ao selecionar o modulo `browsers`, o instalador mostra checkbox dos navegadores 
 
 | Modulo | Descricao | Plataforma |
 |--------|-----------|:----------:|
-| 🐚 `shell-tools` | Zsh + Oh My Zsh + NVM + Node LTS + Git + SSH key + Kitty + Ghostty + CLI tools | 🐧 🍎 |
+| 🐚 `shell-tools` | Zsh + Oh My Zsh + NVM + Node LTS + Git + SSH key + Kitty + Ghostty + AeroSpace (macOS) + CLI tools | 🐧 🍎 |
 | 🔤 `fonts` | Fontes Nerd Font | 🐧 🍎 |
-| 🛠️ `dev` | Neovim + Zellij + tmux + VS Code + GitKraken + GitHub CLI + LazyGit + Delta + LazyDocker + Docker + SQLite + Firebase + Supabase + Postman | 🐧 🍎 |
+| 🛠️ `dev` | Neovim + Zellij + tmux + VS Code + GitKraken + LazyGit + Delta + Docker + Firebase + Supabase + Postman + Stochos... | 🐧 🍎 |
 | 🖥️ `fastfetch` | Config Fastfetch (system info) | 🐧 🍎 |
 | 📊 `btop` | Config Btop (monitor de sistema) | 🐧 🍎 |
 | 🎮 `drivers` | Drivers GPU (AMD/Intel/NVIDIA) + diagnostico amdgpu/radeon + Bluetooth Mac | 🐧 |
@@ -114,7 +114,7 @@ Ao selecionar o modulo `browsers`, o instalador mostra checkbox dos navegadores 
 | 📦 `apps` | LibreOffice + Sublime + VLC + Obsidian + Kdenlive + qBittorrent/Transmission + KeepingYouAwake | 🐧 🍎 |
 | 🎮 `gaming` | Steam + Discord (+ Lutris + ProtonUp-Qt + MangoHud + Gamemode + Wine no Linux) | 🐧 🍎 |
 | 🖥️ `virtualization` | UTM (macOS) / VirtualBox (Linux) | 🐧 🍎 |
-| ⌨️ `keybinds` | Gera e aplica keybinds (Hyprland/COSMIC) | 🐧 |
+| ⌨️ `keybinds` | Gera e aplica keybinds (Hyprland/COSMIC/AeroSpace) | 🐧 🍎 |
 | ⚡ `power` | Energia (suspend auto-detecta desktop/laptop) | 🐧 |
 
 ## 🔄 Atualizacao
@@ -267,6 +267,10 @@ cbdotfiles/
 │   ├── init.lua
 │   ├── lua/
 │   └── ...
+├── aerospace/
+│   └── aerospace.toml             # 🪟 Config AeroSpace macOS (GERADO por generate.sh)
+├── stochos/
+│   └── config.toml                # 🎯 Config Stochos (mouseless keyboard control)
 ├── ghostty/
 │   ├── config                     # 👻 Config base Ghostty
 │   ├── macos.conf                 # 🍎 Override macOS (font 13pt)
@@ -309,6 +313,8 @@ cbdotfiles/
 ~/.config/ghostty/config              → cbdotfiles/ghostty/config
 ~/.config/ghostty/env.conf            → cbdotfiles/ghostty/{macos,omarchy,cosmic}.conf
 ~/.config/ghostty/local.conf          → cbdotfiles/local/ghostty/config.ghostty (se existir)
+~/.aerospace.toml                     → cbdotfiles/aerospace/aerospace.toml (macOS, gerado)
+~/.config/stochos/config.toml         → cbdotfiles/stochos/config.toml
 ~/.config/lazygit/config.yml          → cbdotfiles/lazygit/config.yml
 ~/.tmux.conf                          → cbdotfiles/tmux/tmux.conf
 ~/.markdownlint-cli2.yaml             → cbdotfiles/nvim/.markdownlint-cli2.yaml
@@ -542,7 +548,8 @@ Sistema de keybinds com **fonte unica de verdade**. Defina uma vez em `keybinds.
 
 ```
 keybinds.conf + vars.conf  ──▶  hyprland-bindings.conf  (Arch/Hyprland)
-                           └──▶  cosmic-custom.ron       (Pop!OS/COSMIC)
+                           ├──▶  cosmic-custom.ron       (Pop!OS/COSMIC)
+                           └──▶  aerospace.toml          (macOS/AeroSpace)
 ```
 
 ### Variaveis (`vars.conf`)
@@ -642,7 +649,7 @@ Cada modulo tem uma lista de tools com `active: true/false` no `defaults.ts`:
 
 | Lista | Tools `false` (apenas Custom) |
 |-------|-------------------------------|
-| `DEV_TOOLS_ENABLED` | Tauri, Insomnia, Claude Config, Claude Desktop, Claude Code, Antigravity CLI, Kimi Code, Codex CLI, FlowForge |
+| `DEV_TOOLS_ENABLED` | Tauri, Insomnia, Phonto, Claude Config, Claude Desktop, Claude Code, Antigravity CLI, Kimi Code, Codex CLI, FlowForge |
 | `BROWSERS_ENABLED` | Opera, Chromium |
 | `APPS_ENABLED` | Kdenlive, KeepingYouAwake |
 | `GAMING_ENABLED` | (todos defaultInstall) |

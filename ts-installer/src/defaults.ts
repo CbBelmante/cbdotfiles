@@ -159,6 +159,8 @@ export const DEV_TOOLS_ENABLED: IToolToggle[] = [
   { id: "supabase", defaultInstall: true },
   { id: "postman", defaultInstall: true },
   { id: "insomnia", defaultInstall: false },
+  { id: "stochos", defaultInstall: true },
+  { id: "phonto", defaultInstall: false },
   { id: "claude-config", defaultInstall: false },
   { id: "claude-desktop", defaultInstall: false },
   { id: "claude-code", defaultInstall: false },

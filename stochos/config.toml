@@ -1,0 +1,20 @@
+# Stochos - cbdotfiles config
+# Keyboard-driven mouse control (mouseless)
+# Docs: https://github.com/museslabs/stochos
+
+[grid]
+rows = 9
+cols = 16
+
+[keys]
+grid_keys = "asdfjkl;ghqweruiop"
+action_click = "space"
+action_double_click = "d"
+action_right_click = "f"
+action_scroll_up = "k"
+action_scroll_down = "j"
+action_quit = "escape"
+
+[appearance]
+font_size = 14
+opacity = 0.85

@@ -695,6 +695,46 @@ export async function changeDefaultTerminal() {
 }
 
 // ---------------------------------------------------------------------------
+// AeroSpace tiling WM (macOS)
+// ---------------------------------------------------------------------------
+
+async function setupAeroSpace() {
+  if (!isMacos()) return;
+
+  log.title("aerospace", "AeroSpace");
+
+  if (!existsSync("/Applications/AeroSpace.app")) {
+    log.add("Instalando AeroSpace via Homebrew...");
+    await $`brew install --cask nikitabobko/tap/aerospace`.nothrow();
+
+    if (existsSync("/Applications/AeroSpace.app")) {
+      log.ok("AeroSpace instalado");
+      tracker.installed("AeroSpace");
+    } else {
+      log.warn("Falha ao instalar AeroSpace");
+      tracker.warning("AeroSpace");
+      return;
+    }
+  } else {
+    log.ok("AeroSpace ja instalado");
+    tracker.skipped("AeroSpace");
+  }
+
+  // Gera keybinds a partir da fonte unica (keybinds.conf)
+  log.add("Gerando keybinds AeroSpace...");
+  await $`bash ${DOTFILES_DIR}/keybinds/generate.sh`.nothrow();
+
+  // Symlink config gerada
+  const aeroConfig = `${DOTFILES_DIR}/aerospace/aerospace.toml`;
+  if (existsSync(aeroConfig)) {
+    await symlink(aeroConfig, `${HOME}/.aerospace.toml`);
+    log.ok("~/.aerospace.toml -> cbdotfiles (gerado)");
+  }
+
+  tracker.configured("aerospace config");
+}
+
+// ---------------------------------------------------------------------------
 // Module
 // ---------------------------------------------------------------------------
 
@@ -702,7 +742,7 @@ export const shellTools: IModule = {
   id: "shell-tools",
   name: "Shell Tools",
   emoji: "🐚",
-  description: "Zsh + Oh My Zsh + NVM + Git + Kitty + Ghostty + CLI tools",
+  description: "Zsh + Oh My Zsh + NVM + Git + Kitty + Ghostty + AeroSpace + CLI tools",
   installsSoftware: true,
 
   async run() {
@@ -712,6 +752,7 @@ export const shellTools: IModule = {
     await setupSSH();
     await setupKitty();
     await setupGhostty();
+    await setupAeroSpace();
     await setupCliTools();
   },
 };
