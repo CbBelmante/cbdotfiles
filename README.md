@@ -760,21 +760,31 @@ alias vpn='sudo openvpn ~/configs/trabalho.ovpn'
 **Projetos com worktrees numeradas — funcao dinamica:**
 ```bash
 # local/zsh/local.zsh
-function pulso() {
+function meuapp() {
   if [ -z "$1" ]; then
-    builtin cd ~/Workspaces/volan-pulso
-  elif [ -d ~/Workspaces/volan-pulso-$1 ]; then
-    builtin cd ~/Workspaces/volan-pulso-$1
+    builtin cd ~/Workspaces/meu-app
+  elif [ -d ~/Workspaces/meu-app-$1 ]; then
+    builtin cd ~/Workspaces/meu-app-$1
+  elif [ -d ~/Workspaces/meu-app_$1 ]; then
+    builtin cd ~/Workspaces/meu-app_$1
   else
-    echo "Worktree volan-pulso-$1 nao encontrado"
-    command ls -d ~/Workspaces/volan-pulso-* 2>/dev/null | sed 's|.*/||'
+    echo "Worktree meu-app $1 nao encontrado"
+    command ls -d ~/Workspaces/meu-app* 2>/dev/null | sed 's|.*/||'
   fi
 }
 ```
 
+Uso:
+```bash
+meuapp           # vai pro projeto principal
+meuapp 308       # vai pro worktree meu-app-308
+zj cbw2 meuapp   # abre Zellij no projeto
+zj cbw2 meuapp 308  # abre Zellij no worktree 308
+```
+
 > Use `function nome()` (nao `nome()`) pra evitar conflito com o alias `cd` do zoxide.
 > Use `builtin cd` dentro de funcoes pelo mesmo motivo.
-> Funciona com `zj`: `zj cbw2 pulso` resolve a funcao automaticamente.
+> Funciona com `zj`: resolve funcoes e aliases automaticamente, inclusive com numero.
 > Aceite `_` e `-`: adicione elif pra cada variacao do nome.
 
 ### Como funciona
