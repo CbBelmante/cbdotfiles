@@ -282,6 +282,18 @@ automatically-unhide-macos-hidden-apps = true
 # Inicia JankyBorders junto com AeroSpace (borda na janela ativa)
 after-startup-command = ['exec-and-forget borders']
 
+# Workspaces por monitor (1-5 monitor principal, 6-9 secundario)
+[workspace-to-monitor-force-assignment]
+1 = 2
+2 = 2
+3 = 2
+4 = 2
+5 = 2
+6 = 1
+7 = 1
+8 = 1
+9 = 1
+
 [gaps]
 inner.horizontal = 10
 inner.vertical = 10
