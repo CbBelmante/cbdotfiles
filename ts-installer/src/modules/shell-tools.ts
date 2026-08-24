@@ -731,6 +731,26 @@ async function setupAeroSpace() {
     log.ok("~/.aerospace.toml -> cbdotfiles (gerado)");
   }
 
+  // JankyBorders (borda visual na janela ativa)
+  if (!(await commandExists("borders"))) {
+    log.add("Instalando JankyBorders...");
+    await $`brew tap FelixKratz/formulae`.nothrow();
+    await $`brew install borders`.nothrow();
+    if (await commandExists("borders")) {
+      log.ok("JankyBorders instalado");
+      tracker.installed("JankyBorders");
+    }
+  } else {
+    log.ok("JankyBorders ja instalado");
+    tracker.skipped("JankyBorders");
+  }
+
+  const bordersConfig = `${DOTFILES_DIR}/borders/bordersrc`;
+  if (existsSync(bordersConfig)) {
+    await symlink(bordersConfig, `${HOME}/.config/borders/bordersrc`);
+    log.ok("~/.config/borders/bordersrc -> cbdotfiles");
+  }
+
   // Recarrega config se AeroSpace esta rodando
   await $`aerospace reload-config 2>/dev/null`.nothrow();
   log.ok("AeroSpace config recarregada");

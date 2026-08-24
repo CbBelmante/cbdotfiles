@@ -279,6 +279,9 @@ on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
 
 automatically-unhide-macos-hidden-apps = true
 
+# Inicia JankyBorders junto com AeroSpace (borda na janela ativa)
+after-startup-command = ['exec-and-forget borders']
+
 [gaps]
 inner.horizontal = 10
 inner.vertical = 10

@@ -1,0 +1,10 @@
+#!/bin/bash
+# JankyBorders - cbdotfiles config
+# Borda visual na janela ativa (complementa AeroSpace)
+
+borders \
+  active_color=0xff89b4fa \
+  inactive_color=0xff45475a \
+  width=3.0 \
+  style=round \
+  hidpi=on
