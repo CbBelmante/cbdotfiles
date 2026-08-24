@@ -572,6 +572,29 @@ keybinds.conf + vars.conf  ──▶  hyprland-bindings.conf  (Arch/Hyprland)
                            └──▶  aerospace.toml          (macOS/AeroSpace)
 ```
 
+### 🪟 AeroSpace (macOS Tiling WM)
+
+No macOS, o AeroSpace funciona como tiling WM (equivalente ao Hyprland/COSMIC no Linux). O instalador configura automaticamente:
+
+- **Keybinds** gerados da mesma fonte (`keybinds.conf`) — `Super` vira `Cmd`
+- **JankyBorders** para borda visual na janela ativa (azul) e inativa (cinza)
+- **Workspaces por monitor** — cada monitor tem seus proprios workspaces
+- **Auto-start** no login
+
+| Atalho macOS | Acao |
+|---|---|
+| `Cmd+Enter` | Terminal (Ghostty) |
+| `Cmd+Shift+B` | Browser |
+| `Cmd+1-5` | Workspaces monitor principal |
+| `Cmd+6-9` | Workspaces monitor secundario |
+| `Cmd+Shift+1-9` | Mover janela pra workspace |
+| `Cmd+H/J/K/L` | Foco entre janelas |
+| `Cmd+Shift+H/J/K/L` | Mover janela |
+| `Alt+W` | Fechar janela |
+| `Alt+Space` | App launcher |
+
+> Para multi-monitor, os workspaces sao fixos por tela no `generate.sh` (`workspace-to-monitor-force-assignment`). Ajuste os numeros conforme seus monitores.
+
 ### Variaveis (`vars.conf`)
 
 Mude o browser, terminal ou app em **um lugar so**:
