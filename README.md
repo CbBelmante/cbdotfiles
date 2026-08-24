@@ -752,10 +752,30 @@ font_size 11.0
 
 **Maquina do trabalho — aliases extras:**
 ```bash
-# local/zsh/aliases.zsh
+# local/zsh/local.zsh
 alias deploy='ssh deploy@prod-server'
 alias vpn='sudo openvpn ~/configs/trabalho.ovpn'
 ```
+
+**Projetos com worktrees numeradas — funcao dinamica:**
+```bash
+# local/zsh/local.zsh
+function pulso() {
+  if [ -z "$1" ]; then
+    builtin cd ~/Workspaces/volan-pulso
+  elif [ -d ~/Workspaces/volan-pulso-$1 ]; then
+    builtin cd ~/Workspaces/volan-pulso-$1
+  else
+    echo "Worktree volan-pulso-$1 nao encontrado"
+    command ls -d ~/Workspaces/volan-pulso-* 2>/dev/null | sed 's|.*/||'
+  fi
+}
+```
+
+> Use `function nome()` (nao `nome()`) pra evitar conflito com o alias `cd` do zoxide.
+> Use `builtin cd` dentro de funcoes pelo mesmo motivo.
+> Funciona com `zj`: `zj cbw2 pulso` resolve a funcao automaticamente.
+> Aceite `_` e `-`: adicione elif pra cada variacao do nome.
 
 ### Como funciona
 

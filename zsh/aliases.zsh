@@ -204,6 +204,15 @@ _resolve_dir() {
         echo "${resolved/#\~/$HOME}"
         return
     fi
+    # Tenta resolver como funcao (ex: pulso -> ~/Workspaces/volan-pulso)
+    if typeset -f "$input" > /dev/null 2>&1; then
+        local func_body=$(typeset -f "$input" 2>/dev/null)
+        if [[ "$func_body" =~ "builtin cd ([^[:space:]]+)" ]]; then
+            local resolved="${match[1]}"
+            echo "${resolved/#\~/$HOME}"
+            return
+        fi
+    fi
     # Fallback: assume pasta em ~/Workspaces
     echo "$HOME/Workspaces/$input"
 }
