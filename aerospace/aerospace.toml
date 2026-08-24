@@ -127,7 +127,7 @@ cmd-comma = 'resize smart -50'
 cmd-period = 'resize smart +50'
 
 # App launcher (macOS)
-alt-space = 'exec-and-forget open -a 'Raycast''
+alt-space = 'exec-and-forget open /Applications/Raycast.app'
 
 # Terminal
 cmd-enter = 'exec-and-forget open -na "Ghostty"'
