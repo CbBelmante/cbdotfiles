@@ -277,6 +277,8 @@ enable-normalization-opposite-orientation-for-nested-containers = true
 
 on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
 
+automatically-unhide-macos-hidden-apps = true
+
 [gaps]
 inner.horizontal = 10
 inner.vertical = 10
