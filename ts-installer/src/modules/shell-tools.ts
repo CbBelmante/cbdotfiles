@@ -735,6 +735,7 @@ async function setupAeroSpace() {
   if (!(await commandExists("borders"))) {
     log.add("Instalando JankyBorders...");
     await $`brew tap FelixKratz/formulae`.nothrow();
+    await $`brew trust FelixKratz/formulae`.nothrow();
     await $`brew install borders`.nothrow();
     if (await commandExists("borders")) {
       log.ok("JankyBorders instalado");
