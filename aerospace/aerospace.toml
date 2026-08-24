@@ -144,7 +144,7 @@ cmd-comma = 'resize smart -50'
 cmd-period = 'resize smart +50'
 
 # App launcher (macOS)
-alt-space = 'exec-and-forget open /Applications/Raycast.app'
+ctrl-space = 'exec-and-forget open /Applications/Raycast.app'
 
 # Terminal
 cmd-enter = 'exec-and-forget open -na "Ghostty"'
@@ -165,7 +165,7 @@ cmd-shift-n = 'exec-and-forget open -na "Visual Studio Code"'
 cmd-shift-slash = 'exec-and-forget open -na "1Password"'
 
 # Close window
-alt-w = 'close --quit-if-last-window'
+ctrl-w = 'close --quit-if-last-window'
 
 # Full screen
 cmd-f = 'fullscreen'
