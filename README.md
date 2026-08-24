@@ -119,7 +119,7 @@ Ao selecionar o modulo `browsers`, o instalador mostra checkbox dos navegadores 
 
 | Modulo | Descricao | Plataforma |
 |--------|-----------|:----------:|
-| 🐚 `shell-tools` | Zsh + Oh My Zsh + NVM + Node LTS + Git + SSH key + Kitty + Ghostty + AeroSpace (macOS) + CLI tools | 🐧 🍎 |
+| 🐚 `shell-tools` | Zsh + Oh My Zsh + NVM + Node LTS + Git + SSH key + Kitty + Ghostty + AeroSpace + JankyBorders (macOS) + CLI tools | 🐧 🍎 |
 | 🔤 `fonts` | Fontes Nerd Font | 🐧 🍎 |
 | 🛠️ `dev` | Neovim + Zellij + tmux + VS Code + GitKraken + LazyGit + Delta + Docker + Firebase + Supabase + Postman + Stochos... | 🐧 🍎 |
 | 🖥️ `fastfetch` | Config Fastfetch (system info) | 🐧 🍎 |
@@ -286,6 +286,8 @@ cbdotfiles/
 │   └── ...
 ├── aerospace/
 │   └── aerospace.toml             # 🪟 Config AeroSpace macOS (GERADO por generate.sh)
+├── borders/
+│   └── bordersrc                  # 🔲 Config JankyBorders (borda janela ativa macOS)
 ├── stochos/
 │   └── config.toml                # 🎯 Config Stochos (mouseless keyboard control)
 ├── ghostty/
@@ -331,6 +333,7 @@ cbdotfiles/
 ~/.config/ghostty/env.conf            → cbdotfiles/ghostty/{macos,omarchy,cosmic}.conf
 ~/.config/ghostty/local.conf          → cbdotfiles/local/ghostty/config.ghostty (se existir)
 ~/.aerospace.toml                     → cbdotfiles/aerospace/aerospace.toml (macOS, gerado)
+~/.config/borders/bordersrc           → cbdotfiles/borders/bordersrc (macOS)
 ~/.config/stochos/config.toml         → cbdotfiles/stochos/config.toml
 ~/.config/lazygit/config.yml          → cbdotfiles/lazygit/config.yml
 ~/.tmux.conf                          → cbdotfiles/tmux/tmux.conf
