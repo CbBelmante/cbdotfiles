@@ -138,6 +138,17 @@ cbBrowser() { ~/Workspaces/cbdotfiles/install.sh --chbrowser; }
 alias cbbrowser='cbBrowser'
 cbTerminal() { ~/Workspaces/cbdotfiles/install.sh --chterminal; }
 alias cbterminal='cbTerminal'
+cbForceReload() {
+  echo "Regenerando keybinds..."
+  bash ~/Workspaces/cbdotfiles/keybinds/generate.sh
+  echo "Recarregando configs..."
+  command -v aerospace &>/dev/null && aerospace reload-config 2>/dev/null && echo "  + AeroSpace recarregado"
+  source ~/.zshrc && echo "  + Zsh recarregado"
+  echo "Force reload completo!"
+}
+alias cbforcereload='cbForceReload'
+alias cbReload='cbForceReload'
+alias cbreload='cbForceReload'
 _cb_edit_local() {
     local f=~/Workspaces/cbdotfiles/local/$1
     local header="$2"

@@ -295,6 +295,15 @@ async function main() {
   await saveSelectedModules(moduleIds);
 
   // ---------------------------------------------------------------------------
+  // Force reload (regenera keybinds + recarrega AeroSpace)
+  // ---------------------------------------------------------------------------
+
+  await $`bash ${DOTFILES_DIR}/keybinds/generate.sh`.nothrow().quiet();
+  if (isMacos() && (await commandExists("aerospace"))) {
+    await $`aerospace reload-config`.nothrow().quiet();
+  }
+
+  // ---------------------------------------------------------------------------
   // Summary
   // ---------------------------------------------------------------------------
 
