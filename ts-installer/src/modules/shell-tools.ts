@@ -731,6 +731,10 @@ async function setupAeroSpace() {
     log.ok("~/.aerospace.toml -> cbdotfiles (gerado)");
   }
 
+  // Recarrega config se AeroSpace esta rodando
+  await $`aerospace reload-config 2>/dev/null`.nothrow();
+  log.ok("AeroSpace config recarregada");
+
   tracker.configured("aerospace config");
 }
 
