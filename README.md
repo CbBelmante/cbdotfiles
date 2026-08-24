@@ -77,6 +77,21 @@ O instalador abre um menu interativo com duas opcoes:
   Custom (selecionar modulos)
 ```
 
+No modo **Minimal**, instala o uso diario completo sem infra dev pesada:
+
+| Inclui | Pula |
+|--------|------|
+| Zsh + Oh My Zsh + Powerlevel10k + p10k | Git nome/email (usa existente, sem prompt) |
+| Fontes Nerd Font + CLI tools | SSH key generation |
+| Neovim + Zellij + tmux + LazyGit + Delta + GH CLI | NVM + Node |
+| Kitty + Ghostty + AeroSpace (macOS) | Docker, Firebase, Supabase |
+| Browsers (Vivaldi, Firefox, Chrome) | GitKraken, Postman, Insomnia |
+| Apps (LibreOffice, VLC, Obsidian, Sublime) | LazyDocker, Tauri |
+| Fastfetch + Btop + Stochos + Keybinds | Gaming (Steam, Discord) |
+| | Virtualization (UTM/VirtualBox) |
+
+> Depois de instalar no Minimal, rode `cbdotInstall` a qualquer momento para adicionar o que falta (Git, Docker, etc).
+
 No modo **Custom**, selecione os modulos com checkbox:
 
 ```
