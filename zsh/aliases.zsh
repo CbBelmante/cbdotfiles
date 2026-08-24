@@ -213,6 +213,22 @@ _resolve_dir() {
             return
         fi
     fi
+    # Tenta separar nome+numero (ex: pulso308 -> funcao pulso com arg 308)
+    if [[ "$input" =~ "^([a-zA-Z]+)([0-9]+)$" ]]; then
+        local fname="${match[1]}"
+        local fnum="${match[2]}"
+        if typeset -f "$fname" > /dev/null 2>&1; then
+            local func_body=$(typeset -f "$fname" 2>/dev/null)
+            if [[ "$func_body" =~ "builtin cd ([^[:space:]]+)" ]]; then
+                local base="${match[1]}"
+                base="${base/#\~/$HOME}"
+                # Tenta variantes: base-num, base_num
+                for sep in "-" "_"; do
+                    [ -d "${base}${sep}${fnum}" ] && echo "${base}${sep}${fnum}" && return
+                done
+            fi
+        fi
+    fi
     # Fallback: assume pasta em ~/Workspaces
     echo "$HOME/Workspaces/$input"
 }
@@ -224,6 +240,12 @@ _resolve_dir() {
 zj() {
     local layout="$1"
     local dir="$2"
+    local num="$3"
+
+    # Se tem numero (ex: zj cbw2 pulso 308), junta com o dir
+    if [[ -n "$num" ]]; then
+        dir="${dir}${num}"
+    fi
 
     if [[ -z "$layout" || -z "$dir" ]]; then
         echo "Uso: zj <layout> <diretorio|alias>"
