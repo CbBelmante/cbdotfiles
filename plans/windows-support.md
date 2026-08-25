@@ -138,9 +138,14 @@ alias winopen='cmd.exe /c start'
 
 ## Checklist
 
-- [ ] `isWSL()` no helpers.ts
-- [ ] `winHome()` pra path do Windows host
-- [ ] Copiar GlazeWM config pro Windows host apos gerar
+- [x] `isWSL()` no helpers.ts
+- [x] `winHome()` pra path do Windows host
+- [x] Copiar GlazeWM config pro Windows host apos gerar
+- [x] `isWindows()` no helpers.ts
+- [x] `distro === "windows"` no getDistro()
+- [x] GlazeWM config gerado pelo generate.sh (48 keybinds)
+- [x] vars.conf com WIN_* (terminal, browser, editor, filemanager)
+- [x] keybinds.conf com 8a coluna (CMD_GLAZEWM) + tipo GLAZE
 - [ ] `wingetInstall()` pra instalar apps Windows
 - [ ] Gerar Windows Terminal settings.json
 - [ ] Instalar fonts no lado Windows

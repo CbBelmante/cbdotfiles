@@ -600,7 +600,7 @@ No macOS, o AeroSpace funciona como tiling WM (equivalente ao Hyprland/COSMIC no
 
 ### 🪟 GlazeWM (Windows Tiling WM)
 
-No Windows, o GlazeWM funciona como tiling WM. Instale via `winget install GlazeWM` e copie `glazewm/config.yaml` para `%userprofile%\.glzr\glazewm\config.yaml`. O config e gerado pelo mesmo `generate.sh` com os mesmos keybinds.
+No Windows, o GlazeWM funciona como tiling WM. Instale via `winget install GlazeWM`. No WSL, o `cbdotInstall` copia o `glazewm/config.yaml` automaticamente para `%userprofile%\.glzr\glazewm\config.yaml`. O config e gerado pelo mesmo `generate.sh` com os mesmos keybinds.
 
 | Plataforma | Tiling WM | Modifier | Config |
 |---|---|---|---|
