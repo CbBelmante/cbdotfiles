@@ -26,6 +26,26 @@ export function isWindows(): boolean {
   return process.platform === "win32";
 }
 
+export function isWSL(): boolean {
+  try {
+    const version = require("fs").readFileSync("/proc/version", "utf-8");
+    return /microsoft/i.test(version);
+  } catch {
+    return false;
+  }
+}
+
+export function winHome(): string {
+  try {
+    const wslpath = require("child_process")
+      .execSync("wslpath $(cmd.exe /c 'echo %USERPROFILE%' 2>/dev/null | tr -d '\\r')", { encoding: "utf-8" })
+      .trim();
+    if (wslpath) return wslpath;
+  } catch {}
+  const user = process.env.USER || "user";
+  return `/mnt/c/Users/${user}`;
+}
+
 export async function getDistro(): Promise<Distro> {
   if (isWindows()) return "windows";
   if (isMacos()) return "macos";

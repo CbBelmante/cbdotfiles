@@ -10,6 +10,8 @@ import {
   askInput,
   commandExists,
   isMacos,
+  isWSL,
+  winHome,
   loadLocalOverrides,
   loadSavedModules,
   saveSelectedModules,
@@ -301,6 +303,14 @@ async function main() {
   await $`bash ${DOTFILES_DIR}/keybinds/generate.sh`.nothrow().quiet();
   if (isMacos() && (await commandExists("aerospace"))) {
     await $`aerospace reload-config`.nothrow().quiet();
+  }
+
+  if (isWSL()) {
+    const wh = winHome();
+    const glazeDest = `${wh}/.glzr/glazewm`;
+    await $`mkdir -p ${glazeDest}`.nothrow();
+    await $`cp ${DOTFILES_DIR}/glazewm/config.yaml ${glazeDest}/config.yaml`.nothrow();
+    log.ok(`GlazeWM config copiado pro Windows (${glazeDest})`);
   }
 
   // ---------------------------------------------------------------------------
