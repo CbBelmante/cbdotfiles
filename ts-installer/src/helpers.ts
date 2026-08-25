@@ -16,13 +16,18 @@ export const HOME = process.env.HOME!;
 // Detecta distro pelo gerenciador de pacotes
 // ---------------------------------------------------------------------------
 
-export type Distro = "arch" | "debian" | "fedora" | "macos" | "unknown";
+export type Distro = "arch" | "debian" | "fedora" | "macos" | "windows" | "unknown";
 
 export function isMacos(): boolean {
   return process.platform === "darwin";
 }
 
+export function isWindows(): boolean {
+  return process.platform === "win32";
+}
+
 export async function getDistro(): Promise<Distro> {
+  if (isWindows()) return "windows";
   if (isMacos()) return "macos";
   if (await commandExists("pacman")) return "arch";
   if (await commandExists("apt")) return "debian";

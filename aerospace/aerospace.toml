@@ -137,10 +137,10 @@ cmd-shift-9 = 'move-node-to-workspace 9'
 # Toggle float
 cmd-t = 'layout floating tiling'
 
-# Split horizontal
+# Resize smaller
 cmd-comma = 'resize smart -50'
 
-# Split vertical
+# Resize bigger
 cmd-period = 'resize smart +50'
 
 # App launcher (macOS)

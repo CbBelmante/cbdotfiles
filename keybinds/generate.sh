@@ -37,6 +37,7 @@ HYPR_CLOCK="" HYPR_DATE=""
 COSMIC_TERMINAL="" COSMIC_BROWSER="" COSMIC_WEBAPPBROWSER="" COSMIC_FILEMANAGER=""
 COSMIC_EDITOR="" COSMIC_BROWSER_FLAGS=""
 AERO_TERMINAL="" AERO_BROWSER="" AERO_EDITOR="" AERO_FILEMANAGER=""
+WIN_TERMINAL="" WIN_BROWSER="" WIN_EDITOR="" WIN_FILEMANAGER=""
 
 while IFS= read -r line; do
   [[ "$line" =~ ^[[:space:]]*# ]] && continue
@@ -58,6 +59,10 @@ while IFS= read -r line; do
     AERO_BROWSER=*) AERO_BROWSER="${line#*=}" ;;
     AERO_EDITOR=*) AERO_EDITOR="${line#*=}" ;;
     AERO_FILEMANAGER=*) AERO_FILEMANAGER="${line#*=}" ;;
+    WIN_TERMINAL=*) WIN_TERMINAL="${line#*=}" ;;
+    WIN_BROWSER=*) WIN_BROWSER="${line#*=}" ;;
+    WIN_EDITOR=*) WIN_EDITOR="${line#*=}" ;;
+    WIN_FILEMANAGER=*) WIN_FILEMANAGER="${line#*=}" ;;
   esac
 done < "$VARS_FILE"
 
@@ -89,6 +94,15 @@ expand_aero_vars() {
   text="${text//\$AERO_BROWSER/$AERO_BROWSER}"
   text="${text//\$AERO_EDITOR/$AERO_EDITOR}"
   text="${text//\$AERO_FILEMANAGER/$AERO_FILEMANAGER}"
+  echo "$text"
+}
+
+expand_win_vars() {
+  local text="$1"
+  text="${text//\$WIN_TERMINAL/$WIN_TERMINAL}"
+  text="${text//\$WIN_BROWSER/$WIN_BROWSER}"
+  text="${text//\$WIN_EDITOR/$WIN_EDITOR}"
+  text="${text//\$WIN_FILEMANAGER/$WIN_FILEMANAGER}"
   echo "$text"
 }
 
@@ -351,6 +365,153 @@ HEADER
 }
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Gerar GlazeWM config (Windows)
+# ─────────────────────────────────────────────────────────────────────────────
+
+mods_to_glazewm() {
+  local result="$1"
+  result="${result//Super/alt}"
+  result="${result//Ctrl/ctrl}"
+  result="${result//Shift/shift}"
+  result="${result//Alt/alt}"
+  result=$(echo "$result" | tr '+' '+' | tr '[:upper:]' '[:lower:]')
+  echo "$result"
+}
+
+key_to_glazewm() {
+  local key="$1"
+  case "$key" in
+    Return) echo "enter" ;;
+    Escape) echo "escape" ;;
+    Print|NONE) echo "" ;;
+    slash) echo "oem_2" ;;
+    space) echo "space" ;;
+    comma) echo "oem_comma" ;;
+    period) echo "oem_period" ;;
+    Left) echo "left" ;;
+    Right) echo "right" ;;
+    Up) echo "up" ;;
+    Down) echo "down" ;;
+    *) echo "$key" | tr '[:upper:]' '[:lower:]' ;;
+  esac
+}
+
+generate_glazewm() {
+  local output="$DOTFILES_DIR/glazewm/config.yaml"
+  local count=0
+
+  mkdir -p "$(dirname "$output")"
+
+  cat > "$output" << 'HEADER'
+# ═══════════════════════════════════════════════════════════════════════════════
+# GLAZEWM CONFIG - GERADO AUTOMATICAMENTE
+# ═══════════════════════════════════════════════════════════════════════════════
+#
+# NÃO EDITE AQUI! Edite keybinds/keybinds.conf e keybinds/vars.conf
+# Depois rode: ./keybinds/generate.sh
+#
+# Docs: https://github.com/glzr-io/glazewm
+# ═══════════════════════════════════════════════════════════════════════════════
+
+general:
+  startup_commands: ['shell-exec zebar']
+  shutdown_commands: ['shell-exec taskkill /IM zebar.exe /F']
+  focus_follows_cursor: false
+  toggle_workspace_on_refocus: false
+  cursor_jump:
+    enabled: true
+    trigger: 'monitor_focus'
+  hide_method: 'cloak'
+
+gaps:
+  scale_with_dpi: true
+  inner_gap: '10px'
+  outer_gap:
+    top: '10px'
+    right: '10px'
+    bottom: '10px'
+    left: '10px'
+
+window_effects:
+  focused_window:
+    border:
+      enabled: true
+      color: '#89b4fa'
+  other_windows:
+    border:
+      enabled: true
+      color: '#45475a'
+
+window_behavior:
+  initial_state: 'tiling'
+  state_defaults:
+    floating:
+      centered: true
+      shown_on_top: false
+    fullscreen:
+      maximized: false
+      shown_on_top: false
+
+workspaces:
+  - name: '1'
+  - name: '2'
+  - name: '3'
+  - name: '4'
+  - name: '5'
+  - name: '6'
+  - name: '7'
+  - name: '8'
+  - name: '9'
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# KEYBINDS (gerados de keybinds.conf — Super vira alt no Windows)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+keybindings:
+HEADER
+
+  while IFS= read -r line; do
+    [[ "$line" =~ ^[[:space:]]*# ]] && continue
+    [[ -z "$line" ]] && continue
+
+    local safe_line="${line//\\|/__PIPE__}"
+
+    local tipo mods key desc cmd_glaze
+    tipo=$(echo "$safe_line" | cut -d'|' -f1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    mods=$(echo "$safe_line" | cut -d'|' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    key=$(echo "$safe_line" | cut -d'|' -f3 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    desc=$(echo "$safe_line" | cut -d'|' -f4 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    cmd_glaze=$(echo "$safe_line" | cut -d'|' -f8 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    cmd_glaze="${cmd_glaze//__PIPE__/|}"
+
+    [[ "$tipo" != "BOTH" && "$tipo" != "GLAZE" ]] && continue
+    [[ -z "$cmd_glaze" ]] && continue
+
+    cmd_glaze=$(expand_win_vars "$cmd_glaze")
+
+    local glaze_mods glaze_key
+    glaze_mods=$(mods_to_glazewm "$mods")
+    glaze_key=$(key_to_glazewm "$key")
+
+    [[ -z "$glaze_key" ]] && continue
+
+    local binding
+    if [ -n "$glaze_mods" ]; then
+      binding="${glaze_mods}+${glaze_key}"
+    else
+      binding="${glaze_key}"
+    fi
+
+    echo "  # $desc" >> "$output"
+    echo "  - commands: ['$cmd_glaze']" >> "$output"
+    echo "    bindings: ['$binding']" >> "$output"
+    count=$((count + 1))
+  done < "$SOURCE"
+
+  echo -e "  ${GREEN}✓${NC} glazewm/config.yaml (${count} keybinds)"
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Main
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -360,8 +521,10 @@ echo ""
 generate_hyprland
 generate_cosmic
 generate_aerospace
+generate_glazewm
 
 echo ""
 echo -e "  ${CYAN}+${NC} Hyprland/COSMIC: keybinds/generated/"
 echo -e "  ${CYAN}+${NC} AeroSpace: aerospace/aerospace.toml"
+echo -e "  ${CYAN}+${NC} GlazeWM: glazewm/config.yaml"
 echo -e "  ${CYAN}+${NC} Variaveis: keybinds/vars.conf"

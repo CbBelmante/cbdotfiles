@@ -1,0 +1,209 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# GLAZEWM CONFIG - GERADO AUTOMATICAMENTE
+# ═══════════════════════════════════════════════════════════════════════════════
+#
+# NÃO EDITE AQUI! Edite keybinds/keybinds.conf e keybinds/vars.conf
+# Depois rode: ./keybinds/generate.sh
+#
+# Docs: https://github.com/glzr-io/glazewm
+# ═══════════════════════════════════════════════════════════════════════════════
+
+general:
+  startup_commands: ['shell-exec zebar']
+  shutdown_commands: ['shell-exec taskkill /IM zebar.exe /F']
+  focus_follows_cursor: false
+  toggle_workspace_on_refocus: false
+  cursor_jump:
+    enabled: true
+    trigger: 'monitor_focus'
+  hide_method: 'cloak'
+
+gaps:
+  scale_with_dpi: true
+  inner_gap: '10px'
+  outer_gap:
+    top: '10px'
+    right: '10px'
+    bottom: '10px'
+    left: '10px'
+
+window_effects:
+  focused_window:
+    border:
+      enabled: true
+      color: '#89b4fa'
+  other_windows:
+    border:
+      enabled: true
+      color: '#45475a'
+
+window_behavior:
+  initial_state: 'tiling'
+  state_defaults:
+    floating:
+      centered: true
+      shown_on_top: false
+    fullscreen:
+      maximized: false
+      shown_on_top: false
+
+workspaces:
+  - name: '1'
+  - name: '2'
+  - name: '3'
+  - name: '4'
+  - name: '5'
+  - name: '6'
+  - name: '7'
+  - name: '8'
+  - name: '9'
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# KEYBINDS (gerados de keybinds.conf — Super vira alt no Windows)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+keybindings:
+  # Focus left
+  - commands: ['focus --direction left']
+    bindings: ['alt+h']
+  # Focus down
+  - commands: ['focus --direction down']
+    bindings: ['alt+j']
+  # Focus right
+  - commands: ['focus --direction right']
+    bindings: ['alt+l']
+  # Focus left
+  - commands: ['focus --direction left']
+    bindings: ['alt+left']
+  # Focus down
+  - commands: ['focus --direction down']
+    bindings: ['alt+down']
+  # Focus up
+  - commands: ['focus --direction up']
+    bindings: ['alt+up']
+  # Focus right
+  - commands: ['focus --direction right']
+    bindings: ['alt+right']
+  # Move window left
+  - commands: ['move --direction left']
+    bindings: ['alt+shift+h']
+  # Move window down
+  - commands: ['move --direction down']
+    bindings: ['alt+shift+j']
+  # Move window up
+  - commands: ['move --direction up']
+    bindings: ['alt+shift+k']
+  # Move window right
+  - commands: ['move --direction right']
+    bindings: ['alt+shift+l']
+  # Workspace 1
+  - commands: ['focus --workspace 1']
+    bindings: ['alt+1']
+  # Workspace 2
+  - commands: ['focus --workspace 2']
+    bindings: ['alt+2']
+  # Workspace 3
+  - commands: ['focus --workspace 3']
+    bindings: ['alt+3']
+  # Workspace 4
+  - commands: ['focus --workspace 4']
+    bindings: ['alt+4']
+  # Workspace 5
+  - commands: ['focus --workspace 5']
+    bindings: ['alt+5']
+  # Workspace 6
+  - commands: ['focus --workspace 6']
+    bindings: ['alt+6']
+  # Workspace 7
+  - commands: ['focus --workspace 7']
+    bindings: ['alt+7']
+  # Workspace 8
+  - commands: ['focus --workspace 8']
+    bindings: ['alt+8']
+  # Workspace 9
+  - commands: ['focus --workspace 9']
+    bindings: ['alt+9']
+  # Move to workspace 1
+  - commands: ['move --workspace 1']
+    bindings: ['alt+shift+1']
+  # Move to workspace 2
+  - commands: ['move --workspace 2']
+    bindings: ['alt+shift+2']
+  # Move to workspace 3
+  - commands: ['move --workspace 3']
+    bindings: ['alt+shift+3']
+  # Move to workspace 4
+  - commands: ['move --workspace 4']
+    bindings: ['alt+shift+4']
+  # Move to workspace 5
+  - commands: ['move --workspace 5']
+    bindings: ['alt+shift+5']
+  # Move to workspace 6
+  - commands: ['move --workspace 6']
+    bindings: ['alt+shift+6']
+  # Move to workspace 7
+  - commands: ['move --workspace 7']
+    bindings: ['alt+shift+7']
+  # Move to workspace 8
+  - commands: ['move --workspace 8']
+    bindings: ['alt+shift+8']
+  # Move to workspace 9
+  - commands: ['move --workspace 9']
+    bindings: ['alt+shift+9']
+  # Toggle float
+  - commands: ['toggle-floating --centered']
+    bindings: ['alt+t']
+  # Resize smaller
+  - commands: ['resize --width -2%']
+    bindings: ['alt+oem_comma']
+  # Resize bigger
+  - commands: ['resize --width +2%']
+    bindings: ['alt+oem_period']
+  # Terminal
+  - commands: ['shell-exec wt']
+    bindings: ['alt+enter']
+  # Browser (default)
+  - commands: ['shell-exec vivaldi']
+    bindings: ['alt+shift+b']
+  # Browser (private)
+  - commands: ['shell-exec vivaldi --incognito']
+    bindings: ['alt+shift+alt+b']
+  # File manager
+  - commands: ['shell-exec explorer']
+    bindings: ['alt+shift+f']
+  # Editor
+  - commands: ['shell-exec code']
+    bindings: ['alt+shift+n']
+  # Passwords (1Password)
+  - commands: ['shell-exec 1password']
+    bindings: ['alt+shift+oem_2']
+  # Close window
+  - commands: ['close']
+    bindings: ['alt+w']
+  # Full screen
+  - commands: ['toggle-fullscreen']
+    bindings: ['alt+f']
+  # Obsidian
+  - commands: ['shell-exec obsidian']
+    bindings: ['alt+shift+o']
+  # GitKraken
+  - commands: ['shell-exec gitkraken']
+    bindings: ['alt+shift+g']
+  # Music (Spotify)
+  - commands: ['shell-exec spotify']
+    bindings: ['alt+shift+m']
+  # Docker (LazyDocker)
+  - commands: ['shell-exec wt -e lazydocker']
+    bindings: ['alt+shift+d']
+  # Activity (btop)
+  - commands: ['shell-exec wt -e btop']
+    bindings: ['alt+ctrl+t']
+  # Screenshot (interactive)
+  - commands: ['shell-exec snippingtool']
+    bindings: ['alt+shift+s']
+  # Toggle tiling direction
+  - commands: ['toggle-tiling-direction']
+    bindings: ['alt+v']
+  # Reload GlazeWM config
+  - commands: ['wm-reload-config']
+    bindings: ['alt+shift+r']
