@@ -17,7 +17,7 @@
 
 Configuracoes pessoais de desenvolvimento. Clone o repositorio em qualquer maquina, rode o instalador e tudo funciona — editor, terminal, shell, aliases e layouts.
 
-**Compativel com:** Arch Linux (pacman) | Ubuntu/Debian (apt) | Fedora (dnf) | macOS (brew)
+**Compativel com:** Arch Linux (pacman) | Ubuntu/Debian (apt) | Fedora (dnf) | macOS (brew) | Windows (winget/choco)
 
 ## 🚀 Instalacao Rapida (Maquina Nova)
 
@@ -288,6 +288,8 @@ cbdotfiles/
 │   └── aerospace.toml             # 🪟 Config AeroSpace macOS (GERADO por generate.sh)
 ├── borders/
 │   └── bordersrc                  # 🔲 Config JankyBorders (borda janela ativa macOS)
+├── glazewm/
+│   └── config.yaml                # 🪟 Config GlazeWM Windows (GERADO por generate.sh)
 ├── stochos/
 │   └── config.toml                # 🎯 Config Stochos (mouseless keyboard control)
 ├── ghostty/
@@ -569,7 +571,8 @@ Sistema de keybinds com **fonte unica de verdade**. Defina uma vez em `keybinds.
 ```
 keybinds.conf + vars.conf  ──▶  hyprland-bindings.conf  (Arch/Hyprland)
                            ├──▶  cosmic-custom.ron       (Pop!OS/COSMIC)
-                           └──▶  aerospace.toml          (macOS/AeroSpace)
+                           ├──▶  aerospace.toml          (macOS/AeroSpace)
+                           └──▶  glazewm/config.yaml     (Windows/GlazeWM)
 ```
 
 ### 🪟 AeroSpace (macOS Tiling WM)
@@ -594,6 +597,17 @@ No macOS, o AeroSpace funciona como tiling WM (equivalente ao Hyprland/COSMIC no
 | `Alt+Space` | App launcher |
 
 > Para multi-monitor, os workspaces sao fixos por tela no `generate.sh` (`workspace-to-monitor-force-assignment`). Ajuste os numeros conforme seus monitores.
+
+### 🪟 GlazeWM (Windows Tiling WM)
+
+No Windows, o GlazeWM funciona como tiling WM. Instale via `winget install GlazeWM` e copie `glazewm/config.yaml` para `%userprofile%\.glzr\glazewm\config.yaml`. O config e gerado pelo mesmo `generate.sh` com os mesmos keybinds.
+
+| Plataforma | Tiling WM | Modifier | Config |
+|---|---|---|---|
+| Arch/Hyprland | Hyprland | Super | `keybinds/generated/hyprland-bindings.conf` |
+| Pop!_OS | COSMIC | Super | `keybinds/generated/cosmic-custom.ron` |
+| macOS | AeroSpace | Cmd | `aerospace/aerospace.toml` |
+| Windows | GlazeWM | Alt | `glazewm/config.yaml` |
 
 ### Variaveis (`vars.conf`)
 
@@ -962,4 +976,4 @@ Overrides pra evitar conflito com Zellij e melhorar produtividade:
 - **🖥️ Fastfetch** - System info
 - **📦 NVM** - Node Version Manager
 - **🔍 Zoxide** + **fzf** + **ripgrep** + **bat** - Shell tools
-- **🐧 Arch Linux** / **Ubuntu/Debian** / **Fedora** / **🍎 macOS** - Plataformas suportadas
+- **🐧 Arch Linux** / **Ubuntu/Debian** / **Fedora** / **🍎 macOS** / **🪟 Windows** - Plataformas suportadas
