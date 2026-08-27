@@ -63,7 +63,7 @@ export const virtualization: IModule = {
   id: "virtualization",
   name: "Virtualization",
   emoji: "🖥️",
-  description: "VirtualBox",
+  description: isMacos() ? "UTM (virtualizacao)" : "VirtualBox",
   installsSoftware: true,
 
   async run(ctx: IRunContext) {
