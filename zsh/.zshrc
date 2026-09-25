@@ -153,3 +153,20 @@ export PATH="$HOME/.opencode/bin:$PATH"
 # (symlink em ~/.local/bin/ffkill, ja no PATH). Editar la, nao aqui.
 export NPM_GITHUB_TOKEN="$GITHUB_TOKEN"
 [ -s "$HOME/.deno/env" ] && . "$HOME/.deno/env"
+. "/Users/cbbelmante/.deno/env"
+
+# ── gh: devolver o controle do login ao próprio gh ─────────────────────────
+# GITHUB_TOKEN é exportado pelo override de máquina ~/.config/cb/local.zsh
+# (→ local/zsh/local.zsh, fora do git — carregado na linha 142 acima) e é
+# herdado por tudo que nasce desta shell. O gh dá PRECEDÊNCIA a essa variável
+# sobre o login guardado no keyring: era por isso que `gh auth login`,
+# `gh auth switch` e `gh auth refresh` não surtiam efeito nenhum e o gh
+# respondia "The value of the GITHUB_TOKEN environment variable is being used".
+# A variável NÃO pode simplesmente sumir: o npm depende dela via
+# NPM_GITHUB_TOKEN (linha 154), e só ela carrega read:packages — o escopo que
+# instala os pacotes privados. Então ela fica; só o gh passa a ignorá-la, e
+# volta ao token do keyring, esse com workflow, read:org e gist.
+# Alcance, e importa: isto é FUNÇÃO DE SHELL. Não é herdada por processo que
+# faz exec do gh — um cockpit, um daemon, um script. Para esses, quem decide é
+# o ambiente com que o processo nasceu, não esta linha.
+gh() { env -u GITHUB_TOKEN -u GH_TOKEN command gh "$@"; }
