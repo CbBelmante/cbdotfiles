@@ -33,10 +33,27 @@ if [ -f "$PLIST" ]; then
   [ -f "$BACKUP" ] || cp "$PLIST" "$BACKUP"
 fi
 
+# ATENCAO: tem de ser XML com <integer> explicito. O formato old-style
+# ("{enabled = 1; parameters = (115, 1, 1179648);}") grava os numeros como
+# STRING, e o macOS ignora em silencio um symbolichotkey tipado como string
+# — o atalho simplesmente nao dispara. Confirmado com plutil nesta base:
+# os nativos do sistema sao <integer>, sem aspas.
 set_hotkey() {
   local id="$1" ascii="$2" keycode="$3" mask="$4" desc="$5"
-  defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add "$id" \
-    "{enabled = 1; value = {parameters = ($ascii, $keycode, $mask); type = standard;};}"
+  defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add "$id" "
+<dict>
+  <key>enabled</key><integer>1</integer>
+  <key>value</key>
+  <dict>
+    <key>parameters</key>
+    <array>
+      <integer>$ascii</integer>
+      <integer>$keycode</integer>
+      <integer>$mask</integer>
+    </array>
+    <key>type</key><string>standard</string>
+  </dict>
+</dict>"
   echo -e "  ${GREEN}+${NC} id=$id  $desc"
 }
 
