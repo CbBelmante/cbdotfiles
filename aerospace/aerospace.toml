@@ -185,6 +185,3 @@ cmd-shift-d = 'exec-and-forget bash ~/Workspaces/cbdotfiles/keybinds/aero-ghostt
 # Activity (btop)
 cmd-ctrl-t = 'exec-and-forget bash ~/Workspaces/cbdotfiles/keybinds/aero-ghostty.sh btop'
 
-# Screenshot (interactive)
-cmd-shift-s = 'exec-and-forget screencapture -i ~/Desktop/screenshot.png'
-

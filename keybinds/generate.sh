@@ -157,6 +157,57 @@ key_to_aerospace() {
 }
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Helpers macOS (symbolichotkeys) — atalhos NATIVOS do sistema
+# ─────────────────────────────────────────────────────────────────────────────
+#
+# O macOS guarda os atalhos nativos (print, Mission Control, etc.) em
+# com.apple.symbolichotkeys, identificados por um ID numerico. Remapear o
+# combo de um ID preserva 100% do comportamento nativo (miniatura no canto,
+# editor de anotacao, nome com timestamp) — so troca a tecla que o dispara.
+#
+# Isso existe porque `screencapture -u` (a flag que mostra a miniatura) NAO
+# funciona quando chamado por um processo em background como o AeroSpace:
+# retorna exit=0 e nao grava arquivo nenhum. Medido nesta base.
+#
+# O array `parameters` do symbolichotkey e (ascii, keycode, mascara_mods).
+
+# Virtual key codes do macOS (Carbon). Cobre letras e digitos.
+key_to_macos_keycode() {
+  case "$(echo "$1" | tr '[:upper:]' '[:lower:]')" in
+    a) echo 0 ;;  b) echo 11 ;; c) echo 8 ;;  d) echo 2 ;;  e) echo 14 ;;
+    f) echo 3 ;;  g) echo 5 ;;  h) echo 4 ;;  i) echo 34 ;; j) echo 38 ;;
+    k) echo 40 ;; l) echo 37 ;; m) echo 46 ;; n) echo 45 ;; o) echo 31 ;;
+    p) echo 35 ;; q) echo 12 ;; r) echo 15 ;; s) echo 1 ;;  t) echo 17 ;;
+    u) echo 32 ;; v) echo 9 ;;  w) echo 13 ;; x) echo 7 ;;  y) echo 16 ;;
+    z) echo 6 ;;
+    0) echo 29 ;; 1) echo 18 ;; 2) echo 19 ;; 3) echo 20 ;; 4) echo 21 ;;
+    5) echo 23 ;; 6) echo 22 ;; 7) echo 26 ;; 8) echo 28 ;; 9) echo 25 ;;
+    *) echo "" ;;
+  esac
+}
+
+# Codigo ASCII do caractere (letras minusculas e digitos).
+key_to_macos_ascii() {
+  local k
+  k=$(echo "$1" | tr '[:upper:]' '[:lower:]')
+  case "$k" in
+    [a-z0-9]) printf '%d' "'$k" ;;
+    *) echo "" ;;
+  esac
+}
+
+# Mascara de modificadores: shift 131072 | control 262144
+#                           option 524288 | command 1048576
+mods_to_macos_mask() {
+  local mask=0
+  case "$1" in *Shift*)   mask=$((mask + 131072)) ;; esac
+  case "$1" in *Ctrl*)    mask=$((mask + 262144)) ;; esac
+  case "$1" in *Alt*)     mask=$((mask + 524288)) ;; esac
+  case "$1" in *Super*)   mask=$((mask + 1048576)) ;; esac
+  echo "$mask"
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Gerar Hyprland bindings.conf
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -340,6 +391,9 @@ HEADER
     [[ "$tipo" != "BOTH" && "$tipo" != "AERO" ]] && continue
     [[ -z "$cmd_aero" ]] && continue
 
+    # macos-hotkey: nao e comando do AeroSpace — vai para symbolichotkeys.sh
+    case "$cmd_aero" in macos-hotkey:*) continue ;; esac
+
     cmd_aero=$(expand_aero_vars "$cmd_aero")
 
     local aero_mods aero_key
@@ -362,6 +416,114 @@ HEADER
   done < "$SOURCE"
 
   echo -e "  ${GREEN}✓${NC} aerospace.toml (${count} keybinds)"
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Gerar macOS symbolichotkeys (atalhos NATIVOS do sistema)
+# ─────────────────────────────────────────────────────────────────────────────
+
+generate_macos_hotkeys() {
+  local output="$DOTFILES_DIR/macos/symbolichotkeys.sh"
+  local count=0
+
+  mkdir -p "$(dirname "$output")"
+
+  cat > "$output" << 'HEADER'
+#!/bin/bash
+# ═══════════════════════════════════════════════════════════════════════════════
+# macOS SYMBOLICHOTKEYS - GERADO AUTOMATICAMENTE
+# ═══════════════════════════════════════════════════════════════════════════════
+#
+# NÃO EDITE AQUI! Edite keybinds/keybinds.conf e rode ./keybinds/generate.sh
+#
+# Remapeia atalhos NATIVOS do macOS para combos que nao colidem com o
+# AeroSpace. O print continua 100% nativo (miniatura no canto inferior,
+# editor de anotacao ao clicar nela, arquivo com timestamp) — so muda a tecla.
+#
+# Por que remapear em vez de chamar `screencapture` pelo AeroSpace: a flag -u
+# (a que mostra a miniatura) nao funciona em processo de background. Retorna
+# exit=0 e nao grava arquivo nenhum.
+#
+# Idempotente: rodar varias vezes nao duplica nada.
+# ═══════════════════════════════════════════════════════════════════════════════
+
+set -uo pipefail
+
+[[ "$(uname)" != "Darwin" ]] && { echo "  (nao e macOS, nada a fazer)"; exit 0; }
+
+GREEN='\033[0;32m'
+CYAN='\033[0;36m'
+YELLOW='\033[0;33m'
+NC='\033[0m'
+
+PLIST="$HOME/Library/Preferences/com.apple.symbolichotkeys.plist"
+
+# Backup antes de tocar (uma vez por dia, pra nao poluir)
+if [ -f "$PLIST" ]; then
+  BACKUP="$PLIST.cbdotfiles-$(date +%Y%m%d).bak"
+  [ -f "$BACKUP" ] || cp "$PLIST" "$BACKUP"
+fi
+
+set_hotkey() {
+  local id="$1" ascii="$2" keycode="$3" mask="$4" desc="$5"
+  defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add "$id" \
+    "{enabled = 1; value = {parameters = ($ascii, $keycode, $mask); type = standard;};}"
+  echo -e "  ${GREEN}+${NC} id=$id  $desc"
+}
+
+echo ""
+echo -e "${CYAN}  macOS: atalhos nativos (symbolichotkeys)${NC}"
+echo ""
+
+HEADER
+
+  # Linhas marcadas com macos-hotkey:<id> na coluna do AeroSpace
+  while IFS= read -r line; do
+    [[ "$line" =~ ^[[:space:]]*# ]] && continue
+    [[ -z "$line" ]] && continue
+
+    local safe_line="${line//\\|/__PIPE__}"
+
+    local tipo mods key desc cmd_aero
+    tipo=$(echo "$safe_line" | cut -d'|' -f1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    mods=$(echo "$safe_line" | cut -d'|' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    key=$(echo "$safe_line" | cut -d'|' -f3 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    desc=$(echo "$safe_line" | cut -d'|' -f4 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    cmd_aero=$(echo "$safe_line" | cut -d'|' -f7 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+
+    [[ "$tipo" != "BOTH" && "$tipo" != "AERO" ]] && continue
+    case "$cmd_aero" in macos-hotkey:*) ;; *) continue ;; esac
+
+    local hk_id ascii keycode mask
+    hk_id="${cmd_aero#macos-hotkey:}"
+    ascii=$(key_to_macos_ascii "$key")
+    keycode=$(key_to_macos_keycode "$key")
+    mask=$(mods_to_macos_mask "$mods")
+
+    if [ -z "$ascii" ] || [ -z "$keycode" ]; then
+      echo -e "  ${YELLOW}!${NC} tecla '$key' sem key code macOS — id=$hk_id ignorado" >&2
+      continue
+    fi
+
+    echo "set_hotkey $hk_id $ascii $keycode $mask \"$desc ($mods+$key)\"" >> "$output"
+    count=$((count + 1))
+  done < "$SOURCE"
+
+  cat >> "$output" << 'FOOTER'
+
+# Aplica sem precisar de logout. Se falhar, so um relogin resolve.
+if /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u 2>/dev/null; then
+  echo ""
+  echo -e "  ${GREEN}+${NC} atalhos aplicados"
+else
+  echo ""
+  echo -e "  ${YELLOW}!${NC} faca logout/login para os atalhos valerem"
+fi
+echo ""
+FOOTER
+
+  chmod +x "$output"
+  echo -e "  ${GREEN}✓${NC} macos/symbolichotkeys.sh (${count} atalhos nativos)"
 }
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -521,10 +683,12 @@ echo ""
 generate_hyprland
 generate_cosmic
 generate_aerospace
+generate_macos_hotkeys
 generate_glazewm
 
 echo ""
 echo -e "  ${CYAN}+${NC} Hyprland/COSMIC: keybinds/generated/"
 echo -e "  ${CYAN}+${NC} AeroSpace: aerospace/aerospace.toml"
+echo -e "  ${CYAN}+${NC} macOS nativos: macos/symbolichotkeys.sh"
 echo -e "  ${CYAN}+${NC} GlazeWM: glazewm/config.yaml"
 echo -e "  ${CYAN}+${NC} Variaveis: keybinds/vars.conf"

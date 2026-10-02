@@ -731,6 +731,16 @@ async function setupAeroSpace() {
     log.ok("~/.aerospace.toml -> cbdotfiles (gerado)");
   }
 
+  // Atalhos NATIVOS do macOS (symbolichotkeys), tambem gerados de
+  // keybinds.conf. Tira os prints de Cmd+Shift+3/4/5, que colidiam com
+  // move-node-to-workspace 3/4/5, e os poe em combos com S — nativos de
+  // verdade, com miniatura no canto e editor de anotacao.
+  const hotkeysScript = `${DOTFILES_DIR}/macos/symbolichotkeys.sh`;
+  if (existsSync(hotkeysScript)) {
+    await $`bash ${hotkeysScript}`.nothrow();
+    log.ok("atalhos nativos do macOS remapeados (print -> Cmd+Shift+S)");
+  }
+
   // JankyBorders (borda visual na janela ativa)
   if (!(await commandExists("borders"))) {
     log.add("Instalando JankyBorders...");
