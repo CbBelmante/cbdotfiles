@@ -1,5 +1,5 @@
 import { $ } from "bun";
-import { existsSync } from "fs";
+import { existsSync, lstatSync } from "fs";
 import type { IModule } from "./index";
 import { DOTFILES_DIR, HOME, getDesktop, symlink } from "../helpers";
 import { log, tracker } from "../log";
@@ -24,10 +24,32 @@ export const keybinds: IModule = {
     // Aplicar Hyprland
     const hyprDir = `${HOME}/.config/hypr`;
     if (desktop === "omarchy" || desktop === "hyprland" || existsSync(hyprDir)) {
-      const hyprBindings = `${generated}/hyprland-bindings.conf`;
-      if (existsSync(hyprBindings)) {
-        await symlink(hyprBindings, `${hyprDir}/bindings.conf`);
-        log.ok("~/.config/hypr/bindings.conf -> cbdotfiles (generated)");
+      // O Omarchy 4 (2026-08-14) carrega hyprland.lua e IGNORA os .conf EM
+      // SILENCIO — "left on disk, unloaded and unbacked up, with no error".
+      // A presenca do hyprland.lua e o sinal de qual formato a maquina de fato
+      // le, mais confiavel que versao declarada. Omarchy 3.x e Hyprland puro
+      // seguem no .conf, intactos.
+      const isLua = existsSync(`${hyprDir}/hyprland.lua`);
+      const file = isLua ? "bindings.lua" : "bindings.conf";
+      const source = `${generated}/hyprland-${isLua ? "bindings.lua" : "bindings.conf"}`;
+      const target = `${hyprDir}/${file}`;
+
+      if (existsSync(source)) {
+        // `symlink` usa `ln -sf`, que sobrescreve sem backup. No Omarchy 4 o
+        // bindings.lua ja vem populado com os overrides do usuario, entao um
+        // arquivo real (nao symlink nosso) e preservado antes de linkar.
+        if (existsSync(target) && !lstatSync(target).isSymbolicLink()) {
+          const stamp = new Date().toISOString().slice(0, 10);
+          const backup = `${target}.cbdotfiles-${stamp}.bak`;
+          if (!existsSync(backup)) {
+            await $`cp ${target} ${backup}`;
+            log.ok(`backup: ${file} -> ${file}.cbdotfiles-${stamp}.bak`);
+          }
+        }
+
+        await symlink(source, target);
+        log.ok(`~/.config/hypr/${file} -> cbdotfiles (gerado)`);
+        if (isLua) log.ok("Omarchy 4+ detectado (hyprland.lua) — formato Lua");
       }
     }
 

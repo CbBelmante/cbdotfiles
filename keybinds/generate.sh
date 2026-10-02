@@ -260,6 +260,114 @@ HEADER
 }
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Gerar Hyprland bindings.lua (Omarchy 4+)
+# ─────────────────────────────────────────────────────────────────────────────
+#
+# O Omarchy 4 (2026-08-14) trocou o formato hyprlang .conf por Lua. Os .conf
+# antigos ficam no disco IGNORADOS, sem erro nenhum — entao a mesma fonte tem
+# de emitir os dois: .conf para Omarchy 3.x / Hyprland puro e .lua para o 4+.
+# O instalador escolhe qual linkar; a versao que nao usa um deles o ignora.
+#
+# Usa o.rebind (= hl.unbind + o.bind, por helpers.lua do Omarchy) em vez de
+# o.bind: assim a nossa tecla vence o default do Omarchy sem que este gerador
+# precise saber QUAIS sao os defaults deles — lista que apodreceria a cada
+# release. Um dispatcher em string o o.bind embrulha sozinho em exec_cmd, por
+# isso a coluna do Hyprland passa direto, sem traduzir dispatcher por dispatcher.
+
+mods_to_lua() {
+  echo "$1" | sed 's/Super/SUPER/g; s/Shift/SHIFT/g; s/Ctrl/CTRL/g; s/Alt/ALT/g' \
+            | sed 's/+/ + /g'
+}
+
+key_to_lua() {
+  case "$1" in
+    Return) echo "RETURN" ;;
+    Escape) echo "ESCAPE" ;;
+    Print)  echo "PRINT" ;;
+    Left)   echo "LEFT" ;;
+    Right)  echo "RIGHT" ;;
+    Up)     echo "UP" ;;
+    Down)   echo "DOWN" ;;
+    space)  echo "SPACE" ;;
+    comma|period|slash) echo "$1" ;;
+    NONE)   echo "" ;;
+    *) echo "$1" | tr '[:lower:]' '[:upper:]' ;;
+  esac
+}
+
+generate_hyprland_lua() {
+  local output="$GENERATED_DIR/hyprland-bindings.lua"
+  local count=0
+
+  cat > "$output" << 'HEADER'
+-- ═══════════════════════════════════════════════════════════════════════════════
+-- HYPRLAND BINDINGS (Omarchy 4+) - GERADO AUTOMATICAMENTE
+-- ═══════════════════════════════════════════════════════════════════════════════
+--
+-- NÃO EDITE AQUI! Edite keybinds/keybinds.conf e keybinds/vars.conf
+-- Depois rode: ./keybinds/generate.sh
+--
+-- Este arquivo vai para ~/.config/hypr/bindings.lua, onde o Omarchy ja deixa
+-- `o` e `hl` no escopo. o.rebind desfaz o default do Omarchy antes de aplicar
+-- o nosso, entao estas teclas vencem as de fabrica.
+--
+-- Variaveis de vars.conf ja vem expandidas: o Lua nao tem as $variaveis que o
+-- hyprlang declarava no topo do .conf.
+-- ═══════════════════════════════════════════════════════════════════════════════
+
+HEADER
+
+  while IFS= read -r line; do
+    [[ "$line" =~ ^[[:space:]]*# ]] && continue
+    [[ -z "$line" ]] && continue
+
+    local safe_line="${line//\\|/__PIPE__}"
+
+    local tipo mods key desc cmd_hypr
+    tipo=$(echo "$safe_line" | cut -d'|' -f1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    mods=$(echo "$safe_line" | cut -d'|' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    key=$(echo "$safe_line" | cut -d'|' -f3 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    desc=$(echo "$safe_line" | cut -d'|' -f4 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    cmd_hypr=$(echo "$safe_line" | cut -d'|' -f5 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    cmd_hypr="${cmd_hypr//__PIPE__/|}"
+
+    [[ "$tipo" != "BOTH" && "$tipo" != "HYPR" ]] && continue
+    [[ -z "$cmd_hypr" ]] && continue
+
+    local lua_key
+    lua_key=$(key_to_lua "$key")
+    [[ -z "$lua_key" ]] && continue
+
+    # "exec, <comando>" -> "<comando>". O o.bind embrulha string em exec_cmd.
+    local cmd="${cmd_hypr#exec,}"
+    cmd="${cmd#"${cmd%%[![:space:]]*}"}"
+    cmd=$(expand_hypr_vars "$cmd")
+
+    # ]] fecharia o long bracket do Lua antes da hora.
+    case "$cmd" in
+      *']]'*)
+        echo "  ! '$desc' tem ]] no comando — pulado no .lua" >&2
+        continue ;;
+    esac
+
+    local combo lua_mods
+    lua_mods=$(mods_to_lua "$mods")
+    if [ -n "$lua_mods" ]; then
+      combo="${lua_mods} + ${lua_key}"
+    else
+      combo="${lua_key}"
+    fi
+
+    local safe_desc="${desc//\"/\\\"}"
+
+    echo "o.rebind(\"$combo\", \"$safe_desc\", [[$cmd]])" >> "$output"
+    count=$((count + 1))
+  done < "$SOURCE"
+
+  echo -e "  ${GREEN}✓${NC} hyprland-bindings.lua (${count} keybinds, Omarchy 4+)"
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Gerar COSMIC custom RON
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -698,6 +806,7 @@ echo -e "${BOLD}[keybinds]${NC} Gerando configs..."
 echo ""
 
 generate_hyprland
+generate_hyprland_lua
 generate_cosmic
 generate_aerospace
 generate_macos_hotkeys
