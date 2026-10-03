@@ -309,13 +309,17 @@ cbdotfiles/
 │   └── config.jsonc               # 🖥️ Config Fastfetch
 ├── btop/
 │   └── btop.conf                  # 📊 Config Btop
+├── macos/
+│   └── symbolichotkeys.sh         # 🍎 Atalhos NATIVOS do macOS (GERADO por generate.sh)
 └── keybinds/
     ├── keybinds.conf              # ⌨️ Fonte unica de verdade (bindings)
     ├── vars.conf                  # 🔧 Variaveis Hyprland + COSMIC
+    ├── aero-ghostty.sh            # 🍎 Abre JANELA do Ghostty sem instancia nova
     ├── generate.sh                # 🔄 Gerador (keybinds.conf -> configs)
     ├── show-keybinds.sh           # 📋 Mostra todos os atalhos (Super+K)
     └── generated/                 # 📁 Arquivos gerados (gitignored)
-        ├── hyprland-bindings.conf # 🪟 Keybinds Hyprland
+        ├── hyprland-bindings.conf # 🪟 Keybinds Hyprland / Omarchy 3.x
+        ├── hyprland-bindings.lua  # 🪟 Keybinds Omarchy 4+ (formato Lua)
         └── cosmic-custom.ron      # 🚀 Keybinds COSMIC (RON)
 ```
 
@@ -334,6 +338,8 @@ cbdotfiles/
 ~/.config/ghostty/config              → cbdotfiles/ghostty/config
 ~/.config/ghostty/env.conf            → cbdotfiles/ghostty/{macos,omarchy,cosmic}.conf
 ~/.config/ghostty/local.conf          → cbdotfiles/local/ghostty/config.ghostty (se existir)
+~/.config/hypr/bindings.conf          → cbdotfiles/keybinds/generated/hyprland-bindings.conf (Omarchy 3.x)
+~/.config/hypr/bindings.lua           → cbdotfiles/keybinds/generated/hyprland-bindings.lua (Omarchy 4+)
 ~/.aerospace.toml                     → cbdotfiles/aerospace/aerospace.toml (macOS, gerado)
 ~/.config/borders/bordersrc           → cbdotfiles/borders/bordersrc (macOS)
 ~/.config/stochos/config.toml         → cbdotfiles/stochos/config.toml
@@ -569,11 +575,23 @@ Aliases so sao definidos se os comandos existem na maquina:
 Sistema de keybinds com **fonte unica de verdade**. Defina uma vez em `keybinds.conf`, configure as variaveis em `vars.conf`, gere para ambos:
 
 ```
-keybinds.conf + vars.conf  ──▶  hyprland-bindings.conf  (Arch/Hyprland)
+keybinds.conf + vars.conf  ──▶  hyprland-bindings.conf  (Hyprland / Omarchy 3.x)
+                           ├──▶  hyprland-bindings.lua   (Omarchy 4+, formato Lua)
                            ├──▶  cosmic-custom.ron       (Pop!OS/COSMIC)
                            ├──▶  aerospace.toml          (macOS/AeroSpace)
+                           ├──▶  macos/symbolichotkeys.sh (macOS, atalhos nativos)
                            └──▶  glazewm/config.yaml     (Windows/GlazeWM)
 ```
+
+> **Omarchy 3.x vs 4+** — o Omarchy 4 (2026-08-14) trocou o formato `.conf` por
+> Lua e **ignora os `.conf` em silencio**, sem erro nenhum. Por isso a mesma fonte
+> emite os dois, e o instalador linka o certo por maquina: se existe
+> `~/.config/hypr/hyprland.lua`, e 4+ e vai o `.lua`; senao, vai o `.conf`.
+> Cada versao ignora o arquivo da outra, entao as duas maquinas convivem.
+>
+> No `.lua` as teclas saem com `o.rebind` (= `hl.unbind` + `o.bind`), que faz a
+> tecla **daqui** vencer o default do Omarchy sem este repo ter de manter uma
+> lista dos defaults deles.
 
 ### 🪟 AeroSpace (macOS Tiling WM)
 
@@ -593,10 +611,61 @@ No macOS, o AeroSpace funciona como tiling WM (equivalente ao Hyprland/COSMIC no
 | `Cmd+Shift+1-9` | Mover janela pra workspace |
 | `Cmd+H/J/K/L` | Foco entre janelas |
 | `Cmd+Shift+H/J/K/L` | Mover janela |
-| `Alt+W` | Fechar janela |
-| `Alt+Space` | App launcher |
+| `Ctrl+W` | Fechar janela |
+| `Ctrl+Space` | App launcher (Raycast) |
+| `Cmd+Shift+S` | Print de selecao (nativo) |
+| `Cmd+Shift+Alt+S` | Print de tela inteira (nativo) |
+| `Cmd+Ctrl+Shift+S` | Painel de captura (nativo) |
 
 > Para multi-monitor, os workspaces sao fixos por tela no `generate.sh` (`workspace-to-monitor-force-assignment`). Ajuste os numeros conforme seus monitores.
+
+#### 🍎 Atalhos nativos do macOS (`macos/symbolichotkeys.sh`)
+
+Os prints do macOS vinham em `Cmd+Shift+3/4/5` — os mesmos combos que o
+AeroSpace usa para `move-node-to-workspace 3/4/5`. Atalho de sistema do macOS
+nao e consumido pelo WM, entao **os dois disparavam juntos**: a janela pulava de
+workspace e tirava print na mesma tecla.
+
+A saida nao foi desativar o print nem imitar ele, e sim **remapear o atalho
+nativo**. O macOS guarda esses atalhos em `com.apple.symbolichotkeys`, um ID por
+funcao, e mudar o combo preserva 100% do comportamento nativo — miniatura no
+canto, editor de anotacao ao clicar nela, nome com timestamp.
+
+Na fonte unica isso aparece como um valor especial na coluna do AeroSpace:
+
+```text
+AERO | Super+Shift+Alt | S | Screenshot nativo (tela inteira) | | | macos-hotkey:28 |
+```
+
+| ID | Funcao | Atalho agora | Era |
+|---|---|---|---|
+| `30` | selecao → arquivo | `Cmd+Shift+S` | `Cmd+Shift+4` |
+| `28` | tela inteira → arquivo | `Cmd+Shift+Alt+S` | `Cmd+Shift+3` |
+| `184` | painel de opcoes | `Cmd+Ctrl+Shift+S` | `Cmd+Shift+5` |
+
+> **Dois detalhes que custam horas se esquecidos.** O valor tem de ser
+> `<integer>`: no formato plist old-style o `defaults` grava os numeros como
+> **string**, e o macOS **ignora um symbolichotkey tipado como string sem dizer
+> nada** — fica gravado, o `defaults read` devolve certo, e a tecla nao dispara.
+> E `screencapture -u` (a flag da miniatura) **nao funciona em processo de
+> background**: chamado pelo WM retorna `exit=0` e nao grava arquivo nenhum. Por
+> isso o caminho e remapear o atalho nativo, nao chamar o `screencapture`.
+
+O script faz backup do plist antes de tocar, e idempotente, e nao faz nada fora
+do Darwin. O instalador o aplica junto com o AeroSpace.
+
+#### 🍎 `keybinds/aero-ghostty.sh` — janela nova, nao app novo
+
+No macOS, chamar o binario do Ghostty direto (ou `open -na Ghostty`) cria uma
+**instancia nova do app** a cada acionamento: um icone na Dock por janela, ~46 MB
+de runtime cada, e a instancia **nao morre quando a janela fecha**. Numa maquina
+aqui isso rendeu 13 instancias para 5 janelas, 9 delas sem janela nem shell
+dentro, com 404 MB presos.
+
+O helper pede **janela** (`Cmd+N`) a instancia que ja esta rodando, e so usa
+`open -a` quando o Ghostty ainda nao subiu. Os dois caminhos obvios nao servem:
+`ghostty +new-window` responde *"not supported on this platform"* e
+`open -a Ghostty` apenas ativa o app sem abrir janela.
 
 ### 🪟 GlazeWM (Windows Tiling WM)
 
@@ -605,6 +674,7 @@ No Windows, o GlazeWM funciona como tiling WM. Instale via `winget install Glaze
 | Plataforma | Tiling WM | Modifier | Config |
 |---|---|---|---|
 | Arch/Hyprland | Hyprland | Super | `keybinds/generated/hyprland-bindings.conf` |
+| Arch/Omarchy 4+ | Hyprland | Super | `keybinds/generated/hyprland-bindings.lua` |
 | Pop!_OS | COSMIC | Super | `keybinds/generated/cosmic-custom.ron` |
 | macOS | AeroSpace | Cmd | `aerospace/aerospace.toml` |
 | Windows | GlazeWM | Alt | `glazewm/config.yaml` |

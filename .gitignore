@@ -1,6 +1,7 @@
 # Keybinds generated files (regenerated via generate.sh)
 keybinds/generated/*.conf
 keybinds/generated/*.ron
+keybinds/generated/*.lua
 
 nvim/lazy-lock.json
 
