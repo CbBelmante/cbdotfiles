@@ -167,22 +167,15 @@ e o `OFL.txt` de cada familia viaja junto, como a licenca exige.
 ### As de licenca restrita
 
 Seis familias **nao estao no repo** porque ele e publico e a licenca delas nao
-permite redistribuir:
+permite redistribuir. O instalador nao mexe nelas — ficam na sua pasta de
+fontes, instaladas pelo `Instalar-Fontes.bat` que acompanha a pasta (Windows)
+ou copiando pra `~/.local/share/fonts` (Linux).
 
 | Familia | Onde conseguir |
 |---------|----------------|
 | Birds of Paradise, Cherolina, Hello Bride Script, Salon du Chocolat | freepik.com — a versao free exige **atribuicao ao autor** |
 | Edwardian Script ITC | acompanha Windows / Microsoft Office (© ITC/Microsoft) |
 | Palatino Linotype | acompanha Windows / Microsoft Office (© Linotype) |
-
-Tendo elas numa pasta, aponte em `local/local.sh`:
-
-```bash
-CB_FONTS_PRIVATE="$HOME/Fontes-Privadas"
-```
-
-Sem essa pasta o modulo instala as OFL normalmente, avisa quais faltaram e
-segue — nao quebra a instalacao.
 
 ### Onde cada sistema instala
 

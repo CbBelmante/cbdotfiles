@@ -182,29 +182,6 @@ export const designFonts: IModule = {
       rmSync(tmpDir, { recursive: true, force: true });
     }
 
-    // -----------------------------------------------------------------------
-    // 2. Familias de licenca restrita — pasta local, nunca o repo
-    // -----------------------------------------------------------------------
-    const raw = ctx.overrides.CB_FONTS_PRIVATE ?? CFG.privatePathDefault;
-    const priv = raw.replace(/^\$HOME|^~/, HOME);
-
-    if (!existsSync(priv)) {
-      log.warn(`${CFG.restricted.length} fontes de licença restrita: pasta não encontrada`);
-      log.info(`  esperada em ${priv} — ajuste CB_FONTS_PRIVATE em local/local.sh`);
-      for (const f of CFG.restricted) log.info(`  · ${f.family} — ${f.origin}`);
-      tracker.skipped("fontes restritas");
-      await refreshCache();
-      return;
-    }
-
-    for (const target of dests) {
-      const files = install(priv, target);
-      if (target.windows) await registerWindows(target.dir, files);
-      log.ok(`${files.length} fontes privadas em ${target.label}`);
-    }
-
-    tracker.installed("fontes restritas");
-
     await refreshCache();
   },
 };

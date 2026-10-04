@@ -229,15 +229,7 @@ export const DESIGN_FONTS = {
     "Passions Conflict",
   ],
 
-  // Licenca restrita: NUNCA vao pro repo, que e publico. O instalador procura
-  // numa pasta local, apontada por CB_FONTS_PRIVATE em local/local.sh.
-  privatePathDefault: "$HOME/Fontes-Privadas",
-  restricted: [
-    { family: "Birds of Paradise",    origin: "freepik.com — versao free exige atribuicao" },
-    { family: "Cherolina",            origin: "freepik.com — versao free exige atribuicao" },
-    { family: "Hello Bride Script",   origin: "freepik.com — versao free exige atribuicao" },
-    { family: "Salon du Chocolat",    origin: "freepik.com — versao free exige atribuicao" },
-    { family: "Edwardian Script ITC", origin: "acompanha Windows / Microsoft Office" },
-    { family: "Palatino Linotype",    origin: "acompanha Windows / Microsoft Office" },
-  ],
+  // As familias de licenca restrita (Freepik, Edwardian Script ITC, Palatino
+  // Linotype) nao entram aqui nem no repo, que e publico. Instalacao delas e
+  // manual, pelo Instalar-Fontes.bat que acompanha a pasta de fontes.
 };
