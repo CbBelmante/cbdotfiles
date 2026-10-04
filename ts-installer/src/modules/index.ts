@@ -1,4 +1,5 @@
 import { fonts } from "./fonts";
+import { designFonts } from "./design-fonts";
 import { drivers } from "./drivers";
 import { desktopTools } from "./desktop-tools";
 import { shellTools } from "./shell-tools";
@@ -18,7 +19,7 @@ export interface IRunContext {
   isMinimal?: boolean;
 }
 
-export type Platform = "linux" | "macos";
+export type Platform = "linux" | "macos" | "windows";
 
 export interface IModule {
   id: string;
@@ -34,6 +35,7 @@ export interface IModule {
 export const ALL_MODULES: IModule[] = [
   shellTools,
   fonts,
+  designFonts,
   drivers,
   desktopTools,
   browsers,

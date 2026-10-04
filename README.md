@@ -121,6 +121,7 @@ Ao selecionar o modulo `browsers`, o instalador mostra checkbox dos navegadores 
 |--------|-----------|:----------:|
 | 🐚 `shell-tools` | Zsh + Oh My Zsh + NVM + Node LTS + Git + SSH key + Kitty + Ghostty + AeroSpace + JankyBorders (macOS) + CLI tools | 🐧 🍎 |
 | 🔤 `fonts` | Fontes Nerd Font | 🐧 🍎 |
+| 🎨 `design-fonts` | Fontes de arte (Montserrat, Cormorant Garamond, Dancing Script, Marcellus, Bebas Neue, Passions Conflict) | 🐧 🍎 🪟 |
 | 🛠️ `dev` | Neovim + Zellij + tmux + VS Code + GitKraken + LazyGit + Delta + Docker + SQLite + psql + Firebase + Supabase + Postman + Stochos... | 🐧 🍎 |
 | 🖥️ `fastfetch` | Config Fastfetch (system info) | 🐧 🍎 |
 | 📊 `btop` | Config Btop (monitor de sistema) | 🐧 🍎 |
@@ -132,6 +133,67 @@ Ao selecionar o modulo `browsers`, o instalador mostra checkbox dos navegadores 
 | 🖥️ `virtualization` | UTM (macOS) / VirtualBox (Linux) | 🐧 🍎 |
 | ⌨️ `keybinds` | Gera e aplica keybinds (Hyprland/COSMIC/AeroSpace) | 🐧 🍎 |
 | ⚡ `power` | Energia (suspend auto-detecta desktop/laptop) | 🐧 |
+
+## 🎨 Fontes de Design
+
+Fontes de arte usadas em convite, rotulo e identidade visual. Separadas das Nerd
+Fonts porque sao outra coisa: `fonts` instala fonte de codigo, `design-fonts`
+instala fonte de desenho.
+
+```bash
+cd ~/cbdotfiles && ./install.sh design-fonts
+```
+
+### De onde vem
+
+| Familia | Arquivos | Origem |
+|---------|:--------:|--------|
+| Montserrat | 20 | release `fonts-v1` deste repo |
+| Cormorant Garamond | 12 | release `fonts-v1` |
+| Dancing Script | 5 | release `fonts-v1` |
+| Bebas Neue, Marcellus, Passions Conflict | 3 | release `fonts-v1` |
+
+Essas seis sao **OFL** (SIL Open Font License), que permite redistribuir — por
+isso vao num asset de release, nao no historico do git: o `git clone` fica leve
+e o `OFL.txt` de cada familia viaja junto, como a licenca exige.
+
+> **Por que release e nao baixar do Google?** O endpoint
+> `fonts.google.com/download?family=` foi desativado, e o repo `google/fonts`
+> hoje publica **so variable fonts** — os pesos estaticos sairam de la. Variable
+> font e de 2016: CorelDRAW X7 e Photoshop CS6 nao leem. Baixar do upstream
+> entregaria 2 arquivos de Montserrat em vez de 20, e nenhum abriria nessas
+> ferramentas.
+
+### As de licenca restrita
+
+Seis familias **nao estao no repo** porque ele e publico e a licenca delas nao
+permite redistribuir:
+
+| Familia | Onde conseguir |
+|---------|----------------|
+| Birds of Paradise, Cherolina, Hello Bride Script, Salon du Chocolat | freepik.com — a versao free exige **atribuicao ao autor** |
+| Edwardian Script ITC | acompanha Windows / Microsoft Office (© ITC/Microsoft) |
+| Palatino Linotype | acompanha Windows / Microsoft Office (© Linotype) |
+
+Tendo elas numa pasta, aponte em `local/local.sh`:
+
+```bash
+CB_FONTS_PRIVATE="$HOME/Fontes-Privadas"
+```
+
+Sem essa pasta o modulo instala as OFL normalmente, avisa quais faltaram e
+segue — nao quebra a instalacao.
+
+### Onde cada sistema instala
+
+| Sistema | Pasta | Observacao |
+|---------|-------|------------|
+| Linux | `~/.local/share/fonts` | roda `fc-cache -f` no fim |
+| macOS | `~/Library/Fonts` | sem cache a atualizar |
+| Windows | `%LOCALAPPDATA%\Microsoft\Windows\Fonts` | registra em `HKCU` — sem admin |
+| WSL | as duas | o lado Windows tambem, senao Corel e Photoshop nao veem |
+
+---
 
 ## 🔄 Atualizacao
 
@@ -252,6 +314,7 @@ cbdotfiles/
 │           ├── index.ts           # Registry (IModule[])
 │           ├── shell-tools.ts     # 🐚 Zsh + NVM + Git + Kitty + Ghostty + CLI tools
 │           ├── fonts.ts           # 🔤 Nerd Fonts
+│           ├── design-fonts.ts    # 🎨 Fontes de arte (release asset + pasta privada)
 │           ├── drivers.ts         # 🎮 GPU + Bluetooth (detecta hardware)
 │           ├── browsers.ts        # 🌐 Vivaldi, Opera, Firefox, Chrome, Chromium
 │           ├── desktop-tools.ts   # 🖥️ Wofi, clipboard, screenshots (tiling WMs)

@@ -2,7 +2,7 @@
 
 import { $ } from "bun";
 import { checkbox, select } from "@inquirer/prompts";
-import { ALL_MODULES, getModuleById, type IModule, type IRunContext } from "./modules/index";
+import { ALL_MODULES, getModuleById, type IModule, type IRunContext, type Platform } from "./modules/index";
 import { changeDefaultBrowser } from "./modules/browsers";
 import { changeDefaultTerminal } from "./modules/shell-tools";
 import {
@@ -10,6 +10,7 @@ import {
   askInput,
   commandExists,
   isMacos,
+  isWindows,
   isWSL,
   winHome,
   loadLocalOverrides,
@@ -263,7 +264,11 @@ async function main() {
   const results: Array<{ name: string; status: IModuleStatus }> = [];
   const ctx: IRunContext = { overrides, isAll: runAll, isMinimal: minimal };
 
-  const currentPlatform = isMacos() ? "macos" : "linux";
+  const currentPlatform: Platform = isWindows()
+    ? "windows"
+    : isMacos()
+      ? "macos"
+      : "linux";
   const minimalSkipModules = new Set(["gaming", "virtualization"]);
 
   for (const mod of selectedModules) {

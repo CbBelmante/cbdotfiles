@@ -204,3 +204,40 @@ export const BROWSERS_ENABLED: IToolToggle[] = [
 export const VIRTUALIZATION_ENABLED: IToolToggle[] = [
   { id: "virtualbox", defaultInstall: false },
 ];
+
+// ---------------------------------------------------------------------------
+// Design Fonts — fontes de arte (convites, rotulos, identidade visual)
+// ---------------------------------------------------------------------------
+
+export const DESIGN_FONTS = {
+  // As OFL vem num asset de release deste proprio repo: o clone fica leve
+  // (nada entra no historico do git) e os pesos estaticos ficam preservados.
+  // O upstream do Google ja removeu os estaticos — de la viriam so variable,
+  // que CorelDRAW X7 e Photoshop CS6 nao leem.
+  repo: "CbBelmante/cbdotfiles",
+  releaseTag: "fonts-v1",
+  asset: "cb-fonts.zip",
+
+  // Familias que vem no asset. OFL permite redistribuir; o OFL.txt de cada
+  // uma vai junto no zip, como a licenca exige.
+  ofl: [
+    "Bebas Neue",
+    "Cormorant Garamond",
+    "Dancing Script",
+    "Marcellus",
+    "Montserrat",
+    "Passions Conflict",
+  ],
+
+  // Licenca restrita: NUNCA vao pro repo, que e publico. O instalador procura
+  // numa pasta local, apontada por CB_FONTS_PRIVATE em local/local.sh.
+  privatePathDefault: "$HOME/Fontes-Privadas",
+  restricted: [
+    { family: "Birds of Paradise",    origin: "freepik.com — versao free exige atribuicao" },
+    { family: "Cherolina",            origin: "freepik.com — versao free exige atribuicao" },
+    { family: "Hello Bride Script",   origin: "freepik.com — versao free exige atribuicao" },
+    { family: "Salon du Chocolat",    origin: "freepik.com — versao free exige atribuicao" },
+    { family: "Edwardian Script ITC", origin: "acompanha Windows / Microsoft Office" },
+    { family: "Palatino Linotype",    origin: "acompanha Windows / Microsoft Office" },
+  ],
+};
