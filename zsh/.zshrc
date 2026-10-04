@@ -153,7 +153,6 @@ export PATH="$HOME/.opencode/bin:$PATH"
 # (symlink em ~/.local/bin/ffkill, ja no PATH). Editar la, nao aqui.
 export NPM_GITHUB_TOKEN="$GITHUB_TOKEN"
 [ -s "$HOME/.deno/env" ] && . "$HOME/.deno/env"
-. "/Users/cbbelmante/.deno/env"
 
 # ── gh: devolver o controle do login ao próprio gh ─────────────────────────
 # GITHUB_TOKEN é exportado pelo override de máquina ~/.config/cb/local.zsh
