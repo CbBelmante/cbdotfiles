@@ -154,6 +154,7 @@ export const DEV_TOOLS_ENABLED: IToolToggle[] = [
   { id: "lazydocker", defaultInstall: true },
   { id: "tauri", defaultInstall: false },
   { id: "sqlite", defaultInstall: true },
+  { id: "psql", defaultInstall: true },
   { id: "docker", defaultInstall: true },
   { id: "firebase", defaultInstall: true },
   { id: "supabase", defaultInstall: true },

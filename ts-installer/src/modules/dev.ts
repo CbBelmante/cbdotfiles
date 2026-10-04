@@ -622,6 +622,48 @@ const DEV_TOOLS: IDevTool[] = [
     },
   },
   {
+    id: "psql",
+    name: "PostgreSQL client (psql)",
+    emoji: "🐘",
+    async isInstalled() {
+      return commandExists("psql");
+    },
+    async install(distro) {
+      if (await commandExists("psql")) {
+        const version = (await $`psql --version`.text()).trim().split(" ").pop() || "?";
+        log.ok(`psql ja instalado: v${version}`);
+        return;
+      }
+
+      // Só o CLIENTE, nunca o servidor: o banco de desenvolvimento roda em
+      // container pelo Supabase CLI, e instalar o postgresql completo deixaria
+      // um serviço a escutar a porta 5432 disputando com ele.
+      log.add("Instalando o cliente do PostgreSQL...");
+      switch (distro) {
+        case "arch":
+          await pkgInstall("postgresql-libs");
+          break;
+        case "macos":
+          await pkgInstall("libpq");
+          // O libpq do brew é keg-only: os binários não entram no PATH sozinhos.
+          await $`brew link --force libpq`.quiet().nothrow();
+          break;
+        case "debian":
+          await pkgInstall("postgresql-client");
+          break;
+        case "fedora":
+          await pkgInstall("postgresql");
+          break;
+      }
+      if (await commandExists("psql")) {
+        const version = (await $`psql --version`.text()).trim().split(" ").pop() || "?";
+        log.ok(`psql instalado: v${version}`);
+      } else {
+        log.warn("psql nao encontrado no PATH depois da instalacao");
+      }
+    },
+  },
+  {
     id: "docker",
     name: "Docker",
     emoji: "🐋",
