@@ -121,7 +121,7 @@ Ao selecionar o modulo `browsers`, o instalador mostra checkbox dos navegadores 
 |--------|-----------|:----------:|
 | 🐚 `shell-tools` | Zsh + Oh My Zsh + NVM + Node LTS + Git + SSH key + Kitty + Ghostty + AeroSpace + JankyBorders (macOS) + CLI tools | 🐧 🍎 |
 | 🔤 `fonts` | Fontes Nerd Font | 🐧 🍎 |
-| 🛠️ `dev` | Neovim + Zellij + tmux + VS Code + GitKraken + LazyGit + Delta + Docker + Firebase + Supabase + Postman + Stochos... | 🐧 🍎 |
+| 🛠️ `dev` | Neovim + Zellij + tmux + VS Code + GitKraken + LazyGit + Delta + Docker + SQLite + psql + Firebase + Supabase + Postman + Stochos... | 🐧 🍎 |
 | 🖥️ `fastfetch` | Config Fastfetch (system info) | 🐧 🍎 |
 | 📊 `btop` | Config Btop (monitor de sistema) | 🐧 🍎 |
 | 🎮 `drivers` | Drivers GPU (AMD/Intel/NVIDIA) + diagnostico amdgpu/radeon + Bluetooth Mac | 🐧 |
@@ -255,7 +255,7 @@ cbdotfiles/
 │           ├── drivers.ts         # 🎮 GPU + Bluetooth (detecta hardware)
 │           ├── browsers.ts        # 🌐 Vivaldi, Opera, Firefox, Chrome, Chromium
 │           ├── desktop-tools.ts   # 🖥️ Wofi, clipboard, screenshots (tiling WMs)
-│           ├── dev.ts             # 🛠️ Neovim, Zellij, VS Code, GitKraken, GitHub CLI, LazyGit, LazyDocker, Docker, SQLite, Tauri Dev, Firebase, Supabase, Postman, Insomnia, Claude, Antigravity, Kimi, Codex, FlowForge
+│           ├── dev.ts             # 🛠️ Neovim, Zellij, VS Code, GitKraken, GitHub CLI, LazyGit, LazyDocker, Docker, SQLite, psql, Tauri Dev, Firebase, Supabase, Postman, Insomnia, Claude, Antigravity, Kimi, Codex, FlowForge
 │           ├── fastfetch.ts       # 🖥️ System info
 │           ├── btop.ts            # 📊 Monitor de sistema
 │           ├── apps.ts            # 📦 LibreOffice, Sublime, VLC, Obsidian...
