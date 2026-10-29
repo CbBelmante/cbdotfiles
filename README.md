@@ -922,10 +922,31 @@ zj cbw2 meuapp   # abre Zellij no projeto
 zj cbw2 meuapp 308  # abre Zellij no worktree 308
 ```
 
-> Use `function nome()` (nao `nome()`) pra evitar conflito com o alias `cd` do zoxide.
-> Use `builtin cd` dentro de funcoes pelo mesmo motivo.
-> Funciona com `zj`: resolve funcoes e aliases automaticamente, inclusive com numero.
-> Aceite `_` e `-`: adicione elif pra cada variacao do nome.
+> **Regras pra funcionar com `zj`:**
+> - Use `function nome()` (nao `nome()`) pra evitar conflito com o alias `cd` do zoxide
+> - Use `builtin cd` dentro de funcoes pelo mesmo motivo
+> - Funciona com `zj`: resolve funcoes e aliases automaticamente, inclusive com numero
+> - Aceite `_` e `-`: adicione elif pra cada variacao do nome
+
+**Pode delegar.** Varios atalhos para o mesmo projeto nao precisam duplicar o corpo: uma
+funcao que chama uma auxiliar resolve na mesma, porque o `_resolve_dir` do `zj`
+**executa** a funcao num subshell e le onde ela parou, em vez de procurar um `builtin cd`
+literal no corpo dela.
+
+```bash
+# Uma auxiliar so, e um atalho por nome que voce quiser
+function _cd_worktree() {
+  local projeto=$1 numero=$2
+  [ -z "$numero" ] && builtin cd ~/Workspaces/$projeto && return
+  [ -d ~/Workspaces/$projeto-$numero ] && builtin cd ~/Workspaces/$projeto-$numero && return
+  echo "Worktree $projeto $numero nao encontrado"; return 1
+}
+function meuapp()    { _cd_worktree meu-app "$1" }
+function meuappAlt() { _cd_worktree meu-app "$1" }   # zj resolve os dois
+```
+
+> A auxiliar tambem pode procurar onde quiser — outra raiz, os worktrees do FlowForge —
+> que o `zj` acompanha, porque le o resultado e nao o texto da funcao.
 
 ### Como funciona
 
