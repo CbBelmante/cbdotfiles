@@ -229,6 +229,26 @@ _resolve_dir() {
             fi
         fi
     fi
+    # Ultimo recurso antes do palpite: EXECUTA a funcao num subshell e le onde
+    # ela parou. Os ramos acima so sabem ler um `builtin cd <caminho>` LITERAL no
+    # corpo da funcao, e as funcoes de atalho do local.zsh delegam a busca a
+    # _cb_cd_worktree -- nao tem esse literal, entao caiam todas no fallback e
+    # viravam uma pasta inexistente em ~/Workspaces. Executar reaproveita a busca
+    # que ja funciona, inclusive nos worktrees do FlowForge, que nenhum dos ramos
+    # acima procura. O subshell garante que o cd nao vaza para a shell do
+    # chamador, e o redirecionamento silencia a mensagem de erro da propria
+    # funcao quando ela nao acha nada.
+    #
+    # O primeiro grupo nao pode terminar em digito: com o greedy comendo o numero
+    # junto, `volanAI1562` procuraria a funcao `volanAI1562`, que nao existe.
+    if [[ "$input" =~ "^([a-zA-Z_][a-zA-Z0-9_]*[a-zA-Z_]|[a-zA-Z_])([0-9]*)$" ]]; then
+        local fname="${match[1]}" fnum="${match[2]}"
+        if typeset -f "$fname" > /dev/null 2>&1; then
+            local resolved
+            resolved=$( "$fname" "$fnum" > /dev/null 2>&1 && print -r -- "$PWD" )
+            [[ -n "$resolved" && -d "$resolved" ]] && echo "$resolved" && return
+        fi
+    fi
     # Fallback: assume pasta em ~/Workspaces
     echo "$HOME/Workspaces/$input"
 }
