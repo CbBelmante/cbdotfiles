@@ -153,6 +153,9 @@ keybindings:
   # Toggle float
   - commands: ['toggle-floating --centered']
     bindings: ['alt+t']
+  # Toggle split orientation
+  - commands: ['toggle-tiling-direction']
+    bindings: ['alt+oem_2']
   # Resize smaller
   - commands: ['resize --width -2%']
     bindings: ['alt+oem_comma']

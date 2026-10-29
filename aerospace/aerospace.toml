@@ -137,6 +137,9 @@ cmd-shift-9 = 'move-node-to-workspace 9'
 # Toggle float
 cmd-t = 'layout floating tiling'
 
+# Toggle split orientation
+cmd-slash = 'layout horizontal vertical'
+
 # Resize smaller
 cmd-comma = 'resize smart -50'
 

@@ -12,3 +12,6 @@ ts-installer/node_modules/
 local/
 .flowforge/
 .claude/
+
+# Binario compilado de aerospace/wmprobe.swift — artefato, nao fonte (e so arm64).
+aerospace/wmprobe
